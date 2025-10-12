@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FreshBite - Food App</title>
+  <meta name="description" content="A warm, accessible food app showcasing recipes, menus, shopping lists, and user profiles.">
+  <style>
+    :root{
+      --green: #2e8b57;
+      --green-dark: #22664a;
+      --yellow: #f2c14e;
+      --earth: #8b6b3b;
+      --bg: #f8f5f0;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --shadow: 0 4px 14px rgba(0,0,0,.08);
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+    header{position: sticky; top:0; z-index: 50; background: #fff; border-bottom: 1px solid #eee; backdrop-filter: saturate(1.1) blur(2px);}
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
+    .brand{display:flex;align-items:center;gap:12px;padding:14px 0}
+    .brand .logo{width:38px;height:38px; display:inline-flex;align-items:center;justify-content:center;border-radius:9px;
+      background: linear-gradient(135deg, var(--green) 0%, #6abf6b 100%); color:white;
+    }
+    .brand h1{font-size:1.1rem;margin:0;font-weight:700}
+    nav[aria-label="Main"]{display:flex;justify-content:space-between;gap:12px;padding:0 0 12px 0;border-top:1px solid #f0f0f0}
+    .nav-links{display:flex;gap:8px;flex-wrap:wrap}
+    .nav-links a{text-decoration:none;color:var(--text);font-weight:600;font-size:.95rem;padding:10px 12px;border-radius:999px;background:#fff;border:1px solid #eee; display:inline-flex;align-items:center;gap:8px}
+    .nav-links a.active{background: #f7fbf7; border-color: #d8ecd8; color:var(--green)}
+    .icon{width:16px;height:16px; display:inline-block}
+    main{padding:20px 0 40px}
+    h2{font-size:1.2rem;margin:0 0 12px 0}
+    .section{padding:24px 0;border-bottom:1px solid #eee}
+    .grid{display:grid;gap:16px}
+    .grid-3{grid-template-columns:1fr; }
+    @media (min-width:600px){
+      .grid-3{grid-template-columns:repeat(2,1fr);}
+    }
+    @media (min-width:900px){
+      .grid-3{grid-template-columns:repeat(3,1fr);}
+      .grid-2{grid-template-columns:repeat(2,1fr);}
+      .grid-4{grid-template-columns:repeat(4,1fr);}
+    }
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:1px solid #f0f0f0}
+    .card-media{height:180px;background:#eef5e9; display:flex; align-items:center; justify-content:center}
+    .card-media img{width:100%;height:100%;object-fit:cover}
+    .card-body{padding:14px}
+    .card-title{font-weight:700;margin:0 0 6px 0;font-size:1rem}
+    .card-desc{color:var(--muted);font-size:.95rem;margin:0 0 8px}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#f4f4f4;font-size:.8rem}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 14px;border-radius:10px;border:1px solid #e0e0e0;background:#fff;
+      text-decoration:none;color:var(--text);font-weight:700}
+    .btn.primary{background: var(--green); color:white; border-color: var(--green)}
+    .btn.ghost{background:transparent;border-color:#ddd}
+    .section-header{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .searchbar{display:flex;gap:8px;flex-wrap:wrap}
+    .searchbar input[type="search"]{flex:1 1 260px;padding:12px 14px;border-radius:8px;border:1px solid #ddd;background:white;min-height:48px}
+    .searchbar button{padding:12px 16px;border-radius:8px;border:0;background:var(--yellow);font-weight:700;cursor:pointer}
+    .category-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+    .category{border:1px solid #ddd;background:#fff;padding:8px 12px;border-radius:999px;font-weight:600;font-size:.9rem;cursor:pointer}
+    .filters{border:1px solid #eee;border-radius:12px;padding:14px;background:#fff}
+    fieldset{border:0;padding:0;margin:0}
+    legend{font-weight:700;margin-bottom:6px}
+    label{margin-right:12px;font-size:.92rem}
+    ul{margin:6px 0 0 1.1rem}
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid #eee;padding:6px 8px;text-align:left;vertical-align:top}
+    .section--recipe{display:grid;gap:14px}
+    .recipe-layout{display:grid;gap:14px}
+    @media (min-width: 900px){
+      .recipe-layout{grid-template-columns:1.1fr 0.9fr}
+    }
+    .nutrients{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    @media (min-width:600px){
+      .nutrients{grid-template-columns:repeat(4,1fr);}
+    }
+    .list{margin:0;padding-left:1.25rem}
+    .hr{height:1px;background:#eee;margin:12px 0}
+    .section-title{font-size:1.1rem;margin:0 0 8px}
+    .shadow{box-shadow:0 4px 12px rgba(0,0,0,.05)}
+    .avatar{width:28px;height:28px;border-radius:50%;background:#ddd; display:inline-block;vertical-align:middle}
+    .note{color:var(--muted);font-size:.92rem}
+    .stack{display:flex;flex-direction:column;gap:8px}
+    .recipe-image{width:100%;height:260px;border-radius:12px;overflow:hidden;background: #f3efe3; display:flex;align-items:center;justify-content:center}
+    .recipe-image svg{width:100%;height:100%;object-fit:cover}
+    .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+<style id="fl-baseline">/* --- Baseline responsive reset + hardening (gallery-safe + centered media) --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on phone preview */
+  overflow-y: auto;                    /* allow vertical scroll */
+}
+
+/* Media scale and center by default */
+img, picture img, figure img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-position: center !important;
+}
+
+/* Figures/pictures play nice */
+picture, figure { display:block; }
+figure > img { width:100%; height:auto; display:block; }
+
+/* Background images: centered and covered (no tiling) */
+[style*="background-image"] {
+  background-position: center !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Prevent sideways scroll, but do NOT clamp widths globally (lets cards/layout work) */
+html, body { overflow-x: hidden; }
+
+/* Containers */
+.container, .wrap, main, header, section, footer { width:100%; }
+.container, .wrap, main { max-width:1200px; margin:0 auto; padding:16px; }
+
+/* Type that scales */
+h1 { font-size: clamp(24px, 6vw, 40px); margin: 0 0 8px; }
+h2 { font-size: clamp(20px, 4.5vw, 28px); margin: 0 0 6px; }
+p  { font-size: clamp(14px, 3vw, 16px); line-height: 1.5; }
+
+/* Generic grid helpers (opt-in) */
+.grid, [class*="grid"], [class*="row"], [style*="grid-template-columns"] { display:grid; gap:14px; }
+.grid.cols-2 { grid-template-columns: 1fr; }
+.grid.cols-3 { grid-template-columns: 1fr; }
+@media (min-width:640px){ .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width:960px){ .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* Phone: stack multi-col patterns */
+@media (max-width:420px){
+  [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  [style*="display:flex"] { flex-wrap: wrap !important; }
+  [class*="product"], [class*="card"], [class*="item"] { width:100% !important; }
+  section, header, footer, .container, .wrap, main { padding-left:14px; padding-right:14px; }
+}
+
+/* Buttons + cards */
+.btn { display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; text-decoration:none; cursor:pointer }
+.card { border:1px solid #eee; border-radius:12px; padding:16px; background:#fff }
+
+/* Thin, pretty scrollbars */
+html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================
+   SMART, NON-DISTORTING GALLERIES
+   ============================ */
+
+/* Common gallery class names from the model */
+.image-grid, .images-grid, .gallery, .grid-images {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* Heuristic: any container that has many direct image children becomes a gallery */
+section:has(> img + img), div:has(> img + img),
+section:has(> picture + picture), div:has(> picture + picture),
+section:has(> figure + figure),  div:has(> figure + figure) {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+}
+
+/* Inside these galleries, images never distort; centered by default */
+.image-grid img, .images-grid img, .gallery img, .grid-images img,
+section:has(> img + img) > img,
+div:has(> img + img) > img,
+section:has(> picture + picture) picture > img,
+div:has(> picture + picture) picture > img,
+section:has(> figure + figure) figure > img,
+div:has(> figure + figure) figure > img {
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:center !important;
+  border-radius:12px;
+}
+
+/* If you (or the model) explicitly want square thumbs, opt-in: */
+.thumb img, [data-thumb] img { aspect-ratio:1/1; object-fit:cover; object-position:center; }</style>
+<style id="fl-mobile-drawer-css">/* --- Auto-injected phone drawer --- */
+:root{
+  --fl-brand:#2e8b57;
+  --fl-drawer-bg:#2e8b57;
+  --fl-drawer-fg:#fff;
+  --fl-drawer-scrim: rgba(0,0,0,.32);
+}
+/* The layer covers the screen, but must NOT eat events */
+#fl-layer{ position:fixed; inset:0; pointer-events:none; z-index:2147483000; }
+#fl-mobile-drawer-wrap{ display:none; }
+
+/* Only visible UI gets pointer events */
+#fl-mobile-drawer, #fl-scrim, #fl-drawer { pointer-events:auto; }
+
+#fl-mobile-drawer{
+  position:sticky; top:0; z-index:1; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+#fl-mobile-drawer .brand{font-weight:800;color:#111;text-decoration:none}
+#fl-mobile-drawer .hamb{ margin-left:auto;width:40px;height:40px;border:0;border-radius:10px;background:#111;display:grid;place-items:center;cursor:pointer }
+#fl-mobile-drawer .hamb span{display:block;width:18px;height:2px;background:#fff;margin:2px 0;border-radius:2px}
+#fl-navchk{ display:none }
+#fl-scrim{ position:fixed; inset:0; background:var(--fl-drawer-scrim); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:2147483001; }
+#fl-drawer{
+  position:fixed; top:0; bottom:0; right:0; width:min(82vw,320px);
+  transform:translateX(100%); background:var(--fl-drawer-bg); color:var(--fl-drawer-fg);
+  box-shadow:-12px 0 32px rgba(0,0,0,.28); padding:16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .28s ease;
+  z-index:2147483002;
+}
+#fl-drawer a{ color:var(--fl-drawer-fg); text-decoration:none; border-radius:10px; padding:12px 10px; display:block }
+#fl-drawer a:hover{ background: rgba(255,255,255,.18) }
+#fl-drawer .close { margin-left:auto; font-size:28px; cursor:pointer; padding:4px 8px; border-radius:8px; color:var(--fl-drawer-fg); }
+#fl-drawer .close:hover { background: rgba(255,255,255,.18); }
+/* open states */
+#fl-navchk:checked ~ #fl-scrim{ opacity:1; pointer-events:auto }
+#fl-navchk:checked ~ #fl-drawer{ transform: translateX(0) }
+
+@media (min-width:768px){ #fl-mobile-drawer-wrap{ display:none !important } }
+@media (max-width:767px){
+  header nav, nav:not(#fl-mobile-drawer){ display:none !important }
+  #fl-mobile-drawer-wrap{ display:block }
+}</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></head>
+<body>
+<div id="fl-layer" aria-hidden="false">
+  <div id="fl-mobile-drawer-wrap">
+    <nav id="fl-mobile-drawer" aria-label="Mobile">
+      <a class="brand" href="#" aria-label="Editable text">FreshBite - Food App</a>
+      <label class="hamb" for="fl-navchk" aria-controls="fl-drawer" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </label>
+    </nav>
+
+    <input type="checkbox" id="fl-navchk">
+    <div id="fl-scrim" aria-hidden="true"></div>
+    <aside id="fl-drawer" role="dialog" aria-modal="true" aria-label="Menu">
+      <label for="fl-navchk" class="close" aria-label="Close menu">×</label>
+      <a href="#home" aria-label="Editable text">Home</a>
+      <a href="#menu" aria-label="Editable text">Menu</a>
+      <a href="#recipe-details" aria-label="Editable text">Recipe</a>
+      <a href="#shopping-list" aria-label="Editable text">Shopping List</a>
+      <a href="#user-profile" aria-label="Editable text">Profile</a>
+    </aside>
+  </div>
+</div>
+
+  <header aria-label="Site header">
+    <div class="container brand" role="group" aria-label="Branding and search">
+      <div class="logo" aria-hidden="true">
+        <!-- Simple spoon icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-label="Spoon icon" focusable="false" style="display:block">
+          <path d="M12 2a6 6 0 0 0-6 6c0 3.5 2.5 6.4 6 6.9V21h-2a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-4.1c3-.5 6-3.4 6-6.9a6 6 0 0 0-6-6Z"></path>
+        </svg>
+      </div>
+      <h1 aria-label="Editable text" style="margin:0;">FreshBite</h1>
+      <span class="note" style="margin-left:auto;">Healthy. Tasty. Efficient.</span>
+    </div>
+    <div class="container" aria-label="Search bar area">
+      <div class="searchbar" role="search">
+        <input type="search" aria-label="Search recipes" placeholder="Search recipes, ingredients, or cuisines…">
+        <button type="button" aria-label="Editable text">Search</button>
+      </div>
+    </div>
+    <nav aria-label="Main" class="container" style="padding-top:0;">
+      <div class="nav-links" role="navigation">
+        <a href="#home" class="active" aria-label="Editable text">
+          <!-- Home icon -->
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-label="Home icon" focusable="false">
+            <path d="M3 11l9-7 9 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M9 21V9h6v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          Home
+        </a>
+        <a href="#menu" aria-label="Editable text">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-label="Menu icon" focusable="false">
+            <path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+          Menu
+        </a>
+        <a href="#recipe-details" aria-label="Editable text">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-label="Recipe icon" focusable="false">
+            <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2" fill="none"></path>
+            <path d="M8 7V5h8v2" stroke="currentColor" stroke-width="2" fill="none"></path>
+            <path d="M7 14h10" stroke="currentColor" stroke-width="2" fill="none"></path>
+          </svg>
+          Recipe
+        </a>
+        <a href="#shopping-list" aria-label="Editable text">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-label="Shopping cart icon" focusable="false">
+            <path d="M3 4h2l3 12h9l3-8H6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="9" cy="20" r="1" fill="currentColor"></circle>
+            <circle cx="18" cy="20" r="1" fill="currentColor"></circle>
+          </svg>
+          Shopping List
+        </a>
+        <a href="#user-profile" aria-label="Editable text">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-label="User icon" focusable="false">
+            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Z" stroke="currentColor" stroke-width="2" fill="none"></path>
+            <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" fill="none"></path>
+          </svg>
+          Profile
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="home" aria-label="Home page content" class="container section">
+    <section class="section" aria-labelledby="home-title">
+      <div class="section-header">
+        <h2 id="home-title" class="section-title" aria-label="Editable text">Home</h2>
+        <span class="pill" aria-label="Push notifications toggle">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-label="Bell icon" focusable="false" style="vertical-align:middle">
+            <path d="M12 22a2.5 2.5 0 0 0 2.5-2.5H9.5A2.5 2.5 0 0 0 12 22Z" fill="currentColor"></path>
+            <path d="M18 16v-5a6 6 0 1 0-12 0v5L4 21h16l-2-5Z" stroke="currentColor" stroke-width="2" fill="none"></path>
+          </svg>
+          Enable Push
+        </span>
+      </div>
+
+      <div class="grid grid-3" style="gap:16px;">
+        <article class="card" aria-labelledby="feat1-title">
+          <div class="card-media" aria-label="Dish image placeholder">
+            <!-- Inline SVG placeholder image -->
+            <svg viewBox="0 0 600 360" role="img" aria-label="Featured dish image" style="width:100%;height:100%;object-fit:cover">
+              <defs>
+                <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+                  <stop stop-color="#e6f3e2" offset="0"></stop>
+                  <stop stop-color="#cfe9c4" offset=".6"></stop>
+                  <stop stop-color="#96d08b" offset="1"></stop>
+                </linearGradient>
+              </defs>
+              <rect width="600" height="360" fill="url(#g)"></rect>
+              <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Creamy Avocado Pasta</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 id="feat1-title" class="card-title" style="font-size:1.05rem" aria-label="Editable text">Creamy Avocado Pasta</h3>
+            <p class="card-desc" aria-label="Editable text">A vibrant, plant-forward pasta tossed in a silky avocado sauce with lemon and basil.</p>
+            <span class="pill" aria-label="Vegetarian">
+              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="10" fill="#2ecc71"></circle>
+              </svg>
+              vegetarian
+            </span>
+          </div>
+        </article>
+
+        <article class="card" aria-labelledby="feat2-title">
+          <div class="card-media" aria-label="Dish image placeholder">
+            <svg viewBox="0 0 600 360" role="img" aria-label="Featured dish image" style="width:100%;height:100%;object-fit:cover">
+              <defs><linearGradient id="g2" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff6d6" offset="0"></stop><stop stop-color="#f7d29f" offset="1"></stop></linearGradient></defs>
+              <rect width="600" height="360" fill="url(#g2)"></rect>
+              <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Herb Roasted Chicken</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 id="feat2-title" class="card-title" style="font-size:1.05rem" aria-label="Editable text">Herb Roasted Chicken</h3>
+            <p class="card-desc" aria-label="Editable text">Oven-roasted chicken with thyme, garlic, and a hint of citrus.</p>
+            <span class="pill" aria-label="Gluten-free">
+              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="4" y="4" width="16" height="12" rx="2" fill="#f1c40f"></rect>
+              </svg>
+              GF
+            </span>
+          </div>
+        </article>
+
+        <article class="card" aria-labelledby="feat3-title">
+          <div class="card-media" aria-label="Dish image placeholder">
+            <svg viewBox="0 0 600 360" role="img" aria-label="Featured dish image" style="width:100%;height:100%;object-fit:cover">
+              <defs><linearGradient id="g3" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#e6f2ff" offset="0"></stop><stop stop-color="#cde0ff" offset="1"></stop></linearGradient></defs>
+              <rect width="600" height="360" fill="url(#g3)"></rect>
+              <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Citrus Salmon</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 id="feat3-title" class="card-title" style="font-size:1.05rem" aria-label="Editable text">Citrus Salmon</h3>
+            <p class="card-desc" aria-label="Editable text">Bright salmon fillets with a zesty citrus glaze and herbs.</p>
+            <span class="pill" aria-label="Dairy-free">
+              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 12h18" stroke="currentColor" stroke-width="2" fill="none"></path>
+                <path d="M12 3l3 6h6l-5 4 2 7-6-4-6 4 2-7-5-4h6l3-6z" fill="currentColor" opacity=".25"></path>
+              </svg>
+              dairy-free
+            </span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="daily-title">
+      <div class="section-header">
+        <h2 id="daily-title" class="section-title" aria-label="Editable text">Daily Specials</h2>
+        <span class="note" aria-live="polite">New specials added daily</span>
+      </div>
+      <div class="grid grid-3" style="gap:16px;">
+        <article class="card" aria-labelledby="special1-title">
+          <div class="card-media" aria-label="Special dish image">
+            <svg viewBox="0 0 600 360" role="img" aria-label="Special dish" style="width:100%;height:100%;object-fit:cover">
+              <defs><linearGradient id="sp1" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff0c2" offset="0"></stop><stop stop-color="#ffd27a" offset="1"></stop></linearGradient></defs>
+              <rect width="600" height="360" fill="url(#sp1)"></rect>
+              <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Zesty Lemon Risotto</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 id="special1-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Zesty Lemon Risotto</h3>
+            <p class="card-desc" aria-label="Editable text">Creamy rice with lemon zest, parmesan, and herbs.</p>
+          </div>
+        </article>
+
+        <article class="card" aria-labelledby="special2-title">
+          <div class="card-media" aria-label="Special dish image">
+            <svg viewBox="0 0 600 360" role="img" aria-label="Special dish" style="width:100%;height:100%;object-fit:cover">
+              <rect width="600" height="360" fill="#e6fff2"></rect>
+              <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Veggie Power Bowl</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 id="special2-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Veggie Power Bowl</h3>
+            <p class="card-desc" aria-label="Editable text">Colorful plant-forward bowl with quinoa, beans, and greens.</p>
+          </div>
+        </article>
+
+        <article class="card" aria-labelledby="special3-title">
+          <div class="card-media" aria-label="Special dish image">
+            <svg viewBox="0 0 600 360" role="img" aria-label="Special dish" style="width:100%;height:100%;object-fit:cover">
+              <rect width="600" height="360" fill="#fff0f5"></rect>
+              <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Spiced Shrimp Tacos</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 id="special3-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Spiced Shrimp Tacos</h3>
+            <p class="card-desc" aria-label="Editable text">Citrusy shrimp with crunchy slaw in warm tortillas.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <section id="menu" aria-labelledby="menu-title" class="section container" style="padding-top:0">
+    <div class="section-header">
+      <h2 id="menu-title" class="section-title" aria-label="Editable text">Menu</h2>
+      <span class="note" aria-live="polite">Browse categories and filters</span>
+    </div>
+
+    <div class="category-list" aria-label="Categories">
+      <button class="category" type="button" aria-label="Editable text">Appetizers</button>
+      <button class="category" type="button" aria-label="Editable text">Main Courses</button>
+      <button class="category" type="button" aria-label="Editable text">Desserts</button>
+      <button class="category" type="button" aria-label="Editable text">Beverages</button>
+      <button class="category" type="button" aria-label="Editable text">Specials</button>
+    </div>
+
+    <div class="filters" aria-label="Filters">
+      <form action="#" method="get" aria-label="Dietary and cuisine filters" class="stack">
+        <fieldset>
+          <legend>Dietary restrictions</legend>
+          <label><input type="checkbox" name="diet" value="vegan"> Vegan</label>
+          <label><input type="checkbox" name="diet" value="gluten-free"> Gluten-free</label>
+          <label><input type="checkbox" name="diet" value="dairy-free"> Dairy-free</label>
+          <label><input type="checkbox" name="diet" value="nut-free"> Nut-free</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Cuisine</legend>
+          <label><input type="checkbox" name="cuisine" value="italian"> Italian</label>
+          <label><input type="checkbox" name="cuisine" value="asian"> Asian</label>
+          <label><input type="checkbox" name="cuisine" value="mexican"> Mexican</label>
+          <label><input type="checkbox" name="cuisine" value="american"> American</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Sort by</legend>
+          <select name="sort" aria-label="Sort recipes">
+            <option value="popular">Most popular</option>
+            <option value="newest">Newest</option>
+            <option value="rating">Top rated</option>
+          </select>
+        </fieldset>
+      </form>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:12px;">
+      <!-- Sample Recipe Cards in Menu -->
+      <article class="card" aria-labelledby="menu1-title">
+        <div class="card-media" aria-label="Dish image">
+          <svg viewBox="0 0 600 360" role="img" aria-label="Dish image" style="width:100%;height:100%;object-fit:cover">
+            <rect width="600" height="360" fill="#e8f6ff"></rect>
+            <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Gabacho Veggie Bowl</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <h3 id="menu1-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Gabacho Veggie Bowl</h3>
+          <p class="card-desc" aria-label="Editable text">Colorful quinoa, beans, and greens with zesty dressing.</p>
+          <span class="pill" aria-label="Vegetarian">Vegetarian</span>
+          <div style="margin-top:8px;">
+            <a href="#recipe-details" class="btn" aria-label="Editable text">View Recipe</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" aria-labelledby="menu2-title">
+        <div class="card-media" aria-label="Dish image">
+          <svg viewBox="0 0 600 360" role="img" aria-label="Dish image" style="width:100%;height:100%;object-fit:cover">
+            <rect width="600" height="360" fill="#fff0e6"></rect>
+            <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Spicy Shrimp Tacos</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <h3 id="menu2-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Spicy Shrimp Tacos</h3>
+          <p class="card-desc" aria-label="Editable text">Citrus shrimp with crunchy slaw in warm tortillas.</p>
+          <span class="pill" aria-label="Dairy-free">Dairy-free</span>
+          <div style="margin-top:8px;">
+            <a href="#recipe-details" class="btn" aria-label="Editable text">View Recipe</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" aria-labelledby="menu3-title">
+        <div class="card-media" aria-label="Dish image">
+          <svg viewBox="0 0 600 360" role="img" aria-label="Dish image" style="width:100%;height:100%;object-fit:cover">
+            <rect width="600" height="360" fill="#eaf6db"></rect>
+            <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="28" font-family="sans-serif" dy=".3em">Lemon Garlic Salmon</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <h3 id="menu3-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Lemon Garlic Salmon</h3>
+          <p class="card-desc" aria-label="Editable text">Flaky salmon with bright lemon and herbal notes.</p>
+          <span class="pill" aria-label="Contains fish">Fish</span>
+          <div style="margin-top:8px;">
+            <a href="#recipe-details" class="btn" aria-label="Editable text">View Recipe</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="recipe-details" aria-labelledby="recipe-title" class="section container section--recipe">
+    <h2 id="recipe-title" class="section-title" style="margin-top:0" aria-label="Editable text">Recipe Details</h2>
+
+    <div class="recipe-layout" aria-label="Recipe details layout">
+      <div>
+        <div class="recipe-image" aria-label="Main recipe image">
+          <svg viewBox="0 0 800 480" role="img" aria-label="Recipe photograph" style="width:100%;height:100%;object-fit:cover">
+            <defs><linearGradient id="rg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff0d9" offset="0"></stop><stop stop-color="#ffd28a" offset="1"></stop></linearGradient></defs>
+            <rect width="800" height="480" fill="url(#rg)"></rect>
+            <text x="50%" y="50%" text-anchor="middle" fill="#2a2a2a" font-size="34" font-family="sans-serif" dy=".3em">Sun-kissed Lemon Pasta</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="stack" aria-label="Recipe content">
+        <h3 class="section-title" style="margin:0 0 8px 0" id="recipe-section-title" aria-label="Editable text">Sun-kissed Lemon Pasta</h3>
+
+        <p class="note" style="margin-top:0" aria-label="Editable text">A bright, creamy pasta with fresh lemon, garlic, and parsley. Perfect for a weeknight dinner.</p>
+
+        <section aria-labelledby="ingredients-title" class="stack" style="gap:8px">
+          <h4 id="ingredients-title" style="margin:0 0 6px 0">Ingredients</h4>
+          <ul class="list" aria-label="Ingredients list">
+            <li>200g spaghetti or linguine</li>
+            <li>1 ripe avocado (for creaminess) or 2 tbsp cream</li>
+            <li>1 lemon, zest and juice</li>
+            <li>2 cloves garlic, minced</li>
+            <li>1 tbsp olive oil</li>
+            <li>Salt and pepper to taste</li>
+            <li>Fresh parsley, chopped</li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="steps-title" class="stack" style="gap:8px">
+          <h4 id="steps-title" style="margin:0 0 6px 0">Cooking Instructions</h4>
+          <ol class="list" aria-label="Cooking steps">
+            <li>Cook pasta in salted water until al dente.</li>
+            <li>Whisk avocado/cream with lemon juice, zest, garlic, and olive oil until smooth.</li>
+            <li>Drain pasta and toss with sauce. Add parsley and seasoning.</li>
+            <li>Serve warm with extra lemon wedges.</li>
+          </ol>
+        </section>
+
+        <section aria-labelledby="nutrition-title" class="stack" style="gap:8px">
+          <h4 id="nutrition-title" style="margin:0 0 6px 0">Nutritional Information</h4>
+          <div class="nutrients" aria-label="Nutritional information grid">
+            <div class="pill" aria-label="Calories">Calories: ~420</div>
+            <div class="pill" aria-label="Protein">Protein: ~14g</div>
+            <div class="pill" aria-label="Carbs">Carbs: ~54g</div>
+            <div class="pill" aria-label="Fat">Fat: ~16g</div>
+          </div>
+        </section>
+
+        <div class="hr" aria-hidden="true"></div>
+
+        <div class="stack" style="gap:6px;">
+          <button class="btn primary" aria-label="Editable text">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" aria-hidden="true" focusable="false">
+              <path d="M12 21s-7-4.35-9-9.5C.5 6.8 5 2 9.5 4.5 11 2 14 2 15.5 4.5 19 2 23.5 6.8 21 11.5 19 16.65 12 21 12 21z"></path>
+            </svg>
+            Add to Favorites
+          </button>
+
+          <button class="btn" aria-label="Editable text">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-label="Share icon" focusable="false">
+              <path d="M18 8a3 3 0 0 0-2.83-2H9.83A3 3 0 0 0 7 8v6a3 3 0 0 0 2.83 3H15a3 3 0 0 0 3-3V11"></path>
+              <path d="M15 8l-3-3-3 3"></path>
+              <path d="M9 21l-4-4"></path>
+            </svg>
+            Share This Recipe
+          </button>
+        </div>
+
+        <section aria-labelledby="reviews-title" class="stack" style="gap:8px">
+          <h4 id="reviews-title" style="margin:0 0 6px 0">User Reviews</h4>
+          <ul class="list" aria-label="Reviews list" style="padding-left:1.2rem">
+            <li><strong>Ashley</strong> <span aria-label="rating" style="color:#f5a623;font-weight:700">4.5/5</span> - Bright and creamy, easy weeknight dinner.</li>
+            <li><strong>Daniel</strong> <span aria-label="rating" style="color:#f5a623;font-weight:700">5/5</span> - Loved the avocado twist; lemon zing was perfect.</li>
+          </ul>
+          <form action="#" method="post" aria-label="Leave a review" class="stack" style="margin-top:8px">
+            <label for="review" class="note" style="font-weight:700">Leave a Review</label>
+            <textarea id="review" name="review" rows="4" placeholder="Share your thoughts…" style="width:100%;padding:10px;border-radius:6px;border:1px solid #ddd"></textarea>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <label class="pill" style="cursor:default">Rating:
+                <select name="rating" aria-label="Rating" style="border:0;background:transparent;font-weight:700">
+                  <option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option>
+                </select>
+              </label>
+              <button type="submit" class="btn" aria-label="Editable text" style="min-width:120px">Submit Review</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section id="shopping-list" aria-labelledby="shopping-title" class="section container">
+    <div class="section-header">
+      <h2 id="shopping-title" class="section-title" aria-label="Editable text">Shopping List</h2>
+      <span class="note" aria-live="polite">Add ingredients and check them off</span>
+    </div>
+
+    <div class="stack" style="gap:8px;">
+      <form action="#" method="post" aria-label="Add ingredient" class="stack" style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="text" name="item" placeholder="Add ingredient (e.g., tomatoes)" aria-label="New ingredient" style="flex:1 1 220px;padding:12px;border-radius:8px;border:1px solid #ddd">
+        <button type="submit" class="btn" aria-label="Editable text" style="min-width:120px">Add</button>
+      </form>
+
+      <ul class="list" aria-label="Current shopping items" style="list-style: none; padding-left:0; display:grid; grid-template-columns:1fr 1fr; gap:8px">
+        <li class="card" style="padding:8px 10px; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" aria-label="Select item Tomatoes">
+          <span>Tomatoes</span>
+        </li>
+        <li class="card" style="padding:8px 10px; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" aria-label="Select item Pasta">
+          <span>Pasta, spaghetti</span>
+        </li>
+        <li class="card" style="padding:8px 10px; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" aria-label="Select item Basil">
+          <span>Basil leaves</span>
+        </li>
+        <li class="card" style="padding:8px 10px; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" aria-label="Select item Lemon">
+          <span>Lemon</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="user-profile" aria-labelledby="profile-title" class="section container">
+    <div class="section-header">
+      <h2 id="profile-title" class="section-title" aria-label="Editable text">User Profile</h2>
+      <span class="note" aria-live="polite">Manage preferences and history</span>
+    </div>
+
+    <div class="grid grid-3" style="gap:16px;">
+      <section class="card" aria-labelledby="favorites-title">
+        <div class="card-body">
+          <h3 id="favorites-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Favorites</h3>
+          <ul class="list" aria-label="Favorite recipes" style="padding-left:1.25rem">
+            <li>Citrus Salmon</li>
+            <li>Spicy Shrimp Tacos</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="preferences-title">
+        <div class="card-body">
+          <h3 id="preferences-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Personal Preferences</h3>
+          <form action="#" method="post" aria-label="Personal preferences" class="stack" style="gap:6px">
+            <label><input type="checkbox" name="pref" value="vegan" aria-label="Vegan"> Vegan</label>
+            <label><input type="checkbox" name="pref" value="gluten-free" aria-label="Gluten-free"> Gluten-free</label>
+            <label><input type="checkbox" name="pref" value="italian" aria-label="Loves Italian cuisine"> Loves Italian</label>
+            <label><input type="checkbox" name="pref" value="asian" aria-label="Loves Asian cuisine"> Loves Asian</label>
+          </form>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="history-title">
+        <div class="card-body">
+          <h3 id="history-title" class="card-title" style="font-size:1rem" aria-label="Editable text">Order History</h3>
+          <table aria-label="Past orders">
+            <thead>
+              <tr><th>Date</th><th>Item</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>2025-07-12</td><td>Sun-kissed Lemon Pasta</td><td>$12.50</td></tr>
+              <tr><td>2025-08-03</td><td>Herb Roasted Chicken</td><td>$14.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="section" aria-labelledby="notifications-title" style="margin-top:12px">
+      <h3 id="notifications-title" class="section-title" style="margin:0 0 8px 0" aria-label="Editable text">Notifications</h3>
+      <div class="pill" aria-label="Push notifications toggle" style="gap:6px; display:inline-flex">
+        <span>Push alerts</span>
+        <input type="checkbox" aria-label="Enable push notifications">
+      </div>
+    </section>
+  </section>
+
+  <footer class="container" role="contentinfo" aria-label="Site footer" style="padding:28px 0 60px;">
+    <p class="note" style="text-align:center" aria-label="Editable text">© 2025 FreshBite. All rights reserved. Design system: warm, inviting greens and earthy tones.</p>
+  </footer>
+
+</body></html>

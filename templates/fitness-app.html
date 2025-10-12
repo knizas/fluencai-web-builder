@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EmpowerFit — Find Your Strength Inside and Out</title>
+  <meta name="description" content="Accessible, empowering fitness website focused on community, inclusivity, and personal progress. Join today and track your journey.">
+  <style>
+    :root{
+      --bg: #ffffff;
+      --text: #1b1b1b;
+      --muted: #5a5a5a;
+      --card: #f7f9fb;
+      --border: #e5e7eb;
+      --accent: #1e90ff;
+      --accent-dark: #0b6bd8;
+      --shadow: 0 2px 8px rgba(0,0,0,.08);
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
+
+    /* Base */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* Layout helpers */
+    .container { width: 100%; max-width: 1100px; padding: 0 16px; margin: 0 auto; }
+    .grid { display: grid; gap: 16px; }
+    .section { padding: 28px 0; }
+    header, main, footer { width: 100%; }
+
+    /* Header / Nav */
+    .site-header {
+      background: #0f1b2a;
+      color: #fff;
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 800; letter-spacing: .5px;
+    }
+    .brand-logo {
+      width: 34px; height: 34px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1e90ff 0%, #6a5acd 100%);
+      color: white; font-size: 18px;
+    }
+    nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    nav a { color: #fff; padding: 10px 12px; border-radius: 8px; }
+    nav a:hover, nav a:focus { background: rgba(255,255,255,.15); outline: none; }
+
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+
+    /* Hero */
+    .hero {
+      padding: 28px 0 22px;
+      background: linear-gradient(135deg, #eaf4ff 0%, #ffffff 60%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-content { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: center; }
+    .hero h1 { font-size: 2rem; margin: 0 0 8px; font-weight: 800; color: #0f1b2a; line-height: 1.18; }
+    .hero p { color: var(--muted); margin: 0 0 12px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 14px 20px; border-radius: 999px; border: 0;
+      background: var(--accent); color: #fff; font-weight: 700;
+      cursor: pointer; transition: transform .1s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-secondary {
+      background: #f3f4f6; color: #1f2937; font-weight: 700;
+    }
+    .btn-ghost { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+
+    /* Hero image (inline illustration) */
+    .hero-visual {
+      display: grid; place-items: center; padding: 8px;
+    }
+    .illus {
+      width: 100%; max-width: 420px;
+    }
+
+    /* Sections layout */
+    h2.section-title {
+      font-size: 1.5rem; margin: 0 0 8px; color: #0f1b2a;
+    }
+
+    /* Cards / Trainings */
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 16px; box-shadow: var(--shadow);
+    }
+    .card h3 { margin: 6px 0 8px; font-size: 1.1rem; }
+    .card p { color: var(--muted); margin: 0 0 8px; }
+    .card .image-wrap { height: 120px; display: grid; place-items: center; margin-bottom: 8px; }
+
+    @media (min-width: 600px) {
+      .hero-content { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
+      .hero h1 { font-size: 2.3rem; }
+      .illus { height: auto; }
+    }
+
+    @media (min-width: 900px) {
+      .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+      .hero { padding: 40px 0 32px; }
+      .hero h1 { font-size: 2.6rem; }
+    }
+
+    /* Trainings grid */
+    .trainings-grid { grid-template-columns: 1fr; }
+    @media (min-width: 520px) {
+      .trainings-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .trainings-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* Plans (expandable) */
+    details.plan { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0; overflow: hidden; }
+    details.plan summary {
+      list-style: none; padding: 14px 16px; cursor: pointer; font-weight: 700; color: #0f1b2a;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px;
+    }
+    details.plan[open] summary { background: #f9fbfe; }
+    details.plan .plan-content { padding: 12px 16px 16px; background: #fff; }
+    details.plan ul { margin: 6px 0 12px 18px; padding: 0; }
+    details.plan p { margin: 6px 0 12px; color: var(--muted); }
+    .plan-actions { display: flex; gap: 10px; align-items: center; padding: 0 16px 16px; }
+
+    /* Testimonials */
+    .testimonial { font-style: italic; color: #374151; background: #ffffff; border-radius: 12px; padding: 14px; border: 1px solid var(--border); }
+    .author { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; color: #374151; }
+
+    /* Avatar (inline SVG) */
+    .avatar { width: 28px; height: 28px; border-radius: 50%; display: inline-block; background: #e5e7eb; vertical-align: middle; }
+
+    /* Contact form */
+    form { display: grid; gap: 12px; }
+    label { font-weight: 600; font-size: .92rem; display: block; }
+    input[type="text"],
+    input[type="email"],
+    input[type="textarea"],
+    textarea {
+      width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border);
+      font: inherit; background: #fff;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+
+    .socials { display: flex; gap: 10px; padding: 6px 0; }
+    .socials a { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 8px; background: #f3f4f6; border: 1px solid var(--border); }
+    .socials a:hover { background: #e5e7eb; }
+
+    footer { padding: 26px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .92rem; }
+
+    /* Accessibility helpers */
+    .sr-only {
+      position: absolute !important;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+
+    /* Utility */
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .section-header-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  </style>
+<style id="fl-baseline">/* --- Baseline responsive reset + hardening (gallery-safe + centered media) --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on phone preview */
+  overflow-y: auto;                    /* allow vertical scroll */
+}
+
+/* Media scale and center by default */
+img, picture img, figure img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-position: center !important;
+}
+
+/* Figures/pictures play nice */
+picture, figure { display:block; }
+figure > img { width:100%; height:auto; display:block; }
+
+/* Background images: centered and covered (no tiling) */
+[style*="background-image"] {
+  background-position: center !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Prevent sideways scroll, but do NOT clamp widths globally (lets cards/layout work) */
+html, body { overflow-x: hidden; }
+
+/* Containers */
+.container, .wrap, main, header, section, footer { width:100%; }
+.container, .wrap, main { max-width:1200px; margin:0 auto; padding:16px; }
+
+/* Type that scales */
+h1 { font-size: clamp(24px, 6vw, 40px); margin: 0 0 8px; }
+h2 { font-size: clamp(20px, 4.5vw, 28px); margin: 0 0 6px; }
+p  { font-size: clamp(14px, 3vw, 16px); line-height: 1.5; }
+
+/* Generic grid helpers (opt-in) */
+.grid, [class*="grid"], [class*="row"], [style*="grid-template-columns"] { display:grid; gap:14px; }
+.grid.cols-2 { grid-template-columns: 1fr; }
+.grid.cols-3 { grid-template-columns: 1fr; }
+@media (min-width:640px){ .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width:960px){ .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* Phone: stack multi-col patterns */
+@media (max-width:420px){
+  [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  [style*="display:flex"] { flex-wrap: wrap !important; }
+  [class*="product"], [class*="card"], [class*="item"] { width:100% !important; }
+  section, header, footer, .container, .wrap, main { padding-left:14px; padding-right:14px; }
+}
+
+/* Buttons + cards */
+.btn { display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; text-decoration:none; cursor:pointer }
+.card { border:1px solid #eee; border-radius:12px; padding:16px; background:#fff }
+
+/* Thin, pretty scrollbars */
+html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================
+   SMART, NON-DISTORTING GALLERIES
+   ============================ */
+
+/* Common gallery class names from the model */
+.image-grid, .images-grid, .gallery, .grid-images {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* Heuristic: any container that has many direct image children becomes a gallery */
+section:has(> img + img), div:has(> img + img),
+section:has(> picture + picture), div:has(> picture + picture),
+section:has(> figure + figure),  div:has(> figure + figure) {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+}
+
+/* Inside these galleries, images never distort; centered by default */
+.image-grid img, .images-grid img, .gallery img, .grid-images img,
+section:has(> img + img) > img,
+div:has(> img + img) > img,
+section:has(> picture + picture) picture > img,
+div:has(> picture + picture) picture > img,
+section:has(> figure + figure) figure > img,
+div:has(> figure + figure) figure > img {
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:center !important;
+  border-radius:12px;
+}
+
+/* If you (or the model) explicitly want square thumbs, opt-in: */
+.thumb img, [data-thumb] img { aspect-ratio:1/1; object-fit:cover; object-position:center; }</style>
+<style id="fl-mobile-drawer-css">/* --- Auto-injected phone drawer --- */
+:root{
+  --fl-brand:#ffffff;
+  --fl-drawer-bg:#ffffff;
+  --fl-drawer-fg:#111;
+  --fl-drawer-scrim: rgba(0,0,0,.32);
+}
+/* The layer covers the screen, but must NOT eat events */
+#fl-layer{ position:fixed; inset:0; pointer-events:none; z-index:2147483000; }
+#fl-mobile-drawer-wrap{ display:none; }
+
+/* Only visible UI gets pointer events */
+#fl-mobile-drawer, #fl-scrim, #fl-drawer { pointer-events:auto; }
+
+#fl-mobile-drawer{
+  position:sticky; top:0; z-index:1; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+#fl-mobile-drawer .brand{font-weight:800;color:#111;text-decoration:none}
+#fl-mobile-drawer .hamb{ margin-left:auto;width:40px;height:40px;border:0;border-radius:10px;background:#111;display:grid;place-items:center;cursor:pointer }
+#fl-mobile-drawer .hamb span{display:block;width:18px;height:2px;background:#fff;margin:2px 0;border-radius:2px}
+#fl-navchk{ display:none }
+#fl-scrim{ position:fixed; inset:0; background:var(--fl-drawer-scrim); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:2147483001; }
+#fl-drawer{
+  position:fixed; top:0; bottom:0; right:0; width:min(82vw,320px);
+  transform:translateX(100%); background:var(--fl-drawer-bg); color:var(--fl-drawer-fg);
+  box-shadow:-12px 0 32px rgba(0,0,0,.28); padding:16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .28s ease;
+  z-index:2147483002;
+}
+#fl-drawer a{ color:var(--fl-drawer-fg); text-decoration:none; border-radius:10px; padding:12px 10px; display:block }
+#fl-drawer a:hover{ background: rgba(255,255,255,.18) }
+#fl-drawer .close { margin-left:auto; font-size:28px; cursor:pointer; padding:4px 8px; border-radius:8px; color:var(--fl-drawer-fg); }
+#fl-drawer .close:hover { background: rgba(255,255,255,.18); }
+/* open states */
+#fl-navchk:checked ~ #fl-scrim{ opacity:1; pointer-events:auto }
+#fl-navchk:checked ~ #fl-drawer{ transform: translateX(0) }
+
+@media (min-width:768px){ #fl-mobile-drawer-wrap{ display:none !important } }
+@media (max-width:767px){
+  header nav, nav:not(#fl-mobile-drawer){ display:none !important }
+  #fl-mobile-drawer-wrap{ display:block }
+}</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></head>
+<body>
+<div id="fl-layer" aria-hidden="false">
+  <div id="fl-mobile-drawer-wrap">
+    <nav id="fl-mobile-drawer" aria-label="Mobile">
+      <a class="brand" href="#" aria-label="Editable text">EmpowerFit — Find Your Strength Inside and Out</a>
+      <label class="hamb" for="fl-navchk" aria-controls="fl-drawer" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </label>
+    </nav>
+
+    <input type="checkbox" id="fl-navchk">
+    <div id="fl-scrim" aria-hidden="true"></div>
+    <aside id="fl-drawer" role="dialog" aria-modal="true" aria-label="Menu">
+      <label for="fl-navchk" class="close" aria-label="Close menu">×</label>
+      <a href="#home" aria-label="Editable text">Home</a>
+      <a href="#trainings" aria-label="Editable text">Trainings</a>
+      <a href="#plans" aria-label="Editable text">The Club</a>
+      <a href="#testimonials" aria-label="Editable text">Testimonials</a>
+      <a href="#contact" aria-label="Editable text">Contact</a>
+    </aside>
+  </div>
+</div>
+
+  <!-- Header with brand, navigation and search -->
+  <header class="site-header" aria-label="Site header">
+    <div class="container header-inner">
+      <div class="brand" aria-label="Brand EmpowerFit">
+        <span class="brand-logo" aria-hidden="true">EF</span>
+        <span style="font-weight:900; letter-spacing:.5px;">EmpowerFit</span>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <ul role="menubar">
+          <li><a href="#home" role="menuitem" aria-label="Editable text">Home</a></li>
+          <li><a href="#trainings" role="menuitem" aria-label="Editable text">Trainings</a></li>
+          <li><a href="#plans" role="menuitem" aria-label="Editable text">The Club</a></li>
+          <li><a href="#testimonials" role="menuitem" aria-label="Editable text">Testimonials</a></li>
+          <li><a href="#contact" role="menuitem" aria-label="Editable text">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Search for quick navigation (mobile-first, accessible) -->
+      <form role="search" aria-label="Site search" class="search" action="#" method="get" style="display:flex; gap:8px; align-items:center;">
+        <label for="site-search" class="sr-only">Search</label>
+        <input id="site-search" type="search" name="q" placeholder="Search trainings..." aria-label="Search trainings" style="width: 180px; padding: 10px; border-radius: 6px; border:1px solid var(--border);">
+        <button class="btn" type="submit" aria-label="Editable text" style="padding: 10px 14px;">Search</button>
+      </form>
+    </div>
+  </header>
+
+  <main id="home" class="home" aria-label="Homepage">
+    <!-- Hero Section -->
+    <section class="hero" aria-label="Hero section">
+      <div class="container hero-content">
+        <div class="hero-copy" style="min-width:0;">
+          <h1 aria-label="Editable text">Find Your Strength Inside and Out.</h1>
+          <p aria-label="Editable text">We empower every body to move with confidence. Achieve your fitness goals through inclusive programs, expert coaching, and a community that celebrates progress—your journey, your pace.</p>
+          <div class="cta-row" aria-label="Primary actions">
+            <a href="#plans" class="btn" aria-label="Editable text">Join Today</a>
+            <a href="#trainings" class="btn btn-secondary" aria-label="Editable text">Explore Trainings</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Motivational illustration">
+          <svg class="illus" viewBox="0 0 420 260" role="img" aria-label="Diverse athletes exercising together">
+            <defs>
+              <linearGradient id="grad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#1e90ff"></stop>
+                <stop offset="100%" stop-color="#6a5acd"></stop>
+              </linearGradient>
+            </defs>
+            <rect width="420" height="260" rx="18" ry="18" fill="url(#grad)" opacity="0.15"></rect>
+            <!-- simplified stylized figures -->
+            <g fill="#0f1b2a" opacity="0.9">
+              <circle cx="60" cy="180" r="18"></circle>
+              <rect x="48" y="146" width="24" height="60" rx="8"></rect>
+              <circle cx="120" cy="170" r="16"></circle>
+              <rect x="108" y="136" width="24" height="70" rx="8"></rect>
+            </g>
+            <g fill="#0b6bd8" opacity="0.95">
+              <circle cx="210" cy="170" r="20"></circle>
+              <path d="M198 150 q12 -22 40 0" stroke="#0b6bd8" stroke-width="8" fill="none" stroke-linecap="round"></path>
+              <circle cx="260" cy="170" r="18"></circle>
+              <path d="M248 150 q12 -20 40 0" stroke="#0b6bd8" stroke-width="6" fill="none" stroke-linecap="round"></path>
+            </g>
+            <g fill="#fff" opacity="0.9">
+              <rect x="320" y="110" width="60" height="8" rx="4"></rect>
+              <rect x="312" y="140" width="80" height="8" rx="4"></rect>
+              <rect x="312" y="170" width="84" height="8" rx="4"></rect>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Create Profile (User Accounts) - Expandable form -->
+    <section class="section" aria-label="Profile creation" id="signup">
+      <div class="container">
+        <div class="section-head" style="margin-bottom:6px;">
+          <h2 class="section-title" style="margin:0 0 6px;" aria-label="Editable text">Create Your Profile</h2>
+          <span style="color:var(--muted); font-size:.92rem;">Track progress, book classes, and connect with the community.</span>
+        </div>
+        <details class="card" style="margin-top:8px;" open="">
+          <summary style="font-weight:800; padding:14px 16px; cursor:pointer; list-style:none; font-size:1.05rem;">Create Profile</summary>
+          <div class="plan-content" style="padding:0 16px 16px;">
+            <form action="#" method="post" aria-label="Create fitness profile" style="display:grid; grid-template-columns:1fr; gap:12px; padding-top:6px;">
+              <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+                <label for="name">Full Name</label>
+                <input id="name" name="name" type="text" placeholder="Jane Doe" required="" aria-label="Full name">
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div>
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" placeholder="you@example.com" required="" aria-label="Email address">
+                </div>
+                <div>
+                  <label for="goal">Goal</label>
+                  <input id="goal" name="goal" type="text" placeholder="Lose weight, build strength, etc." aria-label="Fitness goal">
+                </div>
+              </div>
+              <div>
+                <label for="bio">About You (optional)</label>
+                <textarea id="bio" name="bio" placeholder="Tell us about your current activity level and preferences." aria-label="Short bio"></textarea>
+              </div>
+              <button class="btn" type="submit" aria-label="Editable text">Create Profile</button>
+            </form>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Trainings -->
+    <section id="trainings" class="section" aria-label="Trainings">
+      <div class="container">
+        <div class="section-head" aria-label="Trainings header">
+          <h2 class="section-title" aria-label="Editable text">Trainings</h2>
+          <a href="#plans" class="btn btn-secondary" aria-label="Editable text">See All</a>
+        </div>
+
+        <!-- Quick search in Trainings -->
+        <form role="search" aria-label="Search trainings" action="#" method="get" style="display:flex; gap:8px; align-items:center; margin: 6px 0 14px;">
+          <label for="train-search" class="sr-only">Search trainings</label>
+          <input id="train-search" name="q" type="search" placeholder="Search categories..." aria-label="Search trainings" style="flex:1; min-width: 180px; padding: 12px; border-radius: 8px; border:1px solid var(--border);">
+          <button class="btn" type="submit" aria-label="Editable text">Go</button>
+        </form>
+
+        <div class="trainings-grid grid cols-3" role="list">
+          <article class="card" role="listitem" aria-label="Personal Training">
+            <div class="image-wrap" aria-label="Portrait of a personal trainer">
+              <svg width="100%" height="96" viewBox="0 0 320 120" role="img" aria-label="Person training one-on-one">
+                <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#1e90ff"></stop><stop offset="100%" stop-color="#6a5acd"></stop></linearGradient></defs>
+                <rect width="320" height="120" rx="12" fill="url(#g1)" opacity=".15"></rect>
+                <circle cx="60" cy="70" r="14" fill="#1e90ff"></circle>
+                <rect x="82" y="58" width="90" height="26" rx="8" fill="#1e90ff" opacity=".25"></rect>
+                <rect x="60" y="86" width="120" height="8" rx="4" fill="#1e90ff" opacity=".7"></rect>
+              </svg>
+            </div>
+            <h3 aria-label="Editable text">Personal Training</h3>
+            <p aria-label="Editable text">One-on-one coaching tailored to your goals with accountable progress plans.</p>
+            <a href="#plans" class="btn" aria-label="Editable text">See All</a>
+          </article>
+
+          <article class="card" role="listitem" aria-label="Group Fitness Classes">
+            <div class="image-wrap" aria-label="Group fitness class illustration">
+              <svg width="100%" height="96" viewBox="0 0 320 120" role="img" aria-label="Group of people exercising together">
+                <defs><linearGradient id="g2" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#34d399"></stop><stop offset="100%" stop-color="#10b981"></stop></linearGradient></defs>
+                <rect width="320" height="120" rx="12" fill="url(#g2)" opacity=".15"></rect>
+                <circle cx="60" cy="60" r="14" fill="#10b981"></circle>
+                <circle cx="100" cy="50" r="12" fill="#10b981"></circle>
+                <circle cx="90" cy="90" r="10" fill="#10b981"></circle>
+                <rect x="120" y="46" width="110" height="30" rx="8" fill="#10b981" opacity=".25"></rect>
+              </svg>
+            </div>
+            <h3 aria-label="Editable text">Group Fitness Classes</h3>
+            <p aria-label="Editable text">High-energy, inclusive classes designed for all levels, led by expert coaches.</p>
+            <a href="#plans" class="btn" aria-label="Editable text">See All</a>
+          </article>
+
+          <article class="card" role="listitem" aria-label="Functional Training">
+            <div class="image-wrap" aria-label="Functional training illustration">
+              <svg width="100%" height="96" viewBox="0 0 320 120" role="img" aria-label="Functional movement training">
+                <defs><linearGradient id="g3" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#f59e0b"></stop><stop offset="100%" stop-color="#f472b6"></stop></linearGradient></defs>
+                <rect width="320" height="120" rx="12" fill="url(#g3)" opacity=".15"></rect>
+                <rect x="30" y="46" width="60" height="28" rx="6" fill="#f59e0b" opacity=".8"></rect>
+                <rect x="100" y="40" width="120" height="40" rx="8" fill="#f472b6" opacity=".6"></rect>
+                <circle cx="260" cy="60" r="14" fill="#f59e0b"></circle>
+              </svg>
+            </div>
+            <h3 aria-label="Editable text">Functional Training</h3>
+            <p aria-label="Editable text">Move better in daily life with workouts that improve mobility and strength.</p>
+            <a href="#plans" class="btn" aria-label="Editable text">See All</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Membership Plans (The Club) with expandable details -->
+    <section id="plans" class="section" aria-label="Membership plans">
+      <div class="container">
+        <div class="section-head" aria-label="Plans header">
+          <h2 class="section-title" aria-label="Editable text">The Club</h2>
+          <p style="margin:0; color:var(--muted);" aria-label="Editable text">Flexible plans for every level. Expand to read details and choose your path.</p>
+        </div>
+
+        <div class="grid" style="gap:16px;" aria-label="Plans grid" id="plans-grid">
+          <details class="card plan" aria-label="Basic plan details">
+            <summary>Basic</summary>
+            <div class="plan-content">
+              <p aria-label="Editable text">Ideal for newcomers and casual gym-goers. Foundation of progress.</p>
+              <ul>
+                <li>Gym access during staffed hours</li>
+                <li>2 group classes per week</li>
+                <li>Basic progress tracking</li>
+              </ul>
+              <div class="plan-actions">
+                <a href="#signup" class="btn" aria-label="Editable text">Join Today</a>
+              </div>
+            </div>
+          </details>
+
+          <details class="card plan" aria-label="Premium plan details">
+            <summary>Premium</summary>
+            <div class="plan-content">
+              <p aria-label="Editable text">All‑in access with enhanced support and scheduling flexibility.</p>
+              <ul>
+                <li>Unlimited classes</li>
+                <li>Monthly 1-on-1 check-ins</li>
+                <li>Advanced progress tracking &amp; analytics</li>
+              </ul>
+              <div class="plan-actions">
+                <a href="#signup" class="btn" aria-label="Editable text">Join Today</a>
+              </div>
+            </div>
+          </details>
+
+          <details class="card plan" aria-label="Elite plan details">
+            <summary>Elite</summary>
+            <div class="plan-content">
+              <p aria-label="Editable text">Top-tier coaching and priority access to resources.</p>
+              <ul>
+                <li>All Premium benefits</li>
+                <li>Priority class bookings</li>
+                <li>Personalized training plan</li>
+              </ul>
+              <div class="plan-actions">
+                <a href="#signup" class="btn" aria-label="Editable text">Join Today</a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="section" aria-label="Testimonials">
+      <div class="container">
+        <div class="section-head" aria-label="Testimonials header">
+          <h2 class="section-title" aria-label="Editable text">What members say</h2>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr; gap:14px;">
+          <blockquote class="testimonial" aria-label="Success story 1">
+            “I started here not knowing where to begin. The community welcomed me, the coaches helped me set realistic goals, and I finally feel strong in daily life.”
+            <div class="author">
+              <span class="avatar" aria-label="Avatar of user Maria"></span> Maria L.
+            </div>
+          </blockquote>
+
+          <blockquote class="testimonial" aria-label="Success story 2">
+            “Group classes keep me motivated. I’ve improved my endurance and made friendships that keep me coming back week after week.”
+            <div class="author">
+              <span class="avatar" aria-label="Avatar of user Jamal"></span> Jamal R.
+            </div>
+          </blockquote>
+
+          <blockquote class="testimonial" aria-label="Success story 3">
+            “The progress tracking and check-ins helped me stay accountable. I finally see the healthy changes in my energy and confidence.”
+            <div class="author">
+              <span class="avatar" aria-label="Avatar of user Aisha"></span> Aisha K.
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section" aria-label="Contact">
+      <div class="container">
+        <div class="section-head" aria-label="Contact header">
+          <h2 class="section-title" aria-label="Editable text">Get in touch</h2>
+          <p style="margin:0; color:var(--muted);" aria-label="Editable text">Have questions or want to book a class? Reach out anytime.</p>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr; gap:16px;">
+          <div class="card" aria-label="Contact form">
+            <form action="#" method="post" aria-label="Contact form" style="display:grid; grid-template-columns:1fr; gap:12px;">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div>
+                  <label for="contact-name">Name</label>
+                  <input id="contact-name" name="name" type="text" required="" placeholder="Your name" aria-label="Your name">
+                </div>
+                <div>
+                  <label for="contact-email">Email</label>
+                  <input id="contact-email" name="email" type="email" required="" placeholder="you@example.com" aria-label="Your email">
+                </div>
+              </div>
+              <div>
+                <label for="contact-message">Message</label>
+                <textarea id="contact-message" name="message" placeholder="How can we help?" aria-label="Message"></textarea>
+              </div>
+              <button class="btn" type="submit" aria-label="Editable text">Send Message</button>
+            </form>
+          </div>
+
+          <div class="card" aria-label="Social media">
+            <p style="margin:0 0 8px; font-weight:700;" aria-label="Editable text">Follow us</p>
+            <p style="margin:0 0 12px; color:var(--muted);" aria-label="Editable text">Stay inspired and connected with our community.</p>
+            <nav aria-label="Social media links">
+              <div class="socials" role="menu" aria-label="Social media icons">
+                <a href="#" aria-label="Editable text">
+                  <svg width="20" height="20" viewBox="0 0 24 24" role="img" aria-label="Instagram icon" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <circle cx="17" cy="7" r="1.5" fill="currentColor"></circle>
+                  </svg>
+                </a>
+                <a href="#" aria-label="Editable text">
+                  <svg width="20" height="20" viewBox="0 0 24 24" role="img" aria-label="Facebook icon" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 2h-3a4 4 0 0 0-4 4v3H7v4h4v7h4v-7h3l1-4h-4V6a2 2 0 0 1 2-2h2V2z"></path>
+                  </svg>
+                </a>
+                <a href="#" aria-label="Editable text">
+                  <svg width="20" height="20" viewBox="0 0 24 24" role="img" aria-label="Twitter icon" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43 1s-4.2 2-7.2 4.27A4.59 4.59 0 0 0 3 8.49c0 1.5.72 2.83 1.83 3.62A4.5 4.5 0 0 1 3 11.6v.05c0 2.1 1.47 3.86 3.42 4.26-.37.1-.76.15-1.16.15-.28 0-.55-.03-.81-.08.56 1.74 2.18 3 4.1 3a9 9 0 0 1-5.56 1.92c-.36 0-.72-.02-1.07-.07A12.7 12.7 0 0 0 9 21c7.55 0 11.68-6.27 11.68-11.71 0-.18-.01-.35-.02-.53A8.19 8.19 0 0 0 23 3z"></path>
+                  </svg>
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="section" aria-label="Site footer">
+    <div class="container" style="text-align:center;">
+      <p style="margin:0 0 6px;" aria-label="Editable text">© 2025 EmpowerFit. All rights reserved.</p>
+      <p style="margin:0; color:var(--muted);" aria-label="Editable text">Accessible, empowering fitness for every body.</p>
+      <p style="margin:8px 0 0; font-size:.85rem;" aria-label="Editable text">
+        <a href="#home" aria-label="Editable text">Back to top</a>
+      </p>
+    </div>
+  </footer>
+
+</body></html>

@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes App - Mobile First Mock</title>
+  <style>
+    /* Basic reset and typography */
+    html, body {
+      padding: 0;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+      line-height: 1.4;
+      color: #1f2937;
+      background: #f7f7fb;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* Layout containers */
+    .container {
+      width: 100%;
+      padding: 0 16px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header.brand {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    h1.brand-title {
+      font-size: 1.05rem;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    /* Top navigation (anchors to sections) */
+    nav.brand-nav {
+      margin-left: auto;
+      display: none; /* compact mobile: show on larger screens if needed */
+    }
+    nav.brand-nav a {
+      text-decoration: none;
+      color: #374151;
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+    nav.brand-nav a:hover { background: #f1f5f9; }
+
+    /* Search bar styling (Home page specific) */
+    .searchbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      width: 100%;
+      margin: 10px 0 6px;
+    }
+    .searchbar input[type="search"] {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 14px;
+    }
+    .searchbar .icon {
+      width: 18px;
+      height: 18px;
+      color: #6b7280;
+    }
+
+    /* Notes grid and cards */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin: 8px 0 60px;
+    }
+    .note-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .note-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .note-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+    }
+    .pin {
+      width: 18px;
+      height: 18px;
+      color: #f59e0b;
+    }
+    .note-snippet {
+      color: #374151;
+      font-size: 13px;
+      margin: 0;
+      opacity: 0.95;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .tag {
+      background: #eef2f7;
+      color: #374151;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+    .note-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      padding: 6px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .icon-btn:hover {
+      background: #f3f4f6;
+    }
+
+    /* Floating Action Button (FAB) */
+    .fab {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #4f8cff;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,.15);
+      transition: transform .15s ease;
+      z-index: 9;
+    }
+    .fab:active { transform: scale(0.97); }
+    .fab svg { width: 24px; height: 24px; }
+
+    /* Note Detail Page styling */
+    section.page {
+      padding: 18px 0;
+    }
+    section.page h2 {
+      font-size: 18px;
+      margin: 6px 0 12px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      color: #374151;
+      margin: 8px 0 6px;
+    }
+    input[type="text"], input[type="search"], textarea {
+      width: 100%;
+      padding: 12px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #fff;
+    }
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
+    }
+    .btn {
+      padding: 12px 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      color: #111827;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .btn-save { background: #1f9d6a; color: white; border: none; }
+    .btn-delete { background: #fff; color: #b91c1c; border: 1px solid #f5b7b7; }
+    .btn-danger { background: #b91c1c; color: #fff; border: none; }
+
+    /* Delete confirmation modal (CSS-only via target) */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,.45);
+      padding: 16px;
+      z-index: 20;
+    }
+    #delete-confirm:target { display: flex; }
+    .modal-content {
+      width: min(92%, 420px);
+      background: #fff;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; }
+
+    /* Settings Page: theme/size hints (static demo) */
+    .settings-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+    }
+    .settings-item {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .theme-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .theme-links a {
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #374151;
+      font-size: 13px;
+    }
+    .theme-links a:hover { background: #eef2ff; color: #1f2a37; }
+
+    /* Tiny helper icons (inline SVGs) */
+    .icon {
+      display: inline-block;
+      vertical-align: middle;
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+      color: #6b7280;
+    }
+
+    /* Dark-ish defaults for accent details (accessible contrast) */
+    @media (min-width: 700px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Theme and font size "targets" placeholders (for demo navigation) */
+    /* Light mode target (ensures default look) */
+    #light-mode-target { display: none; }
+    #dark-mode-target { display: none; }
+
+    /* Font size targets are inserted similarly to apply to the app content */
+    #fs-small-target { display: none; }
+    #fs-medium-target { display: none; }
+    #fs-large-target { display: none; }
+
+    /* When a target is hit, these rules apply to the main content sections (for demo) */
+    #dark-mode-target:target ~ main,
+    #dark-mode-target:target ~ section#home,
+    #dark-mode-target:target ~ section#note-detail,
+    #dark-mode-target:target ~ section#settings {
+      /* nothing here: handled by per-item overrides below if needed */
+    }
+
+    /* Dark mode adjustments (CSS-only demo for sections & notes) */
+    #dark-mode-target:target ~ .container, #dark-mode-target:target ~ main, #dark-mode-target:target ~ section {
+      /* fallback: no global override; individual items below will adjust when targeted */
+    }
+  </style>
+<style id="fl-baseline">/* --- Baseline responsive reset + hardening (gallery-safe + centered media) --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on phone preview */
+  overflow-y: auto;                    /* allow vertical scroll */
+}
+
+/* Media scale and center by default */
+img, picture img, figure img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-position: center !important;
+}
+
+/* Figures/pictures play nice */
+picture, figure { display:block; }
+figure > img { width:100%; height:auto; display:block; }
+
+/* Background images: centered and covered (no tiling) */
+[style*="background-image"] {
+  background-position: center !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Prevent sideways scroll, but do NOT clamp widths globally (lets cards/layout work) */
+html, body { overflow-x: hidden; }
+
+/* Containers */
+.container, .wrap, main, header, section, footer { width:100%; }
+.container, .wrap, main { max-width:1200px; margin:0 auto; padding:16px; }
+
+/* Type that scales */
+h1 { font-size: clamp(24px, 6vw, 40px); margin: 0 0 8px; }
+h2 { font-size: clamp(20px, 4.5vw, 28px); margin: 0 0 6px; }
+p  { font-size: clamp(14px, 3vw, 16px); line-height: 1.5; }
+
+/* Generic grid helpers (opt-in) */
+.grid, [class*="grid"], [class*="row"], [style*="grid-template-columns"] { display:grid; gap:14px; }
+.grid.cols-2 { grid-template-columns: 1fr; }
+.grid.cols-3 { grid-template-columns: 1fr; }
+@media (min-width:640px){ .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width:960px){ .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* Phone: stack multi-col patterns */
+@media (max-width:420px){
+  [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  [style*="display:flex"] { flex-wrap: wrap !important; }
+  [class*="product"], [class*="card"], [class*="item"] { width:100% !important; }
+  section, header, footer, .container, .wrap, main { padding-left:14px; padding-right:14px; }
+}
+
+/* Buttons + cards */
+.btn { display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; text-decoration:none; cursor:pointer }
+.card { border:1px solid #eee; border-radius:12px; padding:16px; background:#fff }
+
+/* Thin, pretty scrollbars */
+html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================
+   SMART, NON-DISTORTING GALLERIES
+   ============================ */
+
+/* Common gallery class names from the model */
+.image-grid, .images-grid, .gallery, .grid-images {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* Heuristic: any container that has many direct image children becomes a gallery */
+section:has(> img + img), div:has(> img + img),
+section:has(> picture + picture), div:has(> picture + picture),
+section:has(> figure + figure),  div:has(> figure + figure) {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+}
+
+/* Inside these galleries, images never distort; centered by default */
+.image-grid img, .images-grid img, .gallery img, .grid-images img,
+section:has(> img + img) > img,
+div:has(> img + img) > img,
+section:has(> picture + picture) picture > img,
+div:has(> picture + picture) picture > img,
+section:has(> figure + figure) figure > img,
+div:has(> figure + figure) figure > img {
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:center !important;
+  border-radius:12px;
+}
+
+/* If you (or the model) explicitly want square thumbs, opt-in: */
+.thumb img, [data-thumb] img { aspect-ratio:1/1; object-fit:cover; object-position:center; }</style>
+<style id="fl-mobile-drawer-css">/* --- Auto-injected phone drawer --- */
+:root{
+  --fl-brand:#1f2937;
+  --fl-drawer-bg:#1f2937;
+  --fl-drawer-fg:#fff;
+  --fl-drawer-scrim: rgba(0,0,0,.32);
+}
+/* The layer covers the screen, but must NOT eat events */
+#fl-layer{ position:fixed; inset:0; pointer-events:none; z-index:2147483000; }
+#fl-mobile-drawer-wrap{ display:none; }
+
+/* Only visible UI gets pointer events */
+#fl-mobile-drawer, #fl-scrim, #fl-drawer { pointer-events:auto; }
+
+#fl-mobile-drawer{
+  position:sticky; top:0; z-index:1; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+#fl-mobile-drawer .brand{font-weight:800;color:#111;text-decoration:none}
+#fl-mobile-drawer .hamb{ margin-left:auto;width:40px;height:40px;border:0;border-radius:10px;background:#111;display:grid;place-items:center;cursor:pointer }
+#fl-mobile-drawer .hamb span{display:block;width:18px;height:2px;background:#fff;margin:2px 0;border-radius:2px}
+#fl-navchk{ display:none }
+#fl-scrim{ position:fixed; inset:0; background:var(--fl-drawer-scrim); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:2147483001; }
+#fl-drawer{
+  position:fixed; top:0; bottom:0; right:0; width:min(82vw,320px);
+  transform:translateX(100%); background:var(--fl-drawer-bg); color:var(--fl-drawer-fg);
+  box-shadow:-12px 0 32px rgba(0,0,0,.28); padding:16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .28s ease;
+  z-index:2147483002;
+}
+#fl-drawer a{ color:var(--fl-drawer-fg); text-decoration:none; border-radius:10px; padding:12px 10px; display:block }
+#fl-drawer a:hover{ background: rgba(255,255,255,.18) }
+#fl-drawer .close { margin-left:auto; font-size:28px; cursor:pointer; padding:4px 8px; border-radius:8px; color:var(--fl-drawer-fg); }
+#fl-drawer .close:hover { background: rgba(255,255,255,.18); }
+/* open states */
+#fl-navchk:checked ~ #fl-scrim{ opacity:1; pointer-events:auto }
+#fl-navchk:checked ~ #fl-drawer{ transform: translateX(0) }
+
+@media (min-width:768px){ #fl-mobile-drawer-wrap{ display:none !important } }
+@media (max-width:767px){
+  header nav, nav:not(#fl-mobile-drawer){ display:none !important }
+  #fl-mobile-drawer-wrap{ display:block }
+}</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></head>
+<body>
+<div id="fl-layer" aria-hidden="false">
+  <div id="fl-mobile-drawer-wrap">
+    <nav id="fl-mobile-drawer" aria-label="Mobile">
+      <a class="brand" href="#" aria-label="Editable text">Notes App - Mobile First Mock</a>
+      <label class="hamb" for="fl-navchk" aria-controls="fl-drawer" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </label>
+    </nav>
+
+    <input type="checkbox" id="fl-navchk">
+    <div id="fl-scrim" aria-hidden="true"></div>
+    <aside id="fl-drawer" role="dialog" aria-modal="true" aria-label="Menu">
+      <label for="fl-navchk" class="close" aria-label="Close menu">×</label>
+      <a href="#home" aria-label="Editable text">Home</a>
+      <a href="#note-detail" aria-label="Editable text">New Note</a>
+      <a href="#settings" aria-label="Editable text">Settings</a>
+    </aside>
+  </div>
+</div>
+
+
+  <!-- Theme and size controls (anchors before content so CSS-target rules can apply) -->
+  <div class="container" aria-label="Theme and Font controls" style="padding-top:8px; padding-bottom:8px;">
+    <!-- Theme switcher (demo) -->
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <span style="font-size:13px; color:#374151;">Theme:</span>
+      <a href="#light-mode-target" style="font-size:13px; text-decoration:none; padding:6px 10px; border:1px solid #e5e7eb; border-radius:999px; background:#fff;" aria-label="Editable text">Light</a>
+      <a href="#dark-mode-target" style="font-size:13px; text-decoration:none; padding:6px 10px; border:1px solid #e5e7eb; border-radius:999px; background:#fff;" aria-label="Editable text">Dark</a>
+      <span style="margin-left:8px; font-size:12px; color:#6b7280;">Tip: Use Dark to preview contrast</span>
+    </div>
+
+    <!-- Font size switcher (demo) -->
+    <div style="margin-top:6px;">
+      <span style="font-size:13px; color:#374151; margin-right:6px;">Font size:</span>
+      <a href="#fs-small-target" style="font-size:13px; text-decoration:none; padding:6px 10px; border:1px solid #e5e7eb; border-radius:999px; background:#fff;" aria-label="Editable text">Small</a>
+      <a href="#fs-medium-target" style="font-size:13px; text-decoration:none; padding:6px 10px; border:1px solid #e5e7eb; border-radius:999px; background:#fff; margin-left:4px;" aria-label="Editable text">Medium</a>
+      <a href="#fs-large-target" style="font-size:13px; text-decoration:none; padding:6px 10px; border:1px solid #e5e7eb; border-radius:999px; background:#fff; margin-left:4px;" aria-label="Editable text">Large</a>
+    </div>
+
+    <!-- Hidden targets for theme/size (used by CSS targets) -->
+    <div id="light-mode-target" aria-hidden="true"></div>
+    <div id="dark-mode-target" aria-hidden="true"></div>
+
+    <div id="fs-small-target" aria-hidden="true"></div>
+    <div id="fs-medium-target" aria-hidden="true"></div>
+    <div id="fs-large-target" aria-hidden="true"></div>
+  </div>
+
+  <!-- Brand / Header -->
+  <header class="brand" role="banner">
+    <div class="container brand-row" aria-label="Brand row">
+      <span class="brand-logo" aria-hidden="true">
+        <!-- simple note icon -->
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="Notes Logo">
+          <path d="M7 3h9a2 2 0 012 2v13l-5-2-5 2V5a2 2 0 012-2z" fill="none"></path>
+          <path d="M7 10h6"></path>
+        </svg>
+      </span>
+      <h1 class="brand-title" aria-label="Editable text">Notes</h1>
+      <nav class="brand-nav" aria-label="Primary">
+        <a href="#home" class="nav-link" aria-label="Editable text">Home</a>
+        <a href="#note-detail" class="nav-link" aria-label="Editable text">New Note</a>
+        <a href="#settings" class="nav-link" aria-label="Editable text">Settings</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Home / Home Screen -->
+  <main class="container" id="home" aria-label="Home screen">
+    <section class="home-section" aria-label="Notes list">
+      <div class="searchbar" role="search">
+        <svg class="icon" viewBox="0 0 24 24" aria-label="Search icon" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="search" placeholder="Search notes by title or content" aria-label="Search notes">
+      </div>
+
+      <p style="color:#6b7280; font-size:13px; margin:6px 0 6px;" aria-label="Editable text">
+        Placeholder: try typing "project" or "grocery" to filter (static demo).
+      </p>
+
+      <section class="grid" aria-label="Notes grid">
+        <!-- Note 1 -->
+        <article class="note-card" aria-label="Note: Meeting plan">
+          <div class="note-head">
+            <h3 class="note-title" style="margin:0;" aria-label="Editable text">Meeting plan</h3>
+            <span title="Pinned note" class="pin" aria-label="Pinned">
+              <!-- pin icon -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-label="Pin">
+                <path d="M14 3l7 7-7 7-2-2-7-7 2-2 7 7-2-7 2-2z"></path>
+              </svg>
+            </span>
+          </div>
+          <p class="note-snippet" title="Snippet" aria-label="Editable text">Discuss Q3 targets and action items for the cross‑functional team.</p>
+          <div class="tags" aria-label="Note tags">
+            <span class="tag">work</span>
+            <span class="tag">meeting</span>
+            <span class="tag" aria-label="Reminder tag">reminder</span>
+          </div>
+          <div class="note-actions" aria-label="Note actions">
+            <button class="icon-btn" title="Edit note" aria-label="Editable text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 113 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+              </svg>
+            </button>
+            <button class="icon-btn" title="Delete note" aria-label="Editable text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+                <path d="M10 11v6"></path><path d="M14 11v6"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- Note 2 -->
+        <article class="note-card" aria-label="Note: Shopping list">
+          <div class="note-head">
+            <h3 class="note-title" style="margin:0;" aria-label="Editable text">Shopping list</h3>
+            <span class="pin" aria-label="Not pinned" title="Not pinned" style="opacity:.5;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-label="Pin dislike">
+                <path d="M3 7h18"></path>
+              </svg>
+            </span>
+          </div>
+          <p class="note-snippet" title="Snippet" aria-label="Editable text">Milk, eggs, bread, and coffee. Quick grab for the weekend.</p>
+          <div class="tags" aria-label="Note tags">
+            <span class="tag">personal</span>
+            <span class="tag">shopping</span>
+          </div>
+          <div class="note-actions" aria-label="Note actions">
+            <button class="icon-btn" title="Edit note" aria-label="Editable text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 113 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+              </svg>
+            </button>
+            <button class="icon-btn" title="Delete note" aria-label="Editable text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+                <path d="M10 11l0 6"></path><path d="M14 11l0 6"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- Note 3 -->
+        <article class="note-card" aria-label="Note: Ideas">
+          <div class="note-head">
+            <h3 class="note-title" style="margin:0;" aria-label="Editable text">Ideas</h3>
+            <span class="pin" aria-label="Pinned" title="Pinned" style="color:#f59e0b;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-label="Pin">
+                <path d="M14 3l7 7-7 7-2-2-7-7 2-2 7 7-2-7 2-2z"></path>
+              </svg>
+            </span>
+          </div>
+          <p class="note-snippet" title="Snippet" aria-label="Editable text">Sketches for a new feature: quick notes with reminders.</p>
+          <div class="tags" aria-label="Note tags">
+            <span class="tag">idea</span>
+            <span class="tag">product</span>
+          </div>
+          <div class="note-actions" aria-label="Note actions">
+            <button class="icon-btn" title="Edit note" aria-label="Editable text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 113 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+              </svg>
+            </button>
+            <button class="icon-btn" title="Delete note" aria-label="Editable text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- Note 4 -->
+        <article class="note-card" aria-label="Note: Goals">
+          <div class="note-head">
+            <h3 class="note-title" style="margin:0;" aria-label="Editable text">Goals</h3>
+            <span class="pin" aria-label="Not pinned" title="Not pinned" style="opacity:.5;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-label="Pin">
+                <path d="M3 7h18"></path>
+              </svg>
+            </span>
+          </div>
+          <p class="note-snippet" title="Snippet" aria-label="Editable text">Objectives for the sprint: user onboarding and dashboards.</p>
+          <div class="tags" aria-label="Note tags">
+            <span class="tag">work</span>
+            <span class="tag">planning</span>
+          </div>
+          <div class="note-actions" aria-label="Note actions">
+            <button class="icon-btn" title="Edit note" aria-label="Editable text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 113 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+              </svg>
+            </button>
+            <button class="icon-btn" title="Delete note" aria-label="Editable text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+      </section>
+    </section>
+    <!-- Floating action button to create a new note -->
+    <a href="#note-detail" class="fab" title="Create Note" aria-label="Editable text">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white" aria-label="Add note">
+        <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+    </a>
+  </main>
+
+  <!-- Note Detail Page -->
+  <section class="container" id="note-detail" aria-label="Note detail page" style="padding-bottom:48px;">
+    <h2 style="font-size:18px; margin:14px 0 10px;" aria-label="Editable text">Note Detail</h2>
+
+    <form aria-label="Note detail form" onsubmit="return false;">
+      <label for="note-title" style="margin-top:4px;">Title</label>
+      <input id="note-title" type="text" placeholder="Enter note title" aria-label="Note title">
+
+      <label for="note-body" style="margin-top:8px;">Body</label>
+      <textarea id="note-body" placeholder="Placeholder: Type your note here..." aria-label="Note body"></textarea>
+
+      <div class="actions" role="group" aria-label="Note actions">
+        <button type="button" class="btn btn-save" aria-label="Editable text">
+          Save
+        </button>
+        <a href="#delete-confirm" class="btn btn-delete" aria-label="Editable text">Delete</a>
+      </div>
+    </form>
+
+    <!-- Delete confirmation modal (CSS-only via :target) -->
+    <div id="delete-confirm" class="modal" role="dialog" aria-labelledby="delete-title" aria-modal="true">
+      <div class="modal-content" aria-label="Delete confirmation">
+        <h3 id="delete-title" style="margin:0 0 6px;" aria-label="Editable text">Delete this note?</h3>
+        <p style="color:#374151; margin:0 0 12px;" aria-label="Editable text">
+          This action cannot be undone. This is a UI mock for demonstration.
+        </p>
+        <div class="modal-actions">
+          <a href="#note-detail" class="btn" aria-label="Editable text">Cancel</a>
+          <a href="#home" class="btn btn-danger" aria-label="Editable text">Delete</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Settings Page -->
+  <section class="container" id="settings" aria-label="Settings page">
+    <h2 style="font-size:18px; margin:14px 0 10px;" aria-label="Editable text">Settings</h2>
+
+    <div class="settings-grid" aria-label="Settings options">
+      <div class="settings-item" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="font-size:14px;">Theme</strong>
+          <span style="font-size:12px; color:#6b7280;">Light/Dark (demo)</span>
+        </div>
+        <p style="margin:0; color:#6b7280; font-size:13px;" aria-label="Editable text">
+          Use the Dark tab to preview a dark palette (CSS-only demo).
+        </p>
+      </div>
+
+      <div class="settings-item" aria-label="Theme demo region" style="display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:14px; font-weight:600;">Dark theme</div>
+        <p style="margin:0; color:#6b7280; font-size:13px;" aria-label="Editable text">
+          Click the Dark option above to apply styling to the content area.
+        </p>
+      </div>
+
+      <div class="settings-item" aria-label="Font size options" style="display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:14px; font-weight:600;">Font size</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <a href="#fs-small-target" class="btn" aria-label="Editable text" style="padding:8px 12px;">Small</a>
+          <a href="#fs-medium-target" class="btn" aria-label="Editable text" style="padding:8px 12px;">Medium</a>
+          <a href="#fs-large-target" class="btn" aria-label="Editable text" style="padding:8px 12px;">Large</a>
+        </div>
+      </div>
+
+      <div class="settings-item" aria-label="Sync options" style="display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:14px; font-weight:600;">Sync settings</div>
+        <p style="margin:0; color:#6b7280; font-size:13px;" aria-label="Editable text">
+          Sync is not configured in this demo. This area shows the setting placeholder.
+        </p>
+        <button class="btn" aria-label="Editable text" style="width:max-content; align-self:flex-start;">Sync</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Theme target anchors before main app content (for CSS-only theme switch) -->
+  <div id="light-mode" aria-hidden="true" style="display:none;"></div>
+  <div id="dark-mode" aria-hidden="true" style="display:none;"></div>
+
+  <!-- Font size targets (before content sections) -->
+  <div id="fs-small" aria-hidden="true" style="display:none;"></div>
+  <div id="fs-medium" aria-hidden="true" style="display:none;"></div>
+  <div id="fs-large" aria-hidden="true" style="display:none;"></div>
+
+  <!-- CSS-only theme/size application (style blocks) -->
+  <style>
+    /* Theme: light by default. When #dark-mode is targeted, apply dark palette to the content area. */
+    #dark-mode:target ~ main,
+    #dark-mode:target ~ section,
+    #dark-mode:target ~ #home,
+    #dark-mode:target ~ #note-detail,
+    #dark-mode:target ~ #settings {
+      /* generic hint; actual per-element overrides below apply more specifically */
+    }
+
+    /* Dark mode overrides for content area (demonstration) */
+    #dark-mode:target ~ main,
+    #dark-mode:target ~ section,
+    #dark-mode:target ~ #home,
+    #dark-mode:target ~ #note-detail,
+    #dark-mode:target ~ #settings {
+      background: #0b1020;
+      color: #e6e6f0;
+    }
+    /* In many browsers, sections inherit; override card styling for dark mode in notes */
+    #dark-mode:target ~ #home .note-card,
+    #dark-mode:target ~ #home .note-card {
+      background: #141a2a;
+      border-color: #232a3b;
+      color: #e6e6f0;
+    }
+
+    /* Font size adjustments via targets (demo) */
+    #fs-small:target ~ main,
+    #fs-small:target ~ section,
+    #fs-small:target ~ #home,
+    #fs-small:target ~ #note-detail,
+    #fs-small:target ~ #settings {
+      font-size: 14px;
+    }
+    #fs-medium:target ~ main,
+    #fs-medium:target ~ section,
+    #fs-medium:target ~ #home,
+    #fs-medium:target ~ #note-detail,
+    #fs-medium:target ~ #settings {
+      font-size: 16px;
+    }
+    #fs-large:target ~ main,
+    #fs-large:target ~ section,
+    #fs-large:target ~ #home,
+    #fs-large:target ~ #note-detail,
+    #fs-large:target ~ #settings {
+      font-size: 18px;
+    }
+
+    /* Accessibility: ensure contrast for focus-able actions when using dark palette via CSS overrides */
+    #dark-mode:target ~ .fab {
+      background: #1e40af;
+    }
+
+    /* Layout: make sure content stacks nicely on small screens; responsive grid handled above */
+
+    /* Utility: visually hide elements used for CSS targets but keep them accessible for screen readers if needed */
+    .visually-hidden {
+      position: absolute !important;
+      height: 1px; width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+    }
+
+  </style>
+
+
+</body></html>

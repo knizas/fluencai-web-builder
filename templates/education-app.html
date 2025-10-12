@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EduSphere — Mobile Education App</title>
+  <style>
+    :root{
+      --color-primary:#4a90e2;      /* Soft blue */
+      --color-secondary:#f3f4f6;    /* Light gray */
+      --color-accent:#ff7a18;        /* Bright orange */
+      --bg:#ffffff;
+      --text:#1f2937;
+      --muted:#64748b;
+      --radius:14px;
+    }
+
+    /* Global resets */
+    * { box-sizing: border-box; }
+    html, body { margin:0; padding:0; }
+    body {
+      font-family: Georgia, "Times New Roman", serif; /* Body: readable serif */
+      color:var(--text);
+      background:var(--bg);
+      line-height:1.45;
+    }
+
+    /* Layout helpers */
+    .container {
+      width: 92%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header.app-header{
+      position: sticky;
+      top:0;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      z-index: 10;
+    }
+    .header-bar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 0;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      text-decoration:none; color:inherit;
+    }
+    .brand-name{
+      font-family: Arial, Helvetica, sans-serif; /* Heading: Bold sans-serif vibe */
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing:.2px;
+    }
+    .logo-icon{
+      width:28px; height:28px; display:inline-block;
+    }
+    nav.main-nav{
+      display:none; /* mobile-first: hidden on small screens, seen in wider viewports if desired */
+    }
+    nav.main-nav a{
+      margin:0 6px;
+      text-decoration:none;
+      color:var(--text);
+      font-size:0.95rem;
+    }
+
+    /* Mobile-first main content sections */
+    main{ padding: 16px 0 40px; }
+
+    h1, h2, h3{ margin: 0 0 8px; }
+    h1{ font-family: Arial, sans-serif; font-size:1.25rem; font-weight:800; }
+    h2{ font-family: Arial, sans-serif; font-size:1.15rem; font-weight:800; color:#111; margin-top:6px; }
+    h3{ font-family: Arial, sans-serif; font-size:1rem; font-weight:700; color:#111; }
+
+    /* Cards and grids */
+    .grid{ display:grid; gap:12px; }
+    .cards{ grid-template-columns: 1fr; }
+    .card{
+      background:#fff; border:1px solid #e5e7eb; border-radius: var(--radius);
+      padding:12px; display:flex; flex-direction:column; gap:8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.03);
+    }
+    .card-media{ display:flex; align-items:center; justify-content:center; height:72px; border-radius:12px; background:#f8fafc; }
+    .card-content{ display:flex; flex-direction:column; gap:6px; }
+    .price-tag{ align-self:flex-start; padding:4px 8px; border-radius:999px; background: #f1f5f9; font-size:.8rem; color:#374151; }
+
+    .btn{
+      display:inline-block;
+      background:var(--color-primary);
+      color:#fff; text-decoration:none;
+      padding:14px 16px; border-radius:10px; border:0;
+      font-family: Arial, sans-serif; font-weight:700; font-size:1rem;
+      text-align:center;
+      cursor:pointer;
+    }
+    .btn.secondary{ background:#e5e7eb; color:#111; }
+    .btn.enroll{ background:var(--color-accent); }
+    .btn.join{ background:var(--color-accent); }
+    .btn:focus-visible{ outline:2px solid #111; outline-offset:2px; }
+    .btn.small{ padding:10px 12px; font-size:.9rem; }
+
+    /* Progress bars */
+    .progress{ background:#fff; padding:12px; border-radius:12px; border:1px solid #eee; }
+    .progress-item{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:6px 0; }
+    .bar{ height:10px; border-radius:999px; background:#e2e8f0; width:60%; min-width:120px; }
+    .bar::-webkit-progress-bar{ background:#e2e8f0; border-radius:999px; }
+    .bar[data-val] { width: var(--val, 50%); }
+
+    /* Forms and controls */
+    .filters{ display:grid; grid-template-columns: 1fr; gap:10px; padding:6px 0 12px; }
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    label{ font-size:.85rem; color:var(--muted); }
+    select, input[type="text"], input[type="email"], input[type="password"], textarea{
+      padding:12px; border-radius:8px; border:1px solid #d1d5db; font-family: inherit;
+      font-size:1rem; background:#fff;
+    }
+    textarea{ resize:vertical; }
+
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+
+    /* Special sections */
+    .section{ margin:16px 0 6px; padding:0; }
+    .lead{ font-size:0.98rem; color:#374151; }
+
+    /* Profile grid */
+    .profile-grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+    .card{ min-height:auto; }
+
+    /* Forum area */
+    .forum-threads{ list-style:none; padding:0; margin:6px 0 0; display:flex; flex-direction:column; gap:8px; }
+    .thread{ display:flex; gap:8px; padding:8px; border-radius:8px; border:1px solid #eee; background:#fafafa; }
+    .avatar{ font-size:1.4rem; width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#eef2ff; }
+    .thread .thread-content{ display:flex; flex-direction:column; }
+
+    /* Footer nav / sticky bottom (optional enhancements) */
+    footer.app-footer{ border-top:1px solid #e5e7eb; background:#fff; }
+    .footer-bar{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:12px 0; gap:8px; }
+    .footer-nav{ display:flex; gap:8px; flex-wrap:wrap; }
+    .footer-nav a{ text-decoration:none; color:var(--text); font-size:.9rem; }
+
+    /* Utility text helpers */
+    .section-title{ display:flex; align-items:center; gap:8px; margin:6px 0 12px; }
+    .icon{ width:18px; height:18px; display:inline-block; vertical-align:middle; }
+
+    /* Responsive: cards per row, stacking, etc. */
+    @media (min-width: 600px){
+      .cards{ grid-template-columns: repeat(2, 1fr); }
+      .filters{ grid-template-columns: repeat(3, 1fr); align-items:end; }
+      .profile-grid{ grid-template-columns: repeat(3, 1fr); }
+      nav.main-nav{ display:flex; align-items:center; gap:12px; }
+    }
+
+    @media (min-width: 900px){
+      .cards{ grid-template-columns: repeat(3, 1fr); }
+      .filters{ grid-template-columns: repeat(4, 1fr); }
+      .container{ width: 88%; }
+    }
+  </style>
+<style id="fl-baseline">/* --- Baseline responsive reset + hardening (gallery-safe + centered media) --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on phone preview */
+  overflow-y: auto;                    /* allow vertical scroll */
+}
+
+/* Media scale and center by default */
+img, picture img, figure img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-position: center !important;
+}
+
+/* Figures/pictures play nice */
+picture, figure { display:block; }
+figure > img { width:100%; height:auto; display:block; }
+
+/* Background images: centered and covered (no tiling) */
+[style*="background-image"] {
+  background-position: center !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Prevent sideways scroll, but do NOT clamp widths globally (lets cards/layout work) */
+html, body { overflow-x: hidden; }
+
+/* Containers */
+.container, .wrap, main, header, section, footer { width:100%; }
+.container, .wrap, main { max-width:1200px; margin:0 auto; padding:16px; }
+
+/* Type that scales */
+h1 { font-size: clamp(24px, 6vw, 40px); margin: 0 0 8px; }
+h2 { font-size: clamp(20px, 4.5vw, 28px); margin: 0 0 6px; }
+p  { font-size: clamp(14px, 3vw, 16px); line-height: 1.5; }
+
+/* Generic grid helpers (opt-in) */
+.grid, [class*="grid"], [class*="row"], [style*="grid-template-columns"] { display:grid; gap:14px; }
+.grid.cols-2 { grid-template-columns: 1fr; }
+.grid.cols-3 { grid-template-columns: 1fr; }
+@media (min-width:640px){ .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width:960px){ .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* Phone: stack multi-col patterns */
+@media (max-width:420px){
+  [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  [style*="display:flex"] { flex-wrap: wrap !important; }
+  [class*="product"], [class*="card"], [class*="item"] { width:100% !important; }
+  section, header, footer, .container, .wrap, main { padding-left:14px; padding-right:14px; }
+}
+
+/* Buttons + cards */
+.btn { display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; text-decoration:none; cursor:pointer }
+.card { border:1px solid #eee; border-radius:12px; padding:16px; background:#fff }
+
+/* Thin, pretty scrollbars */
+html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================
+   SMART, NON-DISTORTING GALLERIES
+   ============================ */
+
+/* Common gallery class names from the model */
+.image-grid, .images-grid, .gallery, .grid-images {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* Heuristic: any container that has many direct image children becomes a gallery */
+section:has(> img + img), div:has(> img + img),
+section:has(> picture + picture), div:has(> picture + picture),
+section:has(> figure + figure),  div:has(> figure + figure) {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+}
+
+/* Inside these galleries, images never distort; centered by default */
+.image-grid img, .images-grid img, .gallery img, .grid-images img,
+section:has(> img + img) > img,
+div:has(> img + img) > img,
+section:has(> picture + picture) picture > img,
+div:has(> picture + picture) picture > img,
+section:has(> figure + figure) figure > img,
+div:has(> figure + figure) figure > img {
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:center !important;
+  border-radius:12px;
+}
+
+/* If you (or the model) explicitly want square thumbs, opt-in: */
+.thumb img, [data-thumb] img { aspect-ratio:1/1; object-fit:cover; object-position:center; }</style>
+<style id="fl-mobile-drawer-css">/* --- Auto-injected phone drawer --- */
+:root{
+  --fl-brand:#4a90e2;
+  --fl-drawer-bg:#4a90e2;
+  --fl-drawer-fg:#111;
+  --fl-drawer-scrim: rgba(0,0,0,.32);
+}
+/* The layer covers the screen, but must NOT eat events */
+#fl-layer{ position:fixed; inset:0; pointer-events:none; z-index:2147483000; }
+#fl-mobile-drawer-wrap{ display:none; }
+
+/* Only visible UI gets pointer events */
+#fl-mobile-drawer, #fl-scrim, #fl-drawer { pointer-events:auto; }
+
+#fl-mobile-drawer{
+  position:sticky; top:0; z-index:1; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+#fl-mobile-drawer .brand{font-weight:800;color:#111;text-decoration:none}
+#fl-mobile-drawer .hamb{ margin-left:auto;width:40px;height:40px;border:0;border-radius:10px;background:#111;display:grid;place-items:center;cursor:pointer }
+#fl-mobile-drawer .hamb span{display:block;width:18px;height:2px;background:#fff;margin:2px 0;border-radius:2px}
+#fl-navchk{ display:none }
+#fl-scrim{ position:fixed; inset:0; background:var(--fl-drawer-scrim); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:2147483001; }
+#fl-drawer{
+  position:fixed; top:0; bottom:0; right:0; width:min(82vw,320px);
+  transform:translateX(100%); background:var(--fl-drawer-bg); color:var(--fl-drawer-fg);
+  box-shadow:-12px 0 32px rgba(0,0,0,.28); padding:16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .28s ease;
+  z-index:2147483002;
+}
+#fl-drawer a{ color:var(--fl-drawer-fg); text-decoration:none; border-radius:10px; padding:12px 10px; display:block }
+#fl-drawer a:hover{ background: rgba(255,255,255,.18) }
+#fl-drawer .close { margin-left:auto; font-size:28px; cursor:pointer; padding:4px 8px; border-radius:8px; color:var(--fl-drawer-fg); }
+#fl-drawer .close:hover { background: rgba(255,255,255,.18); }
+/* open states */
+#fl-navchk:checked ~ #fl-scrim{ opacity:1; pointer-events:auto }
+#fl-navchk:checked ~ #fl-drawer{ transform: translateX(0) }
+
+@media (min-width:768px){ #fl-mobile-drawer-wrap{ display:none !important } }
+@media (max-width:767px){
+  header nav, nav:not(#fl-mobile-drawer){ display:none !important }
+  #fl-mobile-drawer-wrap{ display:block }
+}</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></head>
+<body>
+<div id="fl-layer" aria-hidden="false">
+  <div id="fl-mobile-drawer-wrap">
+    <nav id="fl-mobile-drawer" aria-label="Mobile">
+      <a class="brand" href="#" aria-label="Editable text">EduSphere — Mobile Education App</a>
+      <label class="hamb" for="fl-navchk" aria-controls="fl-drawer" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </label>
+    </nav>
+
+    <input type="checkbox" id="fl-navchk">
+    <div id="fl-scrim" aria-hidden="true"></div>
+    <aside id="fl-drawer" role="dialog" aria-modal="true" aria-label="Menu">
+      <label for="fl-navchk" class="close" aria-label="Close menu">×</label>
+      <a href="#home" aria-label="Editable text">Home</a>
+      <a href="#catalog" aria-label="Editable text">Catalog</a>
+      <a href="#profile" aria-label="Editable text">Profile</a>
+      <a href="#settings" aria-label="Editable text">Settings</a>
+    </aside>
+  </div>
+</div>
+
+  <header class="app-header" aria-label="Main header">
+    <div class="container header-bar">
+      <a href="#home" class="brand" aria-label="Editable text">
+        <span class="logo-icon" aria-hidden="true">
+          <!-- Educational icon (inline SVG) -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-label="Education icon">
+            <path d="M12 3l9 4.5-9 4.5-9-4.5L12 3z" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+            <path d="M3 8l9 4.5 9-4.5" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+            <path d="M12 12l9-4.5" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+          </svg>
+        </span>
+        <span class="brand-name">EduSphere</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#home" aria-label="Editable text">Home</a>
+        <a href="#catalog" aria-label="Editable text">Catalog</a>
+        <a href="#profile" aria-label="Editable text">Profile</a>
+        <a href="#settings" aria-label="Editable text">Settings</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container" role="main">
+
+    <!-- Home Page -->
+    <section id="home" class="section" aria-labelledby="home-title">
+      <div class="section-title" style="margin-bottom:6px;">
+        <span class="icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M3 12h18" stroke="#4a90e2" stroke-width="2"></path>
+            <path d="M6 12V6a6 6 0 0 1 12 0v6" stroke="#4a90e2" stroke-width="2"></path>
+          </svg>
+        </span>
+        <h2 id="home-title" style="font-size:1.05rem; font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">Home</h2>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <p class="lead" style="margin:0;" aria-label="Editable text">
+          Welcome back! Explore curated courses, track your progress, and join discussions with peers.
+        </p>
+
+        <a class="btn" href="#catalog" aria-label="Editable text">Start Learning</a>
+      </div>
+
+      <!-- Featured Courses -->
+      <section class="section" aria-labelledby="featured-title" style="margin-top:14px;">
+        <div class="section-title" style="margin-bottom:6px;">
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M4 7h16" stroke="#4a90e2" stroke-width="2"></path><path d="M7 11h10" stroke="#4a90e2" stroke-width="2"></path><path d="M10 15h4" stroke="#4a90e2" stroke-width="2"></path>
+            </svg>
+          </span>
+          <h3 id="featured-title" style="font-family: Arial, sans-serif; font-weight:800; font-size:1rem;" aria-label="Editable text">Featured Courses</h3>
+        </div>
+
+        <div class="grid cards" aria-label="Featured courses">
+          <article class="card" aria-label="Intro to Data Literacy course">
+            <div class="card-media" aria-label="Data literacy icon">
+              <span class="icon" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7l8-4 8 4v10l-8 4-8-4V7z" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+                  <path d="M12 3v7" stroke="#4a90e2" stroke-width="1.5"></path>
+                </svg>
+              </span>
+            </div>
+            <h4 style="font-family: Arial, sans-serif; font-weight:800; margin-bottom:6px;">Intro to Data Literacy</h4>
+            <p style="margin:0; color:#555;" aria-label="Editable text">Learn how to read charts, interpret data, and communicate findings clearly.</p>
+            <p class="meta" style="margin:0; font-size:.9rem; color:#6b7280;" aria-label="Editable text">Duration: 4 weeks • Instructor: Dr. Ada Lovelace</p>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="price-tag" aria-label="Course price">Free</span>
+              <button class="btn enroll" aria-label="Editable text" style="margin-left:auto;">Enroll Now</button>
+            </div>
+          </article>
+
+          <article class="card" aria-label="Creative Writing course">
+            <div class="card-media" aria-label="Pencil icon">
+              <span class="icon" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                  <path d="M3 21l6-1 11-11-5-5L3 12v9z" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+                  <path d="M14 5l5 5" stroke="#4a90e2" stroke-width="1.5"></path>
+                </svg>
+              </span>
+            </div>
+            <h4 style="font-family: Arial, sans-serif; font-weight:800; margin-bottom:6px;">Creative Writing Foundations</h4>
+            <p style="margin:0; color:#555;" aria-label="Editable text">Develop storytelling skills with practical prompts and feedback loops.</p>
+            <p class="meta" style="margin:0; font-size:.9rem; color:#6b7280;" aria-label="Editable text">Duration: 3 weeks • Instructor: Ms. Reed</p>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="price-tag" aria-label="Course price">Paid $19</span>
+              <button class="btn enroll" aria-label="Editable text" style="margin-left:auto;">Enroll Now</button>
+            </div>
+          </article>
+
+          <article class="card" aria-label="Foundations of Psychology course">
+            <div class="card-media" aria-label="Brain icon">
+              <span class="icon" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3c4 0 7 3 7 7 0 2-1 4-3 5-1 4-4 4-6 4s-5-1-6-4C6 13 5 11 5 9 5 6 8 3 12 3z" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+                  <path d="M9 9h6" stroke="#4a90e2" stroke-width="1.5"></path>
+                </svg>
+              </span>
+            </div>
+            <h4 style="font-family: Arial, sans-serif; font-weight:800; margin-bottom:6px;">Foundations of Psychology</h4>
+            <p style="margin:0; color:#555;" aria-label="Editable text">Explore human behavior, cognition, and motivation with real-world examples.</p>
+            <p class="meta" style="margin:0; font-size:.9rem; color:#6b7280;" aria-label="Editable text">Duration: 5 weeks • Instructor: Dr. Kim</p>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="price-tag" aria-label="Course price">Free</span>
+              <button class="btn enroll" aria-label="Editable text" style="margin-left:auto;">Enroll Now</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Progress Overview -->
+      <section class="section" aria-labelledby="progress-title" style="margin-top:14px;">
+        <div class="section-title" style="margin-bottom:6px;">
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M3 12h18" stroke="#4a90e2" stroke-width="2"></path><path d="M12 3v18" stroke="#4a90e2" stroke-width="2"></path>
+            </svg>
+          </span>
+          <h3 id="progress-title" style="font-family: Arial, sans-serif; font-weight:800; font-size:1rem;" aria-label="Editable text">Your Progress</h3>
+        </div>
+
+        <div class="progress" aria-label="Progress overview">
+          <div class="progress-item">
+            <span>Intro to Data Literacy</span>
+            <span>60%</span>
+          </div>
+          <div class="bar" style="width:60%;"></div>
+
+          <div class="progress-item" style="margin-top:8px;">
+            <span>Creative Writing Foundations</span>
+            <span>40%</span>
+          </div>
+          <div class="bar" style="width:40%;"></div>
+        </div>
+      </section>
+
+      <!-- Recent Activity -->
+      <section class="section" aria-labelledby="recent-title" style="margin-top:14px;">
+        <div class="section-title" style="margin-bottom:6px;">
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M4 6h16v12H4z" stroke="#4a90e2" stroke-width="2"></path>
+              <path d="M8 6V4h8v2" stroke="#4a90e2" stroke-width="2"></path>
+            </svg>
+          </span>
+          <h3 id="recent-title" style="font-family: Arial, sans-serif; font-weight:800; font-size:1rem;" aria-label="Editable text">Recent Activity</h3>
+        </div>
+        <ul class="activity" aria-label="Recent activities" style="margin:0; padding-left:18px;">
+          <li>Completed module 1 of Intro to Data Literacy</li>
+          <li>Quiz submitted in Creative Writing Foundations</li>
+          <li>Joined Discussion: "Best practices for peer feedback"</li>
+        </ul>
+      </section>
+    </section>
+
+    <!-- Course Catalog (Catalog Page) -->
+    <section id="catalog" class="section" aria-labelledby="catalog-title" style="margin-top:8px;">
+      <h2 id="catalog-title" style="font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">Course Catalog</h2>
+
+      <form class="filters" aria-label="Course filters">
+        <div class="field">
+          <label for="subject">Subject</label>
+          <select id="subject" name="subject" aria-label="Subject filter">
+            <option>All Subjects</option>
+            <option>Data</option>
+            <option>Writing</option>
+            <option>Psychology</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="level">Level</label>
+          <select id="level" name="level" aria-label="Level filter">
+            <option>All Levels</option>
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Advanced</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="price">Price</label>
+          <select id="price" name="price" aria-label="Price filter">
+            <option>All Prices</option>
+            <option>Free</option>
+            <option>Paid</option>
+          </select>
+        </div>
+        <div class="field" style="align-self:end;">
+          <button class="btn" type="button" aria-label="Editable text">Apply</button>
+        </div>
+      </form>
+
+      <section class="catalog-grid" aria-labelledby="catalog-grid-title" style="margin-top:6px;">
+        <h3 id="catalog-grid-title" class="sr-only" aria-label="Editable text">Available Courses</h3>
+
+        <article class="card course" aria-label="Intro to Data Literacy course card">
+          <div class="card-media" aria-label="Data literacy course thumbnail">
+            <span class="icon" aria-hidden="true">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                <path d="M3 7h18" stroke="#4a90e2" stroke-width="2"></path><path d="M3 12h18" stroke="#4a90e2" stroke-width="2"></path><path d="M3 17h18" stroke="#4a90e2" stroke-width="2"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="card-content">
+            <h4 style="font-family: Arial, sans-serif; font-weight:800; margin:0;">Intro to Data Literacy</h4>
+            <p class="desc" style="margin:0; color:#555;" aria-label="Editable text">Understand data storytelling, charts, and interpretation for real-world decisions.</p>
+            <p class="meta" style="margin:0; font-size:.9rem; color:#6b7280;" aria-label="Editable text">Duration: 4 weeks • Instructor: Dr. Ada Lovelace</p>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="price-tag" aria-label="Price">Free</span>
+              <button class="btn enroll" aria-label="Editable text" style="margin-left:auto;">Enroll Now</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card course" aria-label="Creative Writing Foundations course card">
+          <div class="card-media" aria-label="Creative writing thumbnail">
+            <span class="icon" aria-hidden="true">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                <path d="M4 20l4-1 12-8-4-4-12 13z" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+                <path d="M2 6l6 2" stroke="#4a90e2" stroke-width="1.5"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="card-content">
+            <h4 style="font-family: Arial, sans-serif; font-weight:800; margin:0;">Creative Writing Foundations</h4>
+            <p class="desc" style="margin:0; color:#555;" aria-label="Editable text">Build storytelling techniques, character development, and voice.</p>
+            <p class="meta" style="margin:0; font-size:.9rem; color:#6b7280;" aria-label="Editable text">Duration: 3 weeks • Instructor: Ms. Reed</p>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="price-tag" aria-label="Price">Paid $19</span>
+              <button class="btn enroll" aria-label="Editable text" style="margin-left:auto;">Enroll Now</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card course" aria-label="Foundations of Psychology course card">
+          <div class="card-media" aria-label="Psychology thumbnail">
+            <span class="icon" aria-hidden="true">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3a6 6 0 0 0-6 6c0 3 3 6 6 6s6-3 6-6a6 6 0 0 0-6-6z" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+                <path d="M6 14l4 4 8-8" stroke="#4a90e2" stroke-width="1.5" fill="none"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="card-content">
+            <h4 style="font-family: Arial, sans-serif; font-weight:800; margin:0;">Foundations of Psychology</h4>
+            <p class="desc" style="margin:0; color:#555;" aria-label="Editable text">Explore cognition, behavior, and research methods with practical insights.</p>
+            <p class="meta" style="margin:0; font-size:.9rem; color:#6b7280;" aria-label="Editable text">Duration: 5 weeks • Instructor: Dr. Kim</p>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="price-tag" aria-label="Price">Free</span>
+              <button class="btn enroll" aria-label="Editable text" style="margin-left:auto;">Enroll Now</button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </section>
+
+    <!-- Course Detail Page -->
+    <section id="course" class="section" aria-labelledby="course-title" style="margin-top:10px;">
+      <h2 id="course-title" style="font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">Course Detail: Intro to Data Literacy</h2>
+      <div class="section" style="display:flex; flex-direction:column; gap:12px;">
+        <p class="lead" style="margin:0;" aria-label="Editable text">
+          Overview: This course covers data literacy fundamentals, including how to read charts, interpret data, and communicate insights clearly. Hands-on activities and short quizzes reinforce concepts.
+        </p>
+        <p class="meta" style="margin:0; font-size:.92rem; color:#6b7280;" aria-label="Editable text">
+          Duration: 4 weeks • Instructor: Dr. Ada Lovelace
+        </p>
+        <button class="btn enroll" aria-label="Editable text" style="align-self:flex-start;">Enroll Now</button>
+      </div>
+
+      <!-- Interactive Quiz (no JS required) -->
+      <section class="quizzes section" aria-labelledby="quiz-title" style="margin-top:14px;">
+        <h3 id="quiz-title" style="font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">In-course Quiz</h3>
+        <form class="quiz" aria-label="Quiz 1" style="display:flex; flex-direction:column; gap:10px;">
+          <div class="quiz-question" aria-label="Question 1">
+            <p style="margin:0 0 6px;" aria-label="Editable text">1. What does a bar chart primarily show?</p>
+            <label><input type="radio" name="q1" value="a"> Comparison of categories</label><br>
+            <label><input type="radio" name="q1" value="b"> Time series data</label><br>
+            <label><input type="radio" name="q1" value="c"> Geographical locations</label>
+          </div>
+          <div class="quiz-question" aria-label="Question 2">
+            <p style="margin:0 0 6px;" aria-label="Editable text">2. Which source is best for primary data?</p>
+            <label><input type="radio" name="q2" value="a"> Wikipedia</label><br>
+            <label><input type="radio" name="q2" value="b"> Peer-reviewed journal</label><br>
+            <label><input type="radio" name="q2" value="c"> Cartoons</label>
+          </div>
+          <button class="btn" type="submit" aria-label="Editable text">Submit Quiz</button>
+        </form>
+      </section>
+
+      <!-- User Reviews -->
+      <section class="reviews section" aria-labelledby="reviews-title" style="margin-top:14px;">
+        <h3 id="reviews-title" style="font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">User Reviews</h3>
+        <article class="review" aria-label="Review by Jamie P.">
+          <div class="avatar" aria-label="User avatar">👩🏻‍🎓</div>
+          <div class="review-content">
+            <p class="name" style="margin:0; font-weight:700;" aria-label="Editable text">Jamie P.</p>
+            <p class="rating" aria-label="Editable text">★★★★★</p>
+            <p class="text" style="margin:0; color:#555;" aria-label="Editable text">Very clear explanations and practical exercises. The quizzes are helpful.</p>
+          </div>
+        </article>
+        <article class="review" aria-label="Review by Alex R.">
+          <div class="avatar" aria-label="User avatar">👨🏻‍🏫</div>
+          <div class="review-content">
+            <p class="name" style="margin:0; font-weight:700;" aria-label="Editable text">Alex R.</p>
+            <p class="rating" aria-label="Editable text">★★★★☆</p>
+            <p class="text" style="margin:0; color:#555;" aria-label="Editable text">Engaging and concise. More real-world examples would help.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- Discussion Forum -->
+      <section class="section forum" aria-labelledby="forum-title" style="margin-top:14px;">
+        <h3 id="forum-title" style="font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">Discussion Forum</h3>
+        <p class="lead" style="margin:6px 0 8px; color:#555;" aria-label="Editable text">Join the Discussion to share insights, ask questions, and help peers.</p>
+        <button class="btn join" aria-label="Editable text">Join the Discussion</button>
+
+        <ul class="forum-threads" aria-label="Forum threads" style="margin-top:8px;">
+          <li class="thread" aria-label="Thread about data interpretation">
+            <div class="avatar" aria-label="User avatar">💬</div>
+            <div class="thread-content">
+              <strong>Thread: Interpreting charts in real-world reports</strong>
+              <span style="font-size:.85rem; color:#6b7280;">Posted by Maya • 2 hours ago</span>
+            </div>
+          </li>
+          <li class="thread" aria-label="Thread about better data sources">
+            <div class="avatar" aria-label="User avatar">🧭</div>
+            <div class="thread-content">
+              <strong>Thread: Best sources for primary data collection</strong>
+              <span style="font-size:.85rem; color:#6b7280;">Posted by Omar • 1 day ago</span>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </section>
+
+    <!-- Profile Page -->
+    <section id="profile" class="section" aria-labelledby="profile-title" style="margin-top:10px;">
+      <h2 id="profile-title" style="font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">Profile</h2>
+
+      <div class="profile-grid" aria-label="User profile panels" style="gap:12px;">
+        <section class="card profile-info" aria-label="User Information" style="padding:12px;">
+          <h3 style="margin:0 0 6px; font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">User Information</h3>
+          <p aria-label="Editable text">Name: Jordan Lee</p>
+          <p aria-label="Editable text">Email: jordan@example.com</p>
+          <button class="btn" aria-label="Editable text">Edit</button>
+        </section>
+
+        <section class="card profile-history" aria-label="Learning history" style="padding:12px;">
+          <h3 style="margin:0 0 6px; font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">Learning History</h3>
+          <ul style="margin:0; padding-left:18px;">
+            <li>Intro to Data Literacy — Completed</li>
+            <li>Creative Writing Foundations — In Progress</li>
+            <li>Foundations of Psychology — Enrolled</li>
+          </ul>
+        </section>
+
+        <section class="card profile-achievements" aria-label="Achievements" style="padding:12px;">
+          <h3 style="margin:0 0 6px; font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">Achievements &amp; Certificates</h3>
+          <ul style="margin:0; padding-left:18px;">
+            <li>Data Explorer Certificate</li>
+            <li>Creative Thinker Badge</li>
+          </ul>
+        </section>
+      </div>
+    </section>
+
+    <!-- Settings Page -->
+    <section id="settings" class="section" aria-labelledby="settings-title" style="margin-top:10px;">
+      <h2 id="settings-title" style="font-family: Arial, sans-serif; font-weight:800;" aria-label="Editable text">Settings</h2>
+
+      <form class="settings-grid" aria-label="Settings" style="display:grid; grid-template-columns:1fr; gap:12px;">
+        <div class="field" aria-label="Account settings">
+          <label for="account">Account</label>
+          <input id="account" type="text" placeholder="Username" value="jordan_lee">
+        </div>
+        <div class="field" aria-label="Contact settings">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="Email" value="jordan@example.com">
+        </div>
+        <div class="field" aria-label="Security settings">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="••••••••">
+        </div>
+        <div class="field" aria-label="Notification preferences" style="display:flex; flex-direction:column;">
+          <label>Notification Preferences</label>
+          <div class="checkbox-group" style="display:flex; flex-wrap:wrap; gap:12px;">
+            <label><input type="checkbox" checked=""> Email</label>
+            <label><input type="checkbox" checked=""> Push</label>
+            <label><input type="checkbox"> SMS</label>
+          </div>
+        </div>
+        <div class="field" aria-label="Help &amp; Support">
+          <label for="help">Help &amp; Support</label>
+          <textarea id="help" rows="3" placeholder="How can we help?"></textarea>
+        </div>
+        <button class="btn" type="submit" aria-label="Editable text" style="justify-self:start;">Save Settings</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="app-footer" role="contentinfo" aria-label="Footer">
+    <div class="container footer-bar">
+      <span>© EduSphere</span>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#home" aria-label="Editable text">Home</a><a href="#catalog" aria-label="Editable text">Catalog</a><a href="#course" aria-label="Editable text">Course</a><a href="#profile" aria-label="Editable text">Profile</a><a href="#settings" aria-label="Editable text">Settings</a>
+      </nav>
+    </div>
+  </footer>
+
+</body></html>

@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WellnessSphere – A Calm Wellness Experience</title>
+  <style>
+    :root{
+      --bg: #f6fbfe;
+      --surface: #ffffff;
+      --text: #1f2937;
+      --muted: #5b6b7a;
+      --primary: #2e8f6e;      /* calming green-blue */
+      --secondary: #4a90e2;    /* soft blue */
+      --accent: #8bd3e6;       /* pastel aqua */
+      --card: #ffffff;
+      --shadow: 0 6px 18px rgba(19, 40, 60, 0.08);
+      --radius: 14px;
+      --gap: 20px;
+    }
+
+    /* Global resets and mobile-first basics */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #f7fbfe 0%, #eef7fe 60%, #f6fbfe 100%);
+      line-height: 1.4;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    header.brand {
+      padding: 14px 0;
+    }
+
+    .brand-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #e8f3f0 0%, #eef7fe 100%);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand-icon {
+      width: 38px; height: 38px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary) 0%, #5cb59a 100%);
+      color: white;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    .brand-sub {
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    main { padding: 8px 0 60px; }
+
+    /* Page sections show/hide using CSS :target, default to Home */
+    section.page {
+      display: none;
+    }
+    section.page:first-of-type {
+      display: block; /* home shows by default */
+    }
+    section.page:target {
+      display: block;
+    }
+
+    /* Cards and grids */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid #eef4f8;
+    }
+
+    .grid {
+      display: grid;
+      gap: var(--gap);
+    }
+
+    /* Home hero */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary) 0%, #4a9e7a 100%);
+      border: 0;
+      min-width: 210px;
+      cursor: pointer;
+    }
+    .cta.secondary {
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid #dbeaf5;
+    }
+    .cta:focus-visible, .btn:focus-visible {
+      outline: 3px solid #7bd3ff;
+      outline-offset: 2px;
+    }
+
+    .tip {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #f0fbff;
+      border: 1px solid #dbeefa;
+    }
+    .tip-icon {
+      width: 28px; height: 28px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      background: #e7f7ff;
+      color: #1e5a7a;
+    }
+
+    .quote {
+      font-style: italic;
+      color: #134a6b;
+      padding: 8px 12px;
+      border-left: 4px solid var(--secondary);
+      background: #eaf6ff;
+      border-radius: 6px;
+    }
+
+    /* Section headings */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 12px;
+    }
+
+    /* Feature tiles */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 680px){
+      .hero { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
+      .feature-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .feature-tile {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .icon-wrap {
+      width: 40px; height: 40px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 10px;
+      background: #f2fbf7;
+      color: var(--primary);
+    }
+
+    .tile-title { font-weight: 700; font-size: .95rem; margin: 0; }
+    .tile-desc { font-size: .85rem; color: var(--muted); margin: 2px 0 0; }
+
+    /* Profile section */
+    .avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #9bd3c9 0%, #5db6a7 100%);
+      display: inline-block;
+      color: white; font-weight: 700;
+      display: grid; place-items: center;
+    }
+
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+    .label { font-size: .85rem; color: var(--muted); }
+    input[type="text"], input[type="email"], select {
+      width: 100%; padding: 12px 14px; border-radius: 10px;
+      border: 1px solid #dbe7f0; background: #fff;
+      font-size: 1rem;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+    .progress {
+      height: 8px; background: #eef4f8; border-radius: 999px; overflow: hidden;
+      border: 1px solid #dbe7f0;
+    }
+    .progress > span {
+      display: block; height: 100%; background: linear-gradient(90deg, var(--secondary), var(--accent));
+    }
+
+    /* Activities with filters */
+    .filters {
+      display: grid; gap: 8px;
+      grid-template-columns: 1fr; align-items: center;
+    }
+    @media (min-width: 600px){
+      .filters { grid-template-columns: 1fr 1fr 1fr; align-items: center; }
+    }
+
+    .activity-card {
+      display: grid; grid-template-columns: 48px 1fr; gap: 12px;
+      align-items: center;
+      padding: 12px; border-radius: 12px;
+      border: 1px solid #e6f0f7; background: #fff;
+    }
+    .activity-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 12px; background: #f6fbff; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 14px 16px; border-radius: 12px;
+      background: var(--primary); color: #fff; font-weight: 700;
+      text-decoration: none; border: 0; cursor: pointer;
+      min-width: 180px;
+    }
+
+    /* Community: calendar and threads */
+    .calendar {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+    }
+    .day {
+      padding: 8px; text-align: center;
+      border-radius: 8px; background: #fff; border: 1px solid #e8eef4;
+      font-weight: 600;
+    }
+    .thread {
+      padding: 10px; border-radius: 10px; border: 1px solid #e5eef7;
+      background: #fff; display: grid; gap: 6px;
+    }
+    .thread-title { font-weight: 700; font-size: .95rem; }
+    .thread-meta { font-size: .8rem; color: var(--muted); }
+
+    /* Resources: lists */
+    .resource-item { display: grid; gap: 6px; padding: 12px; border-radius: 12px; border: 1px solid #e7eef6; background: #fff; }
+
+    /* Footer nav (bottom) */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; width: 100%;
+      background: #ffffff;
+      border-top: 1px solid #e5eef7;
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      padding: 6px 0;
+    }
+    .bottom-nav a {
+      text-align: center; padding: 6px 8px; color: var(--muted); text-decoration: none;
+      font-size: 12px;
+    }
+    .bottom-nav a.active {
+      color: var(--text); font-weight: 700;
+    }
+    .bottom-nav svg { width: 20px; height: 20px; display: block; margin: 0 auto 4px; }
+
+    /* Accessibility: high contrast toggle hints (visual only) */
+    @media (prefers-color-scheme: dark) {
+      body { background: #0b1b26; color: #e6f0f5; }
+      .card { background: #0f1b24; border-color: #1f2b35; }
+      .tip { background: #122033; border-color: #1f2b35; color: #d6eefc; }
+    }
+
+    /* Responsive adjustments for smaller widths */
+    @media (min-width: 900px){
+      .calendar { grid-template-columns: repeat(7, 1fr); }
+    }
+  </style>
+<style id="fl-baseline">/* --- Baseline responsive reset + hardening (gallery-safe + centered media) --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on phone preview */
+  overflow-y: auto;                    /* allow vertical scroll */
+}
+
+/* Media scale and center by default */
+img, picture img, figure img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-position: center !important;
+}
+
+/* Figures/pictures play nice */
+picture, figure { display:block; }
+figure > img { width:100%; height:auto; display:block; }
+
+/* Background images: centered and covered (no tiling) */
+[style*="background-image"] {
+  background-position: center !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Prevent sideways scroll, but do NOT clamp widths globally (lets cards/layout work) */
+html, body { overflow-x: hidden; }
+
+/* Containers */
+.container, .wrap, main, header, section, footer { width:100%; }
+.container, .wrap, main { max-width:1200px; margin:0 auto; padding:16px; }
+
+/* Type that scales */
+h1 { font-size: clamp(24px, 6vw, 40px); margin: 0 0 8px; }
+h2 { font-size: clamp(20px, 4.5vw, 28px); margin: 0 0 6px; }
+p  { font-size: clamp(14px, 3vw, 16px); line-height: 1.5; }
+
+/* Generic grid helpers (opt-in) */
+.grid, [class*="grid"], [class*="row"], [style*="grid-template-columns"] { display:grid; gap:14px; }
+.grid.cols-2 { grid-template-columns: 1fr; }
+.grid.cols-3 { grid-template-columns: 1fr; }
+@media (min-width:640px){ .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width:960px){ .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* Phone: stack multi-col patterns */
+@media (max-width:420px){
+  [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  [style*="display:flex"] { flex-wrap: wrap !important; }
+  [class*="product"], [class*="card"], [class*="item"] { width:100% !important; }
+  section, header, footer, .container, .wrap, main { padding-left:14px; padding-right:14px; }
+}
+
+/* Buttons + cards */
+.btn { display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; text-decoration:none; cursor:pointer }
+.card { border:1px solid #eee; border-radius:12px; padding:16px; background:#fff }
+
+/* Thin, pretty scrollbars */
+html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================
+   SMART, NON-DISTORTING GALLERIES
+   ============================ */
+
+/* Common gallery class names from the model */
+.image-grid, .images-grid, .gallery, .grid-images {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* Heuristic: any container that has many direct image children becomes a gallery */
+section:has(> img + img), div:has(> img + img),
+section:has(> picture + picture), div:has(> picture + picture),
+section:has(> figure + figure),  div:has(> figure + figure) {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+}
+
+/* Inside these galleries, images never distort; centered by default */
+.image-grid img, .images-grid img, .gallery img, .grid-images img,
+section:has(> img + img) > img,
+div:has(> img + img) > img,
+section:has(> picture + picture) picture > img,
+div:has(> picture + picture) picture > img,
+section:has(> figure + figure) figure > img,
+div:has(> figure + figure) figure > img {
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:center !important;
+  border-radius:12px;
+}
+
+/* If you (or the model) explicitly want square thumbs, opt-in: */
+.thumb img, [data-thumb] img { aspect-ratio:1/1; object-fit:cover; object-position:center; }</style>
+<style id="fl-mobile-drawer-css">/* --- Auto-injected phone drawer --- */
+:root{
+  --fl-brand:#2e8f6e;
+  --fl-drawer-bg:#2e8f6e;
+  --fl-drawer-fg:#fff;
+  --fl-drawer-scrim: rgba(0,0,0,.32);
+}
+/* The layer covers the screen, but must NOT eat events */
+#fl-layer{ position:fixed; inset:0; pointer-events:none; z-index:2147483000; }
+#fl-mobile-drawer-wrap{ display:none; }
+
+/* Only visible UI gets pointer events */
+#fl-mobile-drawer, #fl-scrim, #fl-drawer { pointer-events:auto; }
+
+#fl-mobile-drawer{
+  position:sticky; top:0; z-index:1; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+#fl-mobile-drawer .brand{font-weight:800;color:#111;text-decoration:none}
+#fl-mobile-drawer .hamb{ margin-left:auto;width:40px;height:40px;border:0;border-radius:10px;background:#111;display:grid;place-items:center;cursor:pointer }
+#fl-mobile-drawer .hamb span{display:block;width:18px;height:2px;background:#fff;margin:2px 0;border-radius:2px}
+#fl-navchk{ display:none }
+#fl-scrim{ position:fixed; inset:0; background:var(--fl-drawer-scrim); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:2147483001; }
+#fl-drawer{
+  position:fixed; top:0; bottom:0; right:0; width:min(82vw,320px);
+  transform:translateX(100%); background:var(--fl-drawer-bg); color:var(--fl-drawer-fg);
+  box-shadow:-12px 0 32px rgba(0,0,0,.28); padding:16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .28s ease;
+  z-index:2147483002;
+}
+#fl-drawer a{ color:var(--fl-drawer-fg); text-decoration:none; border-radius:10px; padding:12px 10px; display:block }
+#fl-drawer a:hover{ background: rgba(255,255,255,.18) }
+#fl-drawer .close { margin-left:auto; font-size:28px; cursor:pointer; padding:4px 8px; border-radius:8px; color:var(--fl-drawer-fg); }
+#fl-drawer .close:hover { background: rgba(255,255,255,.18); }
+/* open states */
+#fl-navchk:checked ~ #fl-scrim{ opacity:1; pointer-events:auto }
+#fl-navchk:checked ~ #fl-drawer{ transform: translateX(0) }
+
+@media (min-width:768px){ #fl-mobile-drawer-wrap{ display:none !important } }
+@media (max-width:767px){
+  header nav, nav:not(#fl-mobile-drawer){ display:none !important }
+  #fl-mobile-drawer-wrap{ display:block }
+}</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></head>
+<body>
+<div id="fl-layer" aria-hidden="false">
+  <div id="fl-mobile-drawer-wrap">
+    <nav id="fl-mobile-drawer" aria-label="Mobile">
+      <a class="brand" href="#" aria-label="Editable text">WellnessSphere – A Calm Wellness Experience</a>
+      <label class="hamb" for="fl-navchk" aria-controls="fl-drawer" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </label>
+    </nav>
+
+    <input type="checkbox" id="fl-navchk">
+    <div id="fl-scrim" aria-hidden="true"></div>
+    <aside id="fl-drawer" role="dialog" aria-modal="true" aria-label="Menu">
+      <label for="fl-navchk" class="close" aria-label="Close menu">×</label>
+      <a href="#home" aria-label="Editable text">Home</a>
+      <a href="#profile" aria-label="Editable text">Profile</a>
+      <a href="#activities" aria-label="Editable text">Activities</a>
+      <a href="#community" aria-label="Editable text">Community</a>
+      <a href="#resources" aria-label="Editable text">Resources</a>
+    </aside>
+  </div>
+</div>
+
+  <header class="brand" aria-label="Brand header">
+    <div class="container brand-bar" role="banner">
+      <span class="brand-icon" aria-label="Wellness icon" title="Wellness">
+        <!-- simple leaf-like icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-label="Leaf">
+          <path d="M12 3c3 4 6 6 6 11 0 5-4 7-6 7-2 0-4-2-4-4 0-3 2-5-2-10-3-3-5-1-5-1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </span>
+      <div>
+        <div class="brand-title" aria-label="Brand name">WellnessSphere</div>
+        <div class="brand-sub" aria-label="Brand subtitle">Calm. Personal. Connected.</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <!-- Home Page -->
+    <section id="home" class="page" aria-label="Home">
+      <div class="grid" style="gap:var(--gap);">
+        <div class="card hero" aria-label="Wellness overview">
+          <div>
+            <h2 class="section-title" style="margin:0 0 8px;" aria-label="Editable text">Your calm, guided wellness journey</h2>
+            <p style="color:var(--muted); margin:0 0 6px;" aria-label="Editable text">
+              Welcome to WellnessSphere—your friendly companion for daily wellbeing. Explore activities, track mood, connect with community, and learn with trusted resources.
+            </p>
+            <div class="hero-cta" aria-label="Primary actions">
+              <a class="cta" href="#home" aria-label="Editable text">
+                Start Your Wellness Journey
+              </a>
+              <a class="cta secondary" href="#community" aria-label="Editable text">
+                Join the Community
+              </a>
+            </div>
+          </div>
+          <div class="tip" aria-label="Daily tip">
+            <span class="tip-icon" aria-hidden="true">💡</span>
+            <div>
+              <strong>Daily tip:</strong> Take a 2-minute mindful breath before you start your day.
+              <div style="font-size:.8em; color:var(--muted);">Evidence suggests brief attention breaks improve focus and mood.</div>
+            </div>
+          </div>
+          <div class="quote" aria-label="Motivational quote">
+            “Small steps every day add up to lasting wellness.”
+          </div>
+        </div>
+
+        <div class="card" aria-label="Overview of features">
+          <h3 class="section-title" style="margin:0 0 8px;" aria-label="Editable text">Wellness at a glance</h3>
+          <div class="grid feature-grid" style="gap:12px;">
+            <!-- Feature tiles -->
+            <div class="feature-tile" aria-label="Personalization feature">
+              <span class="icon-wrap" aria-hidden="true">
+                <!-- star icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-label="Personalization icon">
+                  <path d="M12 17.3l6.18 3.73-1.64-7.19L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.6L5.82 21z"></path>
+                </svg>
+              </span>
+              <div>
+                <p class="tile-title" aria-label="Editable text">Personalization</p>
+                <p class="tile-desc" aria-label="Editable text">Set goals that fit your life and values.</p>
+              </div>
+            </div>
+
+            <div class="feature-tile" aria-label="Notifications feature">
+              <span class="icon-wrap" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-label="Notifications icon">
+                  <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h20v-1l-2-2z"></path>
+                </svg>
+              </span>
+              <div>
+                <p class="tile-title" aria-label="Editable text">Notifications</p>
+                <p class="tile-desc" aria-label="Editable text">Gentle reminders for activities and tips.</p>
+              </div>
+            </div>
+
+            <div class="feature-tile" aria-label="Integration feature">
+              <span class="icon-wrap" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-label="Integration icon">
+                  <path d="M3 12h3v-2H3V7l-4 4 4 4v-4zm15-6h3v2h-3V7l-4 4 4 4V7zM6 19h3v2H6v-2zm-4-6h3v2H2v-2z"></path>
+                </svg>
+              </span>
+              <div>
+                <p class="tile-title" aria-label="Editable text">Integration</p>
+                <p class="tile-desc" aria-label="Editable text">Sync with health apps for a complete picture.</p>
+              </div>
+            </div>
+
+            <div class="feature-tile" aria-label="Community feature">
+              <span class="icon-wrap" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-label="Community icon">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-3.5C15 14.17 10.33 13 8 13z"></path>
+                </svg>
+              </span>
+              <div>
+                <p class="tile-title" aria-label="Editable text">Community</p>
+                <p class="tile-desc" aria-label="Editable text">Forums and events to grow together.</p>
+              </div>
+            </div>
+
+            <div class="feature-tile" aria-label="Resources feature">
+              <span class="icon-wrap" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-label="Resources icon">
+                  <path d="M4 4h16v12H4z" opacity=".3"></path>
+                  <path d="M20 3H4c-1.1 0-2 .9-2 2v14l6-3 6 3 6-3V5c0-1.1-.9-2-2-2z"></path>
+                </svg>
+              </span>
+              <div>
+                <p class="tile-title" aria-label="Editable text">Resources</p>
+                <p class="tile-desc" aria-label="Editable text">Articles and videos on wellness topics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile Page -->
+    <section id="profile" class="page" aria-label="Profile">
+      <div class="grid" style="gap:var(--gap);">
+        <div class="card" aria-label="User information">
+          <h3 class="section-title" style="margin:0 0 8px;" aria-label="Editable text">Profile</h3>
+          <div class="row" style="align-items:center;">
+            <span class="avatar" aria-label="User avatar">JD</span>
+            <div>
+              <div style="font-weight:700;">Jordan Doe</div>
+              <div class="label" aria-label="User email">j.doe@example.com</div>
+            </div>
+          </div>
+          <hr style="border:none; height:1px; background:#e5eef7; margin:14px 0;">
+          <div class="form-row" aria-label="User preferences">
+            <div>
+              <label class="label" for="goal-input">Wellness Goal</label>
+              <input id="goal-input" type="text" placeholder="e.g., Improve sleep, meditate 10 minutes daily">
+            </div>
+            <div>
+              <label class="label" for="duration-input">Target Duration (weeks)</label>
+              <input id="duration-input" type="text" placeholder="Example: 6">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Progress tracking">
+          <h3 class="section-title" style="margin:0 0 8px;" aria-label="Editable text">Progress</h3>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div>
+              <div class="label" style="margin-bottom:6px;">Mood</div>
+              <div class="progress" aria-label="Mood progress" title="Mood">
+                <span style="width:70%;"></span>
+              </div>
+              <div class="label" style="font-size:.8rem; text-align:right; color:var(--muted);">Good days 70%</div>
+            </div>
+
+            <div>
+              <div class="label" style="margin-bottom:6px;">Activities completed</div>
+              <div class="progress" aria-label="Activities progress" title="Activities">
+                <span style="width:50%;"></span>
+              </div>
+              <div class="label" style="font-size:.8rem; text-align:right; color:var(--muted);">24 of 48 this month</div>
+            </div>
+
+            <div class="row" aria-label="Track your activities actions">
+              <a class="btn" href="#activities" aria-label="Editable text">Track Your Progress</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activities Page -->
+    <section id="activities" class="page" aria-label="Activities">
+      <div class="grid" style="gap:var(--gap);">
+        <div class="card" aria-label="Activities list and filters">
+          <h3 class="section-title" style="margin:0 0 8px;" aria-label="Editable text">Activities</h3>
+
+          <div class="filters" aria-label="Filters for activities">
+            <div>
+              <label class="label" for="duration-filter">Duration</label>
+              <select id="duration-filter" aria-label="Filter by duration">
+                <option>Any duration</option>
+                <option>5-10 minutes</option>
+                <option>15-30 minutes</option>
+                <option>30+ minutes</option>
+              </select>
+            </div>
+            <div>
+              <label class="label" for="type-filter">Type</label>
+              <select id="type-filter" aria-label="Filter by type">
+                <option>Any type</option>
+                <option>Meditation</option>
+                <option>Movement</option>
+                <option>Breathwork</option>
+                <option>Mindful activity</option>
+              </select>
+            </div>
+            <div>
+              <label class="label" for="intensity-filter">Intensity</label>
+              <select id="intensity-filter" aria-label="Filter by intensity">
+                <option>Any intensity</option>
+                <option>Low</option>
+                <option>Moderate</option>
+                <option>High</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid" style="gap:12px; grid-template-columns: 1fr;">
+          <!-- Activity cards -->
+          <article class="activity-card" aria-label="Meditation activity">
+            <span class="activity-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3a9 9 0 100 18 9 9 0 000-18zm0 2a7 7 0 11-.001 14.001A7 7 0 0112 5zm-1 4h2v6h-2V9zm0 8h2v2h-2v-2z"></path>
+              </svg>
+            </span>
+            <div>
+              <p style="margin:0; font-weight:700;" aria-label="Editable text">Meditation (10 min)</p>
+              <div class="label" style="margin-top:4px;">Calming breathing and awareness to reduce stress.</div>
+            </div>
+          </article>
+
+          <article class="activity-card" aria-label="Yoga inspired stretch">
+            <span class="activity-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l4 4-4 4-4-4 4-4zm0 6l-4 4 4 4 4-4-4-4zM4 14l2 2-2 2-2-2 2-2zm14 0l2 2-2 2-2-2 2-2z"></path>
+              </svg>
+            </span>
+            <div>
+              <p style="margin:0; font-weight:700;" aria-label="Editable text">Morning Yoga</p>
+              <div class="label" style="margin-top:4px;">Gentle flow to wake the body.</div>
+            </div>
+          </article>
+
+          <article class="activity-card" aria-label="Breathwork session">
+            <span class="activity-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3l3 6h6l-4.5 4 1.5 7L12 18l-4 2 1.5-7L3 9h6l3-6z"></path>
+              </svg>
+            </span>
+            <div>
+              <p style="margin:0; font-weight:700;" aria-label="Editable text">Breathwork 5</p>
+              <div class="label" style="margin-top:4px;">Short breathing cycles for focus.</div>
+            </div>
+          </article>
+
+          <article class="activity-card" aria-label="Mindfulness walk">
+            <span class="activity-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 12h3l3-7 3 7h3l3-7 3 7v7h-9l-3-7-3 7H3z"></path>
+              </svg>
+            </span>
+            <div>
+              <p style="margin:0; font-weight:700;" aria-label="Editable text">Mindful Walk</p>
+              <div class="label" style="margin-top:4px;">Light activity with awareness cues.</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community Page -->
+    <section id="community" class="page" aria-label="Community">
+      <div class="grid" style="gap:var(--gap);">
+        <div class="card" aria-label="Community forums and events">
+          <h3 class="section-title" style="margin:0 0 8px;" aria-label="Editable text">Community</h3>
+
+          <div class="grid" style="gap:12px;">
+            <div class="thread" aria-label="Forum thread about well-being">
+              <div class="thread-title">Welcome newcomers — introduce yourself</div>
+              <div class="thread-meta">Posted 2 hours ago • 24 replies</div>
+            </div>
+
+            <div class="thread" aria-label="Thread about goals">
+              <div class="thread-title">Share your wellness goals for this month</div>
+              <div class="thread-meta">Posted today • 8 replies</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Wellness event calendar">
+          <h3 class="section-title" style="margin:0 0 8px;" aria-label="Editable text">Upcoming Workshops</h3>
+          <div class="calendar" aria-label="Event calendar">
+            <div class="day" aria-label="Sunday 1st">Sun</div>
+            <div class="day" aria-label="Monday 2nd">Mon</div>
+            <div class="day" aria-label="Tuesday 3rd">Tue</div>
+            <div class="day" aria-label="Wednesday 4th">Wed</div>
+            <div class="day" aria-label="Thursday 5th">Thu</div>
+            <div class="day" aria-label="Friday 6th">Fri</div>
+            <div class="day" aria-label="Saturday 7th">Sat</div>
+
+            <div class="day" style="grid-column: span 7; background:#eaf2ff; font-weight:700;" aria-label="Event day full description">Wellness Workshop • Sun, 9:00 AM</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resources Page -->
+    <section id="resources" class="page" aria-label="Resources">
+      <div class="grid" style="gap:var(--gap);">
+        <div class="card" aria-label="Articles and videos">
+          <h3 class="section-title" style="margin:0 0 8px;" aria-label="Editable text">Resources</h3>
+
+          <div class="resource-item" aria-label="Article on sleep">
+            <div style="font-weight:700;">Sleep Hygiene Essentials</div>
+            <div class="label" style="margin:0;">A concise guide to improving sleep quality.</div>
+            <a href="#" aria-label="Editable text" style="color:var(--secondary); text-decoration: none;">Read article</a>
+          </div>
+
+          <div class="resource-item" aria-label="Video on breathing exercises">
+            <div style="font-weight:700;">Breathing for Focus (Video)</div>
+            <div class="label" style="margin:0;">A short guided breathing routine.</div>
+            <a href="#" aria-label="Editable text" style="color:var(--secondary); text-decoration: none;">Watch video</a>
+          </div>
+
+          <div class="resource-item" aria-label="Article on stress management">
+            <div style="font-weight:700;">Managing Stress with Mindfulness</div>
+            <div class="label" style="margin:0;">Techniques for daily resilience.</div>
+            <a href="#" aria-label="Editable text" style="color:var(--secondary); text-decoration: none;">Read article</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom navigation (mobile-friendly) -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <a href="#home" class="active" aria-label="Editable text">
+      <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Home icon">
+        <path d="M12 3l9 6v9a2 2 0 0 1-2 2h-5v-6H10v6H5a2 2 0 0 1-2-2V9l9-6z"></path>
+      </svg>
+      Home
+    </a>
+    <a href="#profile" aria-label="Editable text">
+      <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Profile icon">
+        <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-5.08 0-9 2.69-9 6v2h18v-2c0-3.31-3.92-6-9-6z"></path>
+      </svg>
+      Profile
+    </a>
+    <a href="#activities" aria-label="Editable text">
+      <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Activities icon">
+        <path d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zM3 21h8v-6H3v6z"></path>
+      </svg>
+      Activities
+    </a>
+    <a href="#community" aria-label="Editable text">
+      <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Community icon">
+        <path d="M12 3a5 5 0 110 10 5 5 0 010-10zm-8 14a6 6 0 1112 0H4z"></path>
+      </svg>
+      Community
+    </a>
+    <a href="#resources" aria-label="Editable text">
+      <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Resources icon">
+        <path d="M4 4h16v4H4V4zm0 6h10v4H4v-4zm0 6h6v4H4v-4z"></path>
+      </svg>
+      Resources
+    </a>
+  </nav>
+
+</body></html>

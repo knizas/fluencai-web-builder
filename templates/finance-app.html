@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinNova - Finance App</title>
+  <meta name="description" content="FinNova: a mobile-first finance app with dashboard, accounts, budgeting, investments, reports, and settings.">
+  <style>
+    :root{
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --surface: #ffffff;
+      --text: #1f2a37;
+      --muted: #5f6b7a;
+      --border: #e6e8ee;
+      --shadow: 0 2px 8px rgba(22, 38, 67, 0.08);
+      --radius: 12px;
+
+      --blue-50: #e8f0ff;
+      --blue-100: #d4e6ff;
+      --blue-300: #6ea8ff;
+      --blue-500: #2563eb;
+      --blue-700: #1d4ed8;
+
+      --green-50: #eafff3;
+      --green-100: #e8fff1;
+      --green-300: #4ade80;
+      --green-500: #16a34a;
+      --green-700: #15803d;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans";
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Layout */
+    header {
+      position: sticky; top: 0; z-index: 20;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 700; letter-spacing: .2px;
+    }
+    .brand .logo {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--blue-500), var(--green-500));
+      color: #fff;
+    }
+    .brand .title { font-size: 1.05rem; }
+    nav.main-nav {
+      margin-top: 8px;
+    }
+    .nav-list {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 6px;
+      padding: 0; margin: 0; list-style: none;
+    }
+    .nav-link {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; padding: 10px 8px;
+      border-radius: 10px;
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid transparent;
+      background: transparent;
+      font-size: 0.9rem;
+    }
+    .nav-link:hover { background: #f6f9ff; border-color: var(--border); }
+    .nav-link svg { width: 18px; height: 18px; }
+
+    /* Container & sections */
+    .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 16px; }
+    main { padding: 8px 0 40px; }
+
+    .section { margin: 20px 0; }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 12px;
+    }
+    .section h2 { font-size: 1.15rem; margin: 0; }
+    .section .sub { color: var(--muted); font-size: 0.92rem; }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat {
+      display: grid; gap: 6px;
+      padding: 12px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #fff, #fbfdff);
+    }
+    .stat .label { font-size: 0.85rem; color: var(--muted); }
+    .stat .value { font-size: 1.25rem; font-weight: 700; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 14px; border-radius: 10px;
+      border: 1px solid transparent;
+      text-decoration: none; font-weight: 600;
+      cursor: pointer; user-select: none;
+      background: var(--blue-500); color: white;
+    }
+    .btn.secondary { background: #fff; color: var(--blue-700); border-color: var(--border); }
+    .btn.icon { padding: 10px; width: 40px; height: 40px; border-radius: 10px; }
+    .btn.block { width: 100%; justify-content: center; }
+
+    .section .list { width: 100%; border-collapse: collapse; }
+    .section .list th, .section .list td {
+      padding: 8px 6px; border-bottom: 1px solid var(--border);
+    }
+    .section .list th { text-align: left; color: var(--muted); font-weight: 600; font-size: 0.9rem; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+    .progress {
+      height: 8px; background: #eef2f7; border-radius: 6px; overflow: hidden;
+    }
+    .progress > span {
+      display: block; height: 100%; background: linear-gradient(90deg, var(--green-500), var(--blue-500));
+    }
+
+    /* Forms */
+    label { display: block; font-size: 0.9rem; margin-bottom: 6px; }
+    input[type="text"], input[type="email"], input[type="password"], select {
+      width: 100%; padding: 12px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: #fff;
+      font-size: 1rem;
+    }
+    .field { margin-bottom: 12px; }
+
+    /* Sections specifics to hint at features */
+    .hint { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
+
+    /* Utility */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    footer { text-align: center; padding: 20px; color: var(--muted); font-size: 0.9rem; }
+    .tooltip { display:inline-block; border-bottom:1px dotted #6b7280; cursor: help; color:#374151; }
+    @media (max-width: 639px){
+      .nav-list { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+<style id="fl-baseline">/* --- Baseline responsive reset + hardening (gallery-safe + centered media) --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on phone preview */
+  overflow-y: auto;                    /* allow vertical scroll */
+}
+
+/* Media scale and center by default */
+img, picture img, figure img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-position: center !important;
+}
+
+/* Figures/pictures play nice */
+picture, figure { display:block; }
+figure > img { width:100%; height:auto; display:block; }
+
+/* Background images: centered and covered (no tiling) */
+[style*="background-image"] {
+  background-position: center !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Prevent sideways scroll, but do NOT clamp widths globally (lets cards/layout work) */
+html, body { overflow-x: hidden; }
+
+/* Containers */
+.container, .wrap, main, header, section, footer { width:100%; }
+.container, .wrap, main { max-width:1200px; margin:0 auto; padding:16px; }
+
+/* Type that scales */
+h1 { font-size: clamp(24px, 6vw, 40px); margin: 0 0 8px; }
+h2 { font-size: clamp(20px, 4.5vw, 28px); margin: 0 0 6px; }
+p  { font-size: clamp(14px, 3vw, 16px); line-height: 1.5; }
+
+/* Generic grid helpers (opt-in) */
+.grid, [class*="grid"], [class*="row"], [style*="grid-template-columns"] { display:grid; gap:14px; }
+.grid.cols-2 { grid-template-columns: 1fr; }
+.grid.cols-3 { grid-template-columns: 1fr; }
+@media (min-width:640px){ .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width:960px){ .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* Phone: stack multi-col patterns */
+@media (max-width:420px){
+  [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  [style*="display:flex"] { flex-wrap: wrap !important; }
+  [class*="product"], [class*="card"], [class*="item"] { width:100% !important; }
+  section, header, footer, .container, .wrap, main { padding-left:14px; padding-right:14px; }
+}
+
+/* Buttons + cards */
+.btn { display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; text-decoration:none; cursor:pointer }
+.card { border:1px solid #eee; border-radius:12px; padding:16px; background:#fff }
+
+/* Thin, pretty scrollbars */
+html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================
+   SMART, NON-DISTORTING GALLERIES
+   ============================ */
+
+/* Common gallery class names from the model */
+.image-grid, .images-grid, .gallery, .grid-images {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* Heuristic: any container that has many direct image children becomes a gallery */
+section:has(> img + img), div:has(> img + img),
+section:has(> picture + picture), div:has(> picture + picture),
+section:has(> figure + figure),  div:has(> figure + figure) {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+}
+
+/* Inside these galleries, images never distort; centered by default */
+.image-grid img, .images-grid img, .gallery img, .grid-images img,
+section:has(> img + img) > img,
+div:has(> img + img) > img,
+section:has(> picture + picture) picture > img,
+div:has(> picture + picture) picture > img,
+section:has(> figure + figure) figure > img,
+div:has(> figure + figure) figure > img {
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:center !important;
+  border-radius:12px;
+}
+
+/* If you (or the model) explicitly want square thumbs, opt-in: */
+.thumb img, [data-thumb] img { aspect-ratio:1/1; object-fit:cover; object-position:center; }</style>
+<style id="fl-mobile-drawer-css">/* --- Auto-injected phone drawer --- */
+:root{
+  --fl-brand:#f5f7fb;
+  --fl-drawer-bg:#f5f7fb;
+  --fl-drawer-fg:#111;
+  --fl-drawer-scrim: rgba(0,0,0,.32);
+}
+/* The layer covers the screen, but must NOT eat events */
+#fl-layer{ position:fixed; inset:0; pointer-events:none; z-index:2147483000; }
+#fl-mobile-drawer-wrap{ display:none; }
+
+/* Only visible UI gets pointer events */
+#fl-mobile-drawer, #fl-scrim, #fl-drawer { pointer-events:auto; }
+
+#fl-mobile-drawer{
+  position:sticky; top:0; z-index:1; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+#fl-mobile-drawer .brand{font-weight:800;color:#111;text-decoration:none}
+#fl-mobile-drawer .hamb{ margin-left:auto;width:40px;height:40px;border:0;border-radius:10px;background:#111;display:grid;place-items:center;cursor:pointer }
+#fl-mobile-drawer .hamb span{display:block;width:18px;height:2px;background:#fff;margin:2px 0;border-radius:2px}
+#fl-navchk{ display:none }
+#fl-scrim{ position:fixed; inset:0; background:var(--fl-drawer-scrim); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:2147483001; }
+#fl-drawer{
+  position:fixed; top:0; bottom:0; right:0; width:min(82vw,320px);
+  transform:translateX(100%); background:var(--fl-drawer-bg); color:var(--fl-drawer-fg);
+  box-shadow:-12px 0 32px rgba(0,0,0,.28); padding:16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .28s ease;
+  z-index:2147483002;
+}
+#fl-drawer a{ color:var(--fl-drawer-fg); text-decoration:none; border-radius:10px; padding:12px 10px; display:block }
+#fl-drawer a:hover{ background: rgba(255,255,255,.18) }
+#fl-drawer .close { margin-left:auto; font-size:28px; cursor:pointer; padding:4px 8px; border-radius:8px; color:var(--fl-drawer-fg); }
+#fl-drawer .close:hover { background: rgba(255,255,255,.18); }
+/* open states */
+#fl-navchk:checked ~ #fl-scrim{ opacity:1; pointer-events:auto }
+#fl-navchk:checked ~ #fl-drawer{ transform: translateX(0) }
+
+@media (min-width:768px){ #fl-mobile-drawer-wrap{ display:none !important } }
+@media (max-width:767px){
+  header nav, nav:not(#fl-mobile-drawer){ display:none !important }
+  #fl-mobile-drawer-wrap{ display:block }
+}</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></head>
+<body>
+<div id="fl-layer" aria-hidden="false">
+  <div id="fl-mobile-drawer-wrap">
+    <nav id="fl-mobile-drawer" aria-label="Mobile">
+      <a class="brand" href="#" aria-label="Editable text">FinNova - Finance App</a>
+      <label class="hamb" for="fl-navchk" aria-controls="fl-drawer" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </label>
+    </nav>
+
+    <input type="checkbox" id="fl-navchk">
+    <div id="fl-scrim" aria-hidden="true"></div>
+    <aside id="fl-drawer" role="dialog" aria-modal="true" aria-label="Menu">
+      <label for="fl-navchk" class="close" aria-label="Close menu">×</label>
+      <a href="#home" aria-label="Editable text">Home</a>
+      <a href="#accounts" aria-label="Editable text">Accounts</a>
+      <a href="#budget" aria-label="Editable text">Budgeting</a>
+      <a href="#investments" aria-label="Editable text">Investments</a>
+      <a href="#reports" aria-label="Editable text">Reports</a>
+      <a href="#settings" aria-label="Editable text">Settings</a>
+    </aside>
+  </div>
+</div>
+
+  <header aria-label="Site header">
+    <div class="container brand" aria-label="Brand area">
+      <div class="logo" aria-hidden="true">
+        <!-- Simple brand icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-label="Brand icon">
+          <path d="M3 12c0-4.97 4.03-9 9-9 2.2 0 4.22.79 5.79 2.11l1.21-1.21A9 9 0 1 0 21 12h-2" fill="white" opacity=".8"></path>
+        </svg>
+      </div>
+      <div class="title">FinNova</div>
+    </div>
+    <nav class="main-nav" aria-label="Main navigation">
+      <ul class="nav-list" role="menubar">
+        <li role="none">
+          <a class="nav-link" href="#home" aria-label="Editable text">
+            <!-- Dashboard icon -->
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" width="18" height="18">
+              <path d="M3 11h8V3H3v8zm10-8v8h8V3h-8zM3 21h8v-6H3v6zm10 0h8v-4h-8v4z" fill="currentColor"></path>
+            </svg>
+            Home
+          </a>
+        </li>
+        <li role="none">
+          <a class="nav-link" href="#accounts" aria-label="Editable text">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm7 9H5a2 2 0 0 1-2-2v-1a9 9 0 0 1 18 0v1a2 2 0 0 1-2 2z"></path>
+            </svg>
+            Accounts
+          </a>
+        </li>
+        <li role="none">
+          <a class="nav-link" href="#budget" aria-label="Editable text">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M3 6h18v2H3V6zm0 5h12v2H3v-2zm0 5h18v2H3v-2z"></path>
+            </svg>
+            Budgeting
+          </a>
+        </li>
+        <li role="none">
+          <a class="nav-link" href="#investments" aria-label="Editable text">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M4 19h16l-4-8-4-3-4 3-4 8z"></path>
+            </svg>
+            Investments
+          </a>
+        </li>
+        <li role="none">
+          <a class="nav-link" href="#reports" aria-label="Editable text">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M4 4h16v12H4z"></path><path d="M8 20h8" stroke="currentColor" stroke-width="2" fill="none"></path>
+            </svg>
+            Reports
+          </a>
+        </li>
+        <li role="none">
+          <a class="nav-link" href="#settings" aria-label="Editable text">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1-1.51V14a2 2 0 0 0-4 0v.12A1.65 1.65 0 0 0 6.6 14l-.06.06A2 2 0 1 1 3.76 9.23l.06-.06A1.65 1.65 0 0 0 5.4 7.6H5a2 2 0 0 0 0-4h.12A1.65 1.65 0 0 0 7 3.6l.06-.06A2 2 0 1 1 12 5.4V5a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0 1.82.33l.06.06A1.65 1.65 0 0 0 18 5.6V6a2 2 0 0 0 4 0v-.12A1.65 1.65 0 0 0 24 4.8l-.06-.06A2 2 0 1 1 21.2 2.2l.06.06a1.65 1.65 0 0 0 1.51 1.0H22a2 2 0 0 0-4 0v.12A1.65 1.65 0 0 0 15 4.4l-.06.06A2 2 0 1 1 9.2 2l.06-.06A1.65 1.65 0 0 0 12 0h0v0"></path>
+            </svg>
+            Settings
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="home" class="container" aria-label="Home dashboard">
+    <section class="section" aria-labelledby="home-title">
+      <div class="section-header">
+        <div>
+          <h2 id="home-title" aria-label="Editable text">Home Dashboard</h2>
+          <p class="sub" aria-label="Editable text">Overview of your financial status and quick access to key features.</p>
+        </div>
+        <span class="tooltip" title="Tip: Use the navigation above to switch sections.">
+          ⓘ
+        </span>
+      </div>
+
+      <div class="grid" aria-label="Overview statistics">
+        <div class="card stat" aria-label="Net worth">
+          <div class="label">Net Worth</div>
+          <div class="value" style="color: #0f5132;">$128,450</div>
+          <div class="progress" aria-label="Net worth progress" style="margin-top:6px;">
+            <span style="width: 78%;"></span>
+          </div>
+        </div>
+
+        <div class="card stat" aria-label="Account balance">
+          <div class="label">Total Balance</div>
+          <div class="value" style="color: #0b5ed7;">$34,210</div>
+          <div class="progress" aria-label="Balance progress" style="margin-top:6px;">
+            <span style="width: 56%;"></span>
+          </div>
+        </div>
+
+        <div class="card stat" aria-label="Monthly spending">
+          <div class="label">Monthly Spending</div>
+          <div class="value" style="color: #047857;">$2,410</div>
+          <div class="progress" aria-label="Spending progress" style="margin-top:6px;">
+            <span style="width: 62%; background: linear-gradient(90deg, #f59e0b, #f472b6);"></span>
+          </div>
+        </div>
+
+        <div class="card stat" aria-label="Upcoming bills">
+          <div class="label">Upcoming Bills</div>
+          <div class="value" style="color: #374151;">$620 due this week</div>
+          <div class="progress" aria-label="Bills progress" style="margin-top:6px;">
+            <span style="width: 31%;"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" style="margin-top: 14px;">
+        <div class="grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="card" aria-label="Quick actions">
+            <div class="row" style="margin-bottom:6px;">
+              <strong>Quick Access</strong>
+              <span class="tooltip" title="Secure login with password or biometrics.">ⓘ</span>
+            </div>
+            <p class="sub" style="margin:0 0 8px; color:var(--muted);" aria-label="Editable text">Use Quick Access to jump into core features.</p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <a href="#accounts" class="btn" aria-label="Editable text">Accounts</a>
+              <a href="#budget" class="btn secondary" aria-label="Editable text">Budgeting</a>
+              <a href="#reports" class="btn secondary" aria-label="Editable text">Reports</a>
+            </div>
+          </div>
+
+          <div class="card" aria-label="Security &amp; authentication">
+            <div class="row" style="justify-content:space-between;">
+              <strong>Security</strong>
+              <span class="tooltip" title="Biometric options for quick login">ⓘ</span>
+            </div>
+            <p class="sub" style="margin:6px 0 12px; color:var(--muted);" aria-label="Editable text">Secure login with email/password or biometric options.</p>
+            <form aria-label="Login form (demo)" onsubmit="return false;">
+              <div class="field" style="display:flex; gap:8px;">
+                <input type="password" placeholder="Enter your password" aria-label="Password" style="flex:1;">
+              </div>
+              <button class="btn block" type="submit" aria-label="Editable text">Sign In</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="accounts" class="section" aria-labelledby="accounts-title">
+      <div class="section-header">
+        <div>
+          <h2 id="accounts-title" aria-label="Editable text">Accounts</h2>
+          <p class="sub" aria-label="Editable text">Linked bank accounts, balances, and recent activity.</p>
+        </div>
+      </div>
+
+      <div class="grid" aria-label="Accounts grid">
+        <div class="card" aria-label="Account list">
+          <div class="row" style="margin-bottom:8px;">
+            <strong>Linked Accounts</strong>
+            <span class="tooltip" title="Accounts are securely connected to your bank via APIs.">ⓘ</span>
+          </div>
+          <table class="list" aria-label="Accounts table" style="width:100%;">
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th>Balance</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Checking <span class="sub" style="color:var(--muted);">– Primary</span></td>
+                <td>$4,250.30</td>
+                <td>Active</td>
+              </tr>
+              <tr>
+                <td>Savings</td>
+                <td>$12,800.00</td>
+                <td>Active</td>
+              </tr>
+              <tr>
+                <td>Credit Card</td>
+                <td>-$1,320.75</td>
+                <td>Observing</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:10px;">
+            <button class="btn block" aria-label="Editable text" title="Add a new linked account">
+              Add Account
+            </button>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Recent transactions">
+          <div class="row" style="justify-content:space-between; margin-bottom:6px;">
+            <strong>Recent Transactions</strong>
+            <span class="tooltip" title="Automatic categorization may suggest labels like Groceries, Transport, etc.">ⓘ</span>
+          </div>
+          <table class="list" aria-label="Recent transactions table" style="width:100%;">
+            <thead>
+              <tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>2025-09-25</td><td>Grocery Store</td><td>-$76.40</td><td>Groceries</td></tr>
+              <tr><td>2025-09-24</td><td>Gas Station</td><td>-$42.10</td><td>Transport</td></tr>
+              <tr><td>2025-09-23</td><td>Salary</td><td>$2,800.00</td><td>Income</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="budget" class="section" aria-labelledby="budget-title">
+      <div class="section-header">
+        <div>
+          <h2 id="budget-title" aria-label="Editable text">Budgeting</h2>
+          <p class="sub" aria-label="Editable text">Create and manage budgets. View visual spending breakdowns.</p>
+        </div>
+      </div>
+
+      <div class="grid" aria-label="Budgets grid">
+        <div class="card" aria-label="Budget overview">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Monthly Budget</strong>
+            <span class="tooltip" title="Budgets can alert when limits are reached.">ⓘ</span>
+          </div>
+          <div class="sub" style="margin:6px 0 8px; color:var(--muted);">Overall allocation</div>
+          <div class="progress" aria-label="Overall budget progress" style="height:10px;">
+            <span style="width: 68%;"></span>
+          </div>
+          <div class="row" style="margin-top:8px; font-weight:600;">
+            <span>Remaining: $2,150</span>
+            <span>Used: 68%</span>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Budgets by category">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Spending by Category</strong>
+            <span class="tooltip" title="Click Set Budget to adjust limits.">ⓘ</span>
+          </div>
+          <div style="margin-top:8px;">
+            <div class="row" style="justify-content:space-between;">
+              <span>Groceries</span><span>40%</span>
+            </div>
+            <div class="progress" aria-label="Groceries budget" style="margin:6px 0;">
+              <span style="width:40%; background: linear-gradient(90deg, #34d399, #10b981);"></span>
+            </div>
+
+            <div class="row" style="justify-content:space-between;">
+              <span>Entertainment</span><span>18%</span>
+            </div>
+            <div class="progress" aria-label="Entertainment budget" style="margin:6px 0;">
+              <span style="width:18%; background: linear-gradient(90deg, #f472b6, #f97316);"></span>
+            </div>
+
+            <div class="row" style="justify-content:space-between;">
+              <span>Rent</span><span>30%</span>
+            </div>
+            <div class="progress" aria-label="Rent budget" style="margin:6px 0;">
+              <span style="width:30%; background: linear-gradient(90deg, #93c5fd, #2563eb);"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Set budget action">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Set Budget</strong>
+            <span class="tooltip" title="Define category limits to control spending.">ⓘ</span>
+          </div>
+          <p class="sub" style="color:var(--muted); margin:6px 0 12px;" aria-label="Editable text">Allocate funds across categories for better control.</p>
+          <form aria-label="Set budget form" onsubmit="return false;">
+            <div class="field">
+              <label for="budget-name">Category</label>
+              <input id="budget-name" type="text" placeholder="e.g., Groceries">
+            </div>
+            <div class="field">
+              <label for="budget-limit">Monthly Limit</label>
+              <input id="budget-limit" type="text" placeholder="$500">
+            </div>
+            <button class="btn block" aria-label="Editable text" title="Save budget settings">Set Budget</button>
+          </form>
+        </div>
+
+        <div class="card" aria-label="Goals &amp; alerts">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Budget Alerts</strong>
+            <span class="tooltip" title="Notifications when you approach limits.">ⓘ</span>
+          </div>
+          <p class="sub" style="color:var(--muted);" aria-label="Editable text">Enable push or email alerts when you near limits.</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn secondary" aria-label="Editable text">Email</button>
+            <button class="btn secondary" aria-label="Editable text">Push</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="investments" class="section" aria-labelledby="investments-title">
+      <div class="section-header">
+        <div>
+          <h2 id="investments-title" aria-label="Editable text">Investments</h2>
+          <p class="sub" aria-label="Editable text">Portfolio overview, performance tracking, and analytics.</p>
+        </div>
+      </div>
+
+      <div class="grid" aria-label="Investments grid">
+        <div class="card" aria-label="Portfolio overview">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Portfolio Value</strong>
+            <span class="tooltip" title="Real-time value updates from connected accounts.">ⓘ</span>
+          </div>
+          <div class="value" style="font-size: 1.5rem; font-weight: 700; margin:6px 0 12px; color:#0b5ed7;">$92,410</div>
+
+          <div class="row" style="gap:6px;">
+            <div style="flex:1; min-width:40px;">
+              <div class="sub" style="margin-bottom:6px; color:var(--muted);">YTD Return</div>
+              <div class="progress" aria-label="YTD return" style="height:6px;">
+                <span style="width: 8%; background: linear-gradient(90deg, #f87171, #f59e0b);"></span>
+              </div>
+            </div>
+            <div style="flex:1; min-width:40px;">
+              <div class="sub" style="margin-bottom:6px; color:var(--muted);">Total Gain</div>
+              <div class="progress" aria-label="Total gain" style="height:6px;">
+                <span style="width: 25%; background: linear-gradient(90deg, #34d399, #10b981);"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Holdings">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Holdings</strong>
+            <span class="tooltip" title="Diversified across stocks and ETFs.">ⓘ</span>
+          </div>
+          <table class="list" aria-label="Holdings table" style="width:100%;">
+            <thead>
+              <tr><th>Asset</th><th>Alloc</th><th>Value</th><th>Change</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ABC Corp</td><td>25%</td><td>$22,000</td><td>+2.1%</td></tr>
+              <tr><td>XYZ ETF</td><td>40%</td><td>$38,500</td><td>+0.6%</td></tr>
+              <tr><td>Cash Alternatives</td><td>15%</td><td>$12,000</td><td>+0.2%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" aria-label="Performance analytics">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Performance Analytics</strong>
+            <span class="tooltip" title="Historical performance and trends.">ⓘ</span>
+          </div>
+          <div style="height:120px; border-radius:8px; background: linear-gradient(135deg, #eef2ff 0%, #f0fff0 100%);
+                       border:1px solid var(--border); display:flex; align-items:center; justify-content:center; margin-top:8px;">
+            <span class="sub" style="color:var(--muted); font-weight:600;">Chart placeholder</span>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Export and insights">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Insights</strong>
+            <span class="tooltip" title="Export data for reports.">ⓘ</span>
+          </div>
+          <p class="sub" style="color:var(--muted); margin:6px 0 12px;" aria-label="Editable text">
+            Export portfolio data to PDF or CSV for offline analysis.
+          </p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn secondary" aria-label="Editable text" title="Export as PDF">Export PDF</button>
+            <button class="btn secondary" aria-label="Editable text" title="Export as CSV">Export CSV</button>
+            <button class="btn" aria-label="Editable text" title="View detailed report" style="background: #1e3a8a;">View Report</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reports" class="section" aria-labelledby="reports-title">
+      <div class="section-header">
+        <div>
+          <h2 id="reports-title" aria-label="Editable text">Reports</h2>
+          <p class="sub" aria-label="Editable text">Generate financial reports with visual graphs and charts.</p>
+        </div>
+      </div>
+
+      <div class="grid" aria-label="Reports grid">
+        <div class="card" aria-label="Generate report">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Generate Report</strong>
+            <span class="tooltip" title="Choose date range and type.">ⓘ</span>
+          </div>
+          <p class="sub" style="color:var(--muted); margin:6px 0 12px;" aria-label="Editable text">
+            Create a report for a selected period. Supports PDF and CSV exports.
+          </p>
+          <form aria-label="Report options" onsubmit="return false;">
+            <div class="field">
+              <label for="report-range">Date Range</label>
+              <select id="report-range" aria-label="Date range">
+                <option>Last 7 days</option>
+                <option>Last 30 days</option>
+                <option>Year to date</option>
+              </select>
+            </div>
+            <div class="field" style="display:flex; gap:8px;">
+              <button class="btn block" aria-label="Editable text" title="Open report viewer">
+                View Report
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" aria-label="Recent reports">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Recent Reports</strong>
+            <span class="tooltip" title="Reports you recently generated.">ⓘ</span>
+          </div>
+          <ul style="margin:8px 0 0; padding-left: 20px; color: var(--muted);">
+            <li>Annual Summary 2024 - PDF</li>
+            <li>Budget Performance - CSV</li>
+            <li>Investments 2025 Q1 - PDF</li>
+          </ul>
+        </div>
+
+        <div class="card" aria-label="Export options">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Data Export</strong>
+            <span class="tooltip" title="Export all current data to PDF or CSV.">ⓘ</span>
+          </div>
+          <p class="sub" style="color:var(--muted); margin:6px 0 12px;" aria-label="Editable text">
+            Export reports in PDF/CSV formats for sharing or archival.
+          </p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn secondary" aria-label="Editable text" title="Export reports as PDF">Export PDF</button>
+            <button class="btn secondary" aria-label="Editable text" title="Export reports as CSV">Export CSV</button>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Real-time insights">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Visual Graphs</strong>
+            <span class="tooltip" title="Interactive charts are simulated in this static page.">ⓘ</span>
+          </div>
+          <div style="height:110px; border-radius:8px; background: linear-gradient(135deg, #f0f9ff, #fff0f0); border:1px solid var(--border);
+                       display:flex; align-items:center; justify-content:center; margin-top:8px;">
+            <span class="sub" style="color:var(--muted); font-weight:600;">Graph placeholder</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="settings" class="section" aria-labelledby="settings-title">
+      <div class="section-header">
+        <div>
+          <h2 id="settings-title" aria-label="Editable text">Settings</h2>
+          <p class="sub" aria-label="Editable text">User profile management and notification preferences.</p>
+        </div>
+      </div>
+
+      <div class="grid" aria-label="Settings grid">
+        <div class="card" aria-label="Profile management">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Profile</strong>
+            <span class="tooltip" title="Securely manage your personal information.">ⓘ</span>
+          </div>
+          <form aria-label="Profile form" onsubmit="return false;">
+            <div class="field">
+              <label for="name">Full name</label>
+              <input id="name" type="text" placeholder="Jane Doe">
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" placeholder="you@example.com">
+            </div>
+            <div class="field">
+              <label for="phone">Phone (optional)</label>
+              <input id="phone" type="text" placeholder="(555) 012-3456">
+            </div>
+            <button class="btn block" aria-label="Editable text" title="Save changes">Save Changes</button>
+          </form>
+        </div>
+
+        <div class="card" aria-label="Notifications">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Notifications</strong>
+            <span class="tooltip" title="Choose how you receive budget alerts.">ⓘ</span>
+          </div>
+          <p class="sub" style="color:var(--muted); margin-top:6px;" aria-label="Editable text">
+            Manage alert preferences for budgets, investments, and activity.
+          </p>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" checked="" aria-label="Email notifications">
+              Email Alerts
+            </label>
+            <label style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" aria-label="Push notifications">
+              Push Alerts
+            </label>
+            <label style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" aria-label="SMS notifications">
+              SMS Alerts
+            </label>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Security">
+          <div class="row" style="justify-content:space-between;">
+            <strong>Security</strong>
+            <span class="tooltip" title="Enable biometric login if available.">ⓘ</span>
+          </div>
+          <p class="sub" style="color:var(--muted); margin:6px 0 12px;" aria-label="Editable text">
+            Optional biometric sign-in for quick, secure access.
+          </p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn secondary" aria-label="Editable text" title="Enable biometrics">Enable Biometrics</button>
+            <button class="btn secondary" aria-label="Editable text" title="Update your password">Change Password</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer aria-label="Footer">
+    <div class="container" style="max-width:1100px;">
+      <p aria-label="Editable text">© 2025 FinNova. All rights reserved. This is a design prototype for a mobile-first finance app.</p>
+    </div>
+  </footer>
+
+</body></html>

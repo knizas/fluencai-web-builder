@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NovaStream • Gen Z Streaming</title>
+  <style>
+    :root{
+      --bg: #0b0f1a;
+      --surface: #141a2a;
+      --surface-2: #1e2540;
+      --text: #eaf3ff;
+      --muted: #a8b3c6;
+      --accent-start: #ff4d9d; /* pink */
+      --accent-mid: #8a3aff;   /* purple */
+      --accent-end: #2bd6d6;   /* teal/blue */
+      --card: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.15);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient( circle at 20% -10%, rgba(139,92,246,.25), transparent 40% ),
+                  radial-gradient( circle at 100% 0%, rgba(43,214,214,.25), transparent 40% ),
+                  linear-gradient(#0b0f1a, #0b0f1a 60%, #0b0f1a);
+      background-attachment: fixed;
+    }
+
+    /* Layout scaffolding (semantic) */
+    header.site-header {
+      position: sticky; top: 0; z-index: 10;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(255,0,180,0.25), rgba(43,214,214,0.25) 60%), rgba(10,12,20,.92);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      display:flex; align-items: center; gap: 10px;
+    }
+    .brand-logo {
+      width: 34px; height: 34px; border-radius: 9px;
+      display:inline-block;
+      background: conic-gradient(from 180deg at 50% 50%, #ff4d9d, #8a3aff, #2bd6d6, #ff4d9d);
+      outline: 2px solid rgba(255,255,255,.25);
+    }
+    .brand-name {
+      font-weight: 700; letter-spacing: .4px;
+      background: linear-gradient(90deg, #fff, #dfe8ff);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+    }
+
+    /* Top navigation (icon labels) */
+    nav.top-nav {
+      display: flex; gap: 12px; align-items: center; margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .nav-link {
+      display:flex; align-items:center; gap:8px;
+      padding: 8px 12px; border-radius: 999px;
+      text-decoration: none; color: #e8f0ff;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+    }
+    .nav-link:hover { background: rgba(255,255,255,.12); }
+
+    /* Main container */
+    .container { width: 100%; padding: 0 16px 100px; margin: 0 auto; max-width: 1100px; }
+
+    /* Section styling */
+    .section { padding: 20px 0; }
+    .section + .section { border-top: 1px solid rgba(255,255,255,.05); }
+
+    .section-title {
+      font-size: 1.25rem; margin: 0 0 12px;
+      color: #fff;
+    }
+    .description { color: #d9e4ff; line-height: 1.5; }
+
+    /* Carousel (CSS-only, horizontal scroll) */
+    .carousel {
+      display: flex; overflow-x: auto; gap: 12px; padding-bottom: 8px;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    }
+    .card {
+      min-width: 72%; max-width: 320px;
+      height: 180px; border-radius: var(--radius);
+      padding: 12px; color: #fff; position: relative;
+      display: flex; flex-direction: column; justify-content: space-between;
+      scroll-snap-align: start;
+      background: linear-gradient(135deg, #ff4d9d 0%, #8a3aff 60%, #2bd6d6 100%);
+      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.25);
+    }
+    .card .badge {
+      align-self: flex-start;
+      padding: 6px 10px; border-radius: 999px;
+      font-size: 12px; background: rgba(0,0,0,.25);
+    }
+    .card-title { font-size: 1.05rem; font-weight: 700; }
+    .cta-row { display:flex; gap:8px; align-items:center; }
+
+    /* Grids for content sections */
+    .grid { display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .tile {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px;
+      display:flex; flex-direction: column; gap: 8px;
+    }
+    .thumb { height: 110px; border-radius: 8px; background: linear-gradient(135deg, #2b2f55, #6a2c70); }
+    .tile-title { font-weight: 600; font-size: 0.95rem; }
+    .tiny { font-size: 12px; color: var(--muted); }
+
+    /* Panels in profile/settings */
+    .panel { background: rgba(255,255,255,.04); border: 1px solid var(--border);
+             border-radius: 12px; padding: 12px; }
+    .profile-card { display:flex; align-items:center; gap: 12px; padding: 8px 0; }
+    .avatar { width: 64px; height: 64px; border-radius: 50%;
+              background: linear-gradient(135deg, #2a9d8f, #277da1);
+              border: 2px solid rgba(255,255,255,.6); }
+    .user-info h3 { margin: 0; font-size: 1.05rem; }
+    .user-info p { margin: 4px 0 0; color: var(--muted); font-size: 0.92rem; }
+
+    /* Form elements */
+    .search-form .search-bar {
+      display:flex; gap:8px; align-items:center;
+    }
+    input[type="search"] {
+      width: 100%; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid var(--border); background: rgba(255,255,255,.08);
+      color: #fff; outline: none;
+    }
+    select, input[type="checkbox"] { background: rgba(255,255,255,.08); color: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+    .btn {
+      background: rgba(255,255,255,.08); border: 1px solid var(--border);
+      color: #fff; padding: 12px 16px; border-radius: 10px; text-decoration: none;
+      display:inline-flex; align-items: center; justify-content: center; gap: 8px;
+      cursor: pointer;
+    }
+    .btn[aria-label]:focus, .nav-link:focus, .bottom-item:focus { outline: 2px solid #fff; outline-offset: 2px; }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent-start), var(--accent-mid), var(--accent-end));
+      border: none;
+      color: white;
+      box-shadow: 0 6px 14px rgba(0,0,0,.25);
+    }
+    .btn.secondary { background: rgba(255,255,255,.08); }
+
+    /* CTA helpers */
+    .cta { padding: 10px 14px; border-radius: 999px; font-weight: 600; border: none; cursor: pointer; }
+    .cta.small { padding: 6px 10px; font-size: 12px; }
+
+    /* Misc helpers */
+    .section-title small { display:block; font-weight: 500; color: var(--muted); margin-top: 4px; }
+
+    /* Responsive adjustments */
+    @media (min-width: 560px){
+      .card { min-width: 320px; height: 190px; padding: 14px; }
+      .grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 900px){
+      .grid { grid-template-columns: repeat(3, 1fr); }
+      .carousel { gap: 14px; }
+    }
+    @media (max-width: 799px){
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .bottom-nav { display: flex; }
+    }
+    @media (min-width: 1000px){
+      .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* Bottom navigation (mobile only) */
+    nav.bottom-nav {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      height: 64px; display: none; justify-content: space-around; align-items: center;
+      background: rgba(12,14,28,.95);
+      border-top: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(6px);
+      z-index: 20;
+    }
+    .bottom-item {
+      color: #e9f0ff; text-decoration: none; font-size: 12px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+    }
+    .bottom-icon { width: 20px; height: 20px; display:block; margin-bottom: 4px; }
+
+    /* Visually hidden helper for accessibility */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+               overflow: hidden; clip: rect(0,0,1px,1px); white-space: nowrap; border: 0; }
+
+    /* Footer */
+    footer.site-footer {
+      text-align: center; color: #aab6d3; padding: 20px 12px 40px;
+      font-size: 12px;
+    }
+  </style>
+<style id="fl-baseline">/* --- Baseline responsive reset + hardening (gallery-safe + centered media) --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on phone preview */
+  overflow-y: auto;                    /* allow vertical scroll */
+}
+
+/* Media scale and center by default */
+img, picture img, figure img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-position: center !important;
+}
+
+/* Figures/pictures play nice */
+picture, figure { display:block; }
+figure > img { width:100%; height:auto; display:block; }
+
+/* Background images: centered and covered (no tiling) */
+[style*="background-image"] {
+  background-position: center !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Prevent sideways scroll, but do NOT clamp widths globally (lets cards/layout work) */
+html, body { overflow-x: hidden; }
+
+/* Containers */
+.container, .wrap, main, header, section, footer { width:100%; }
+.container, .wrap, main { max-width:1200px; margin:0 auto; padding:16px; }
+
+/* Type that scales */
+h1 { font-size: clamp(24px, 6vw, 40px); margin: 0 0 8px; }
+h2 { font-size: clamp(20px, 4.5vw, 28px); margin: 0 0 6px; }
+p  { font-size: clamp(14px, 3vw, 16px); line-height: 1.5; }
+
+/* Generic grid helpers (opt-in) */
+.grid, [class*="grid"], [class*="row"], [style*="grid-template-columns"] { display:grid; gap:14px; }
+.grid.cols-2 { grid-template-columns: 1fr; }
+.grid.cols-3 { grid-template-columns: 1fr; }
+@media (min-width:640px){ .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width:960px){ .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* Phone: stack multi-col patterns */
+@media (max-width:420px){
+  [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  [style*="display:flex"] { flex-wrap: wrap !important; }
+  [class*="product"], [class*="card"], [class*="item"] { width:100% !important; }
+  section, header, footer, .container, .wrap, main { padding-left:14px; padding-right:14px; }
+}
+
+/* Buttons + cards */
+.btn { display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; text-decoration:none; cursor:pointer }
+.card { border:1px solid #eee; border-radius:12px; padding:16px; background:#fff }
+
+/* Thin, pretty scrollbars */
+html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================
+   SMART, NON-DISTORTING GALLERIES
+   ============================ */
+
+/* Common gallery class names from the model */
+.image-grid, .images-grid, .gallery, .grid-images {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* Heuristic: any container that has many direct image children becomes a gallery */
+section:has(> img + img), div:has(> img + img),
+section:has(> picture + picture), div:has(> picture + picture),
+section:has(> figure + figure),  div:has(> figure + figure) {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+}
+
+/* Inside these galleries, images never distort; centered by default */
+.image-grid img, .images-grid img, .gallery img, .grid-images img,
+section:has(> img + img) > img,
+div:has(> img + img) > img,
+section:has(> picture + picture) picture > img,
+div:has(> picture + picture) picture > img,
+section:has(> figure + figure) figure > img,
+div:has(> figure + figure) figure > img {
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:center !important;
+  border-radius:12px;
+}
+
+/* If you (or the model) explicitly want square thumbs, opt-in: */
+.thumb img, [data-thumb] img { aspect-ratio:1/1; object-fit:cover; object-position:center; }</style>
+<style id="fl-mobile-drawer-css">/* --- Auto-injected phone drawer --- */
+:root{
+  --fl-brand:#0b0f1a;
+  --fl-drawer-bg:#0b0f1a;
+  --fl-drawer-fg:#fff;
+  --fl-drawer-scrim: rgba(0,0,0,.32);
+}
+/* The layer covers the screen, but must NOT eat events */
+#fl-layer{ position:fixed; inset:0; pointer-events:none; z-index:2147483000; }
+#fl-mobile-drawer-wrap{ display:none; }
+
+/* Only visible UI gets pointer events */
+#fl-mobile-drawer, #fl-scrim, #fl-drawer { pointer-events:auto; }
+
+#fl-mobile-drawer{
+  position:sticky; top:0; z-index:1; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+#fl-mobile-drawer .brand{font-weight:800;color:#111;text-decoration:none}
+#fl-mobile-drawer .hamb{ margin-left:auto;width:40px;height:40px;border:0;border-radius:10px;background:#111;display:grid;place-items:center;cursor:pointer }
+#fl-mobile-drawer .hamb span{display:block;width:18px;height:2px;background:#fff;margin:2px 0;border-radius:2px}
+#fl-navchk{ display:none }
+#fl-scrim{ position:fixed; inset:0; background:var(--fl-drawer-scrim); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:2147483001; }
+#fl-drawer{
+  position:fixed; top:0; bottom:0; right:0; width:min(82vw,320px);
+  transform:translateX(100%); background:var(--fl-drawer-bg); color:var(--fl-drawer-fg);
+  box-shadow:-12px 0 32px rgba(0,0,0,.28); padding:16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .28s ease;
+  z-index:2147483002;
+}
+#fl-drawer a{ color:var(--fl-drawer-fg); text-decoration:none; border-radius:10px; padding:12px 10px; display:block }
+#fl-drawer a:hover{ background: rgba(255,255,255,.18) }
+#fl-drawer .close { margin-left:auto; font-size:28px; cursor:pointer; padding:4px 8px; border-radius:8px; color:var(--fl-drawer-fg); }
+#fl-drawer .close:hover { background: rgba(255,255,255,.18); }
+/* open states */
+#fl-navchk:checked ~ #fl-scrim{ opacity:1; pointer-events:auto }
+#fl-navchk:checked ~ #fl-drawer{ transform: translateX(0) }
+
+@media (min-width:768px){ #fl-mobile-drawer-wrap{ display:none !important } }
+@media (max-width:767px){
+  header nav, nav:not(#fl-mobile-drawer){ display:none !important }
+  #fl-mobile-drawer-wrap{ display:block }
+}</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></head>
+<body>
+<div id="fl-layer" aria-hidden="false">
+  <div id="fl-mobile-drawer-wrap">
+    <nav id="fl-mobile-drawer" aria-label="Mobile">
+      <a class="brand" href="#" aria-label="Editable text">NovaStream • Gen Z Streaming</a>
+      <label class="hamb" for="fl-navchk" aria-controls="fl-drawer" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </label>
+    </nav>
+
+    <input type="checkbox" id="fl-navchk">
+    <div id="fl-scrim" aria-hidden="true"></div>
+    <aside id="fl-drawer" role="dialog" aria-modal="true" aria-label="Menu">
+      <label for="fl-navchk" class="close" aria-label="Close menu">×</label>
+      <a href="#home" aria-label="Editable text">🏠 Home</a>
+      <a href="#search" aria-label="Editable text">🔎 Search</a>
+      <a href="#profile" aria-label="Editable text">👤 Profile</a>
+      <a href="#settings" aria-label="Editable text">⚙️ Settings</a>
+    </aside>
+  </div>
+</div>
+
+  <header class="site-header" aria-label="Site header">
+    <div class="brand" aria-label="NovaStream brand">
+      <span class="brand-logo" aria-label="NovaStream logo"></span>
+      <span class="brand-name" aria-label="NovaStream">NovaStream</span>
+    </div>
+    <nav class="top-nav" aria-label="Primary navigation">
+      <a class="nav-link" href="#home" aria-label="Editable text">
+        <span aria-hidden="true">🏠</span> Home
+      </a>
+      <a class="nav-link" href="#search" aria-label="Editable text">
+        <span aria-hidden="true">🔎</span> Search
+      </a>
+      <a class="nav-link" href="#profile" aria-label="Editable text">
+        <span aria-hidden="true">👤</span> Profile
+      </a>
+      <a class="nav-link" href="#settings" aria-label="Editable text">
+        <span aria-hidden="true">⚙️</span> Settings
+      </a>
+    </nav>
+  </header>
+
+  <main class="container" role="main">
+    <!-- Home -->
+    <section id="home" class="section" aria-labelledby="home-title">
+      <h2 id="home-title" class="section-title" aria-label="Editable text">Home</h2>
+
+      <!-- Featured content carousel -->
+      <div class="carousel" aria-label="Featured content carousel">
+        <article class="card" style="background: linear-gradient(135deg, #ff4d9d 0%, #8a3aff 60%, #2bd6d6 100%);">
+          <span class="badge" aria-label="New content badge" style="align-self:flex-start">New</span>
+          <div>
+            <div class="card-title" style="font-size:1.05rem; font-weight:700;">Pulse City: Afterglow</div>
+            <div class="tiny" style="margin-top:4px;">Sci‑fi thriller • Neon city vibes</div>
+          </div>
+          <div class="cta-row" aria-label="Actions for featured content">
+            <button class="btn primary" aria-label="Editable text">Watch Now</button>
+            <button class="btn" aria-label="Editable text">Share with Friends</button>
+          </div>
+        </article>
+
+        <article class="card" style="background: linear-gradient(135deg, #2bd6d6 0%, #4cc9f0 50%, #7b5cff 100%);">
+          <span class="badge" aria-label="New content badge" style="align-self:flex-start;background: rgba(0,0,0,.25);">Trending</span>
+          <div>
+            <div class="card-title" style="font-size:1.05rem; font-weight:700;">Granita: Global Beats</div>
+            <div class="tiny" style="margin-top:4px;">Music docuseries • Cultures worldwide</div>
+          </div>
+          <div class="cta-row" aria-label="Actions for featured content">
+            <button class="btn primary" aria-label="Editable text">Watch Now</button>
+            <button class="btn" aria-label="Editable text">Share with Friends</button>
+          </div>
+        </article>
+
+        <article class="card" style="background: linear-gradient(135deg, #8a3aff 0%, #ff4d4d 60%, #2bd6d6 100%);">
+          <span class="badge" aria-label="New content badge" style="align-self:flex-start">New</span>
+          <div>
+            <div class="card-title" style="font-size:1.05rem; font-weight:700;">Horizon Arcade</div>
+            <div class="tiny" style="margin-top:4px;">Comedy/sci-fi anthology</div>
+          </div>
+          <div class="cta-row" aria-label="Actions for featured content">
+            <button class="btn primary" aria-label="Editable text">Watch Now</button>
+            <button class="btn" aria-label="Editable text">Share with Friends</button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Trending section -->
+      <section aria-label="Trending shows and movies" class="section" style="padding:12px 0 0;">
+        <h3 style="margin:6px 0 8px; font-size:1.05rem;" aria-label="Editable text">Trending</h3>
+        <div class="grid" aria-label="Trending grid">
+          <div class="tile">
+            <div class="thumb" aria-label="Trending thumbnail 1"></div>
+            <div class="tile-title">Nova Race: Neon Streets</div>
+            <div class="tiny">Action • 2024</div>
+          </div>
+          <div class="tile">
+            <div class="thumb" aria-label="Trending thumbnail 2"></div>
+            <div class="tile-title">Color of Silence</div>
+            <div class="tiny">Drama • 2023</div>
+          </div>
+          <div class="tile">
+            <div class="thumb" aria-label="Trending thumbnail 3"></div>
+            <div class="tile-title">Eastbound Dreams</div>
+            <div class="tiny">Romance • 2022</div>
+          </div>
+          <div class="tile">
+            <div class="thumb" aria-label="Trending thumbnail 4"></div>
+            <div class="tile-title">City of Echoes</div>
+            <div class="tiny">Thriller • 2021</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Personalized recommendations -->
+      <section aria-label="Personalized recommendations" class="section" style="padding-top:0;">
+        <h3 class="section-title" style="font-size:1.05rem; margin:0 0 6px;" aria-label="Editable text">Recommended for you</h3>
+        <p class="tiny" style="margin-top:0 0 6px;" aria-label="Editable text">Algorithm-driven suggestions based on your viewing habits</p>
+        <div class="grid" aria-label="Recommendations grid">
+          <div class="tile" role="article">
+            <div class="thumb" aria-label="Recommended 1"></div>
+            <div class="tile-title">Kaleidoscope Kids: Fragments</div>
+            <div class="tiny">Animated • Family</div>
+          </div>
+          <div class="tile" role="article">
+            <div class="thumb" aria-label="Recommended 2"></div>
+            <div class="tile-title">Global Street Food</div>
+            <div class="tiny">Docuseries • Culture</div>
+          </div>
+          <div class="tile" role="article">
+            <div class="thumb" aria-label="Recommended 3"></div>
+            <div class="tile-title">Midnight Riders</div>
+            <div class="tiny">Adventure • Action</div>
+          </div>
+          <div class="tile" role="article">
+            <div class="thumb" aria-label="Recommended 4"></div>
+            <div class="tile-title">Pixel Hearts</div>
+            <div class="tiny">Romantic comedy</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;">
+          <button class="btn" aria-label="Editable text">Explore More</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- Search -->
+    <section id="search" class="section" aria-labelledby="search-title" style="scroll-margin-top:80px;">
+      <h2 id="search-title" class="section-title" aria-label="Editable text">Search</h2>
+
+      <form class="search-form" action="#" method="get" aria-label="Search content form">
+        <div class="search-bar" style="width:100%; align-items:center;">
+          <label for="query" class="sr-only">Search query</label>
+          <input id="query" type="search" placeholder="Search for movies, shows, genres…" aria-label="Search input for content">
+          <button type="submit" class="btn primary" aria-label="Editable text">Search</button>
+        </div>
+      </form>
+
+      <div class="filters" aria-label="Filters">
+        <label for="genre" class="sr-only">Genre</label>
+        <select id="genre" aria-label="Genre filter" style="margin-right:8px;">
+          <option>All genres</option>
+          <option>Action</option><option>Drama</option><option>Romance</option><option>Animation</option>
+        </select>
+
+        <label for="year" class="sr-only">Release year</label>
+        <select id="year" aria-label="Release year filter">
+          <option>Any year</option><option>2024</option><option>2023</option><option>2022</option>
+        </select>
+      </div>
+
+      <div class="history" aria-label="Recent searches">
+        <h3 style="margin:8px 0 6px;" aria-label="Editable text">Recent Searches</h3>
+        <ul class="chip-list" style="list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:8px; margin:0;">
+          <li class="chip" style="background: rgba(255,255,255,.08); padding:6px 10px; border-radius:999px;">Action</li>
+          <li class="chip" style="background: rgba(255,255,255,.08); padding:6px 10px; border-radius:999px;">Romance</li>
+          <li class="chip" style="background: rgba(255,255,255,.08); padding:6px 10px; border-radius:999px;">Sci‑Fi</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Content Detail -->
+    <section id="content-detail" class="section" aria-labelledby="content-detail-title" style="scroll-margin-top:80px;">
+      <h2 id="content-detail-title" class="section-title" aria-label="Editable text">Pulse City: Afterglow</h2>
+      <p class="description" style="max-width: 700px;" aria-label="Editable text">
+        A neon-drenched sci‑fi thriller that follows a fearless crew as they unravel a city-wide mystery
+        stirring beneath the surface. Diverse characters, stellar world-building, and heart-pounding moments
+        designed to vibe with Gen Z tastes.
+      </p>
+
+      <div class="actions" aria-label="Content actions" style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <button class="btn primary" aria-label="Editable text">Watch trailer</button>
+        <button class="btn" aria-label="Editable text">Add to Favorites</button>
+        <button class="btn" aria-label="Editable text">Share with Friends</button>
+        <button class="btn" aria-label="Editable text">Download</button>
+      </div>
+
+      <section class="reviews" aria-label="User reviews and ratings" style="margin-top:14px;">
+        <h3 style="margin:6px 0 6px;" aria-label="Editable text">User reviews and ratings</h3>
+        <div class="rating" aria-label="Average rating 4.4 out of 5" style="font-weight:600; margin-bottom:6px;">4.4/5</div>
+        <p class="tiny" style="margin-top:0;" aria-label="Editable text">
+          “This show nails the Gen Z vibe—diverse stories, fast pace, and fresh energy.”
+        </p>
+      </section>
+    </section>
+
+    <!-- Profile -->
+    <section id="profile" class="section" aria-labelledby="profile-title" style="scroll-margin-top:80px;">
+      <h2 id="profile-title" class="section-title" aria-label="Editable text">Profile</h2>
+
+      <div class="profile-card" aria-label="User profile">
+        <div class="avatar" aria-label="User avatar"></div>
+        <div class="user-info">
+          <h3 aria-label="Editable text">Alexandra</h3>
+          <p aria-label="Editable text">Premium Member • 2 months • 2 devices</p>
+          <button class="btn" aria-label="Editable text">Edit profile</button>
+        </div>
+      </div>
+
+      <div class="grid" aria-label="Profile sections" style="margin-top:8px;">
+        <section class="panel" aria-label="Watch history">
+          <h4 style="margin:0 0 6px;">Watch History</h4>
+          <ul style="padding-left:18px; margin:0; color:#dbe6ff;">
+            <li>Pulse City: Afterglow</li>
+            <li>Granita: Global Beats</li>
+            <li>City of Echoes</li>
+          </ul>
+        </section>
+
+        <section class="panel" aria-label="Favorites">
+          <h4 style="margin:0 0 6px;">Favorites</h4>
+          <div class="thumb-grid" aria-label="Favorites thumbnails" style="display:flex; gap:8px; flex-wrap:wrap;">
+            <div class="thumb" style="width:72px; height:72px; border-radius:8px;" aria-label="Favorite thumbnail 1"></div>
+            <div class="thumb" style="width:72px; height:72px; border-radius:8px;" aria-label="Favorite thumbnail 2"></div>
+            <div class="thumb" style="width:72px; height:72px; border-radius:8px;" aria-label="Favorite thumbnail 3"></div>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Subscription details">
+          <h4 style="margin:0 0 6px;">Subscription</h4>
+          <p class="tiny" style="margin:0 0 6px;" aria-label="Editable text">
+            Plan: Premium • Auto-renewal
+          </p>
+          <button class="btn" aria-label="Editable text">Manage</button>
+        </section>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings" class="section" aria-labelledby="settings-title" style="scroll-margin-top:80px;">
+      <h2 id="settings-title" class="section-title" aria-label="Editable text">Settings</h2>
+
+      <div class="panel" aria-label="Account management">
+        <h3 style="margin:0 0 6px;" aria-label="Editable text">Account management</h3>
+        <p class="tiny" style="margin:0 0 6px;" aria-label="Editable text">
+          Sign up or log in with email, or connect social accounts.
+        </p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn" aria-label="Editable text">Sign up</button>
+          <button class="btn" aria-label="Editable text">Log in</button>
+          <button class="btn" aria-label="Editable text">Social signup</button>
+        </div>
+      </div>
+
+      <div class="panel" aria-label="Notification preferences" style="margin-top:8px;">
+        <h3 style="margin:0 0 6px;" aria-label="Editable text">Notification preferences</h3>
+        <p class="tiny" style="margin:0 0 6px;" aria-label="Editable text">
+          Control push, email, and in-app alerts.
+        </p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <label><input type="checkbox" checked="" aria-label="Enable email notifications"> Email</label>
+          <label><input type="checkbox" aria-label="Enable push notifications"> Push</label>
+        </div>
+      </div>
+
+      <div class="panel" aria-label="Help and support" style="margin-top:8px;">
+        <h3 style="margin:0 0 6px;" aria-label="Editable text">Help and support</h3>
+        <p class="tiny" style="margin:0 0 6px;" aria-label="Editable text">
+          FAQ, contact, and community guidelines.
+        </p>
+        <button class="btn" aria-label="Editable text">Help Center</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" aria-label="Footer">
+    <p aria-label="Editable text">© 2025 NovaStream • Built for Gen Z with love. Your streaming, your vibe.</p>
+  </footer>
+
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <a href="#home" class="bottom-item" aria-label="Editable text">
+      <svg class="bottom-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 11.5L12 3l9 8.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z" stroke="white" stroke-width="2" fill="none"></path>
+      </svg>
+      Home
+    </a>
+    <a href="#search" class="bottom-item" aria-label="Editable text">
+      <svg class="bottom-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" stroke="white" stroke-width="2" fill="none"></circle>
+        <path d="M20 20l-3.5-3.5" stroke="white" stroke-width="2"></path>
+      </svg>
+      Search
+    </a>
+    <a href="#profile" class="bottom-item" aria-label="Editable text">
+      <svg class="bottom-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4z" stroke="white" stroke-width="2" fill="none"></path>
+        <path d="M4 20a8 8 0 0 1 16 0" stroke="white" stroke-width="2" fill="none"></path>
+      </svg>
+      Profile
+    </a>
+  </nav>
+
+</body></html>

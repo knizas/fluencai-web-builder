@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delivery Dash – Mobile-First Delivery App</title>
+  <style>
+    :root{
+      --bg: #f7f7fb;
+      --surface: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #10b981;
+      --accent: #f472b6;
+      --border: #e5e7eb;
+    }
+
+    /* Global baseline + accessibility */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Helvetica Neue"; color: var(--text); background: var(--bg); }
+    a { color: var(--primary); text-decoration: none; }
+    button, input, select, textarea { font-family: inherit; font-size: 1rem; }
+
+    /* Layout primitives */
+    .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+
+    .header { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--border); }
+    .brand { display: flex; align-items: center; justify-content: space-between; padding: .75rem 0; }
+    .logo { width: 28px; height: 28px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--accent)); display: inline-block; }
+    .brand-title { display: flex; align-items: baseline; gap: .5rem; }
+    .brand-title h1 { font-size: 1.05rem; margin: 0; font-weight: 700; }
+    .brand-title small { color: var(--muted); font-size: .8rem; }
+
+    .nav { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; padding-bottom: .25rem; }
+    .nav a { padding: .55rem .8rem; border-radius: 999px; font-weight: 700; border: 1px solid transparent; }
+    .nav a.primary { background: var(--primary); color: #fff; }
+    .nav a.secondary { background: #f8fafc; color: #111827; border: 1px solid var(--border); }
+
+    main { padding: 1rem 0 2rem; }
+
+    /* Sections */
+    .section { padding: 1rem 0; }
+    .section-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .5rem; }
+    .section-title h2 { font-size: 1.15rem; margin: 0; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas; border: 1px solid var(--border); background: #f8fafc; padding: .15rem .5rem; border-radius: 6px; font-size: .8rem; color: #374151; }
+
+    /* Cards & grids */
+    .grid { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+    @media (min-width: 520px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 860px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: .75rem; display: flex; flex-direction: column; }
+
+    .product-image { width: 100%; height: 150px; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; background: #fff; overflow:hidden; margin-bottom: .5rem; }
+    .card h3 { font-size: 1rem; margin: .25rem 0 .25rem; }
+    .card p { color: var(--muted); font-size: .92rem; margin: 0 0 .5rem; flex: 1; }
+    .price { font-weight: 700; font-size: 1.05rem; margin: .25rem 0; }
+
+    /* Search / filters / controls */
+    .filters { border: 1px solid var(--border); padding: .75rem; border-radius: 12px; background: #fff; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+    .filters label { font-size: .9rem; color: var(--muted); }
+    select, input[type="range"] { min-height: 44px; padding: .6rem; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+    .input { min-height: 44px; padding: .6rem; border: 1px solid var(--border); border-radius: 8px; background: #fff; width: 100%; }
+
+    /* Cart table */
+    .cart-table { width: 100%; border-collapse: collapse; }
+    .cart-table th, .cart-table td { padding: .5rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    .qty { display: flex; align-items: center; gap: .25rem; }
+    .qty button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: #fff; cursor: pointer; }
+
+    /* Buttons */
+    .btn { border: none; border-radius: 10px; padding: .9rem 1rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; cursor: pointer; }
+    .btn:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+    .btn.primary { background: var(--primary); color: #fff; }
+    .btn.secondary { background: #111827; color: #fff; }
+
+    /* Misc */
+    .sep { height: 1px; background: var(--border); margin: .75rem 0; }
+
+    /* Typography tweaks for readability */
+    p { line-height: 1.45; }
+    ul { margin: .25rem 0 0 1rem; padding: 0; }
+
+    /* Accessibility helpers for contrast on elements like cards that contain text */
+    [aria-label] { outline: none; }
+
+    /* Mobile-first: ensure tappable controls are large */
+    button, a.btn { min-height: 44px; padding: .9rem 1.1rem; }
+
+    /* Utility small tweaks */
+    .muted { color: var(--muted); }
+
+    /* Footer */
+    footer { padding: 1rem 0; text-align: center; color: var(--muted); font-size: .9rem; }
+
+  </style>
+<style id="fl-baseline">/* --- Baseline responsive reset + hardening (gallery-safe + centered media) --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on phone preview */
+  overflow-y: auto;                    /* allow vertical scroll */
+}
+
+/* Media scale and center by default */
+img, picture img, figure img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-position: center !important;
+}
+
+/* Figures/pictures play nice */
+picture, figure { display:block; }
+figure > img { width:100%; height:auto; display:block; }
+
+/* Background images: centered and covered (no tiling) */
+[style*="background-image"] {
+  background-position: center !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Prevent sideways scroll, but do NOT clamp widths globally (lets cards/layout work) */
+html, body { overflow-x: hidden; }
+
+/* Containers */
+.container, .wrap, main, header, section, footer { width:100%; }
+.container, .wrap, main { max-width:1200px; margin:0 auto; padding:16px; }
+
+/* Type that scales */
+h1 { font-size: clamp(24px, 6vw, 40px); margin: 0 0 8px; }
+h2 { font-size: clamp(20px, 4.5vw, 28px); margin: 0 0 6px; }
+p  { font-size: clamp(14px, 3vw, 16px); line-height: 1.5; }
+
+/* Generic grid helpers (opt-in) */
+.grid, [class*="grid"], [class*="row"], [style*="grid-template-columns"] { display:grid; gap:14px; }
+.grid.cols-2 { grid-template-columns: 1fr; }
+.grid.cols-3 { grid-template-columns: 1fr; }
+@media (min-width:640px){ .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width:960px){ .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* Phone: stack multi-col patterns */
+@media (max-width:420px){
+  [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  [style*="display:flex"] { flex-wrap: wrap !important; }
+  [class*="product"], [class*="card"], [class*="item"] { width:100% !important; }
+  section, header, footer, .container, .wrap, main { padding-left:14px; padding-right:14px; }
+}
+
+/* Buttons + cards */
+.btn { display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; text-decoration:none; cursor:pointer }
+.card { border:1px solid #eee; border-radius:12px; padding:16px; background:#fff }
+
+/* Thin, pretty scrollbars */
+html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================
+   SMART, NON-DISTORTING GALLERIES
+   ============================ */
+
+/* Common gallery class names from the model */
+.image-grid, .images-grid, .gallery, .grid-images {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* Heuristic: any container that has many direct image children becomes a gallery */
+section:has(> img + img), div:has(> img + img),
+section:has(> picture + picture), div:has(> picture + picture),
+section:has(> figure + figure),  div:has(> figure + figure) {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:16px;
+}
+
+/* Inside these galleries, images never distort; centered by default */
+.image-grid img, .images-grid img, .gallery img, .grid-images img,
+section:has(> img + img) > img,
+div:has(> img + img) > img,
+section:has(> picture + picture) picture > img,
+div:has(> picture + picture) picture > img,
+section:has(> figure + figure) figure > img,
+div:has(> figure + figure) figure > img {
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:center !important;
+  border-radius:12px;
+}
+
+/* If you (or the model) explicitly want square thumbs, opt-in: */
+.thumb img, [data-thumb] img { aspect-ratio:1/1; object-fit:cover; object-position:center; }</style>
+<style id="fl-mobile-drawer-css">/* --- Auto-injected phone drawer --- */
+:root{
+  --fl-brand:#2563eb;
+  --fl-drawer-bg:#2563eb;
+  --fl-drawer-fg:#fff;
+  --fl-drawer-scrim: rgba(0,0,0,.32);
+}
+/* The layer covers the screen, but must NOT eat events */
+#fl-layer{ position:fixed; inset:0; pointer-events:none; z-index:2147483000; }
+#fl-mobile-drawer-wrap{ display:none; }
+
+/* Only visible UI gets pointer events */
+#fl-mobile-drawer, #fl-scrim, #fl-drawer { pointer-events:auto; }
+
+#fl-mobile-drawer{
+  position:sticky; top:0; z-index:1; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+#fl-mobile-drawer .brand{font-weight:800;color:#111;text-decoration:none}
+#fl-mobile-drawer .hamb{ margin-left:auto;width:40px;height:40px;border:0;border-radius:10px;background:#111;display:grid;place-items:center;cursor:pointer }
+#fl-mobile-drawer .hamb span{display:block;width:18px;height:2px;background:#fff;margin:2px 0;border-radius:2px}
+#fl-navchk{ display:none }
+#fl-scrim{ position:fixed; inset:0; background:var(--fl-drawer-scrim); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:2147483001; }
+#fl-drawer{
+  position:fixed; top:0; bottom:0; right:0; width:min(82vw,320px);
+  transform:translateX(100%); background:var(--fl-drawer-bg); color:var(--fl-drawer-fg);
+  box-shadow:-12px 0 32px rgba(0,0,0,.28); padding:16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .28s ease;
+  z-index:2147483002;
+}
+#fl-drawer a{ color:var(--fl-drawer-fg); text-decoration:none; border-radius:10px; padding:12px 10px; display:block }
+#fl-drawer a:hover{ background: rgba(255,255,255,.18) }
+#fl-drawer .close { margin-left:auto; font-size:28px; cursor:pointer; padding:4px 8px; border-radius:8px; color:var(--fl-drawer-fg); }
+#fl-drawer .close:hover { background: rgba(255,255,255,.18); }
+/* open states */
+#fl-navchk:checked ~ #fl-scrim{ opacity:1; pointer-events:auto }
+#fl-navchk:checked ~ #fl-drawer{ transform: translateX(0) }
+
+@media (min-width:768px){ #fl-mobile-drawer-wrap{ display:none !important } }
+@media (max-width:767px){
+  header nav, nav:not(#fl-mobile-drawer){ display:none !important }
+  #fl-mobile-drawer-wrap{ display:block }
+}</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></head>
+<body>
+<div id="fl-layer" aria-hidden="false">
+  <div id="fl-mobile-drawer-wrap">
+    <nav id="fl-mobile-drawer" aria-label="Mobile">
+      <a class="brand" href="#" aria-label="Editable text">Delivery Dash – Mobile-First Delivery App</a>
+      <label class="hamb" for="fl-navchk" aria-controls="fl-drawer" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </label>
+    </nav>
+
+    <input type="checkbox" id="fl-navchk">
+    <div id="fl-scrim" aria-hidden="true"></div>
+    <aside id="fl-drawer" role="dialog" aria-modal="true" aria-label="Menu">
+      <label for="fl-navchk" class="close" aria-label="Close menu">×</label>
+      <a href="#home" aria-label="Editable text">Home</a>
+      <a href="#listing" aria-label="Editable text">Listing</a>
+      <a href="#detail" aria-label="Editable text">Detail</a>
+      <a href="#cart" aria-label="Editable text">Cart</a>
+      <a href="#checkout" aria-label="Editable text">Checkout</a>
+      <a href="#profile" aria-label="Editable text">Profile</a>
+      <a href="#auth" aria-label="Editable text">Auth</a>
+    </aside>
+  </div>
+</div>
+
+  <header class="header" aria-label="Site header">
+    <div class="container brand" style="align-items: center; justify-content: space-between;">
+      <div class="brand-title" style="display:flex; align-items:center; gap:.6rem;">
+        <span class="logo" aria-label="Brand logo"></span>
+        <div>
+          <h1 aria-label="Editable text">Delivery Dash</h1>
+          <small>Fast. Fresh. Flexible.</small>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#home" class="primary" aria-label="Editable text">Home</a>
+        <a href="#listing" aria-label="Editable text">Listing</a>
+        <a href="#detail" aria-label="Editable text">Detail</a>
+        <a href="#cart" aria-label="Editable text">Cart</a>
+        <a href="#checkout" aria-label="Editable text">Checkout</a>
+        <a href="#profile" aria-label="Editable text">Profile</a>
+        <a href="#auth" class="secondary" style="border:1px solid var(--border);" aria-label="Editable text">Auth</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <!-- Home -->
+    <section id="home" class="section" aria-labelledby="home-title">
+      <div class="section-title">
+        <h2 id="home-title" aria-label="Editable text">Home</h2>
+        <span class="kbd" aria-label="Shortcut for help">Shift + /</span>
+      </div>
+
+      <div class="hero" aria-label="Featured and search" style="display:grid; grid-template-columns:1fr; gap:1rem;">
+        <div class="hero-card" role="region" aria-label="Featured products" style="padding:1rem;">
+          <h2 style="margin:0 0 .25rem 0; font-size:1.05rem;" aria-label="Editable text">Featured Picks</h2>
+          <p style="color:var(--muted); margin:0 0 .75rem 0;" aria-label="Editable text">Curated favorites crafted for speed. Perfect for busy days.</p>
+          <div class="grid" style="grid-template-columns: 1fr 1fr;">
+            <!-- Featured card 1 -->
+            <article class="card" aria-label="Deluxe Veggie Bowl">
+              <div class="product-image" aria-label="Deluxe Veggie Bowl image">
+                <svg width="100%" height="120" viewBox="0 0 320 120" role="img" aria-label="Deluxe Veggie Bowl illustration">
+                  <defs><linearGradient id="gv1" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="#8bd3ff"></stop><stop offset="100%" stop-color="#69c"></stop></linearGradient></defs>
+                  <rect width="320" height="120" fill="url(#gv1)"></rect>
+                  <circle cx="60" cy="60" r="22" fill="#fff" opacity=".9"></circle>
+                  <rect x="120" y="40" width="120" height="40" rx="8" fill="#fff" opacity=".8"></rect>
+                  <text x="60" y="105" font-family="Arial" font-size="14" fill="#0a0a0a">Veggie Bowl</text>
+                </svg>
+              </div>
+              <h3 aria-label="Editable text">Deluxe Veggie Bowl</h3>
+              <p aria-label="Editable text">Crunchy greens, roasted veggies, and tangy sesame glaze. A colorful burst of flavor in every bite.</p>
+              <div class="price" aria-label="Price">$9.99</div>
+              <button class="btn primary" aria-label="Editable text">Order Now</button>
+            </article>
+
+            <!-- Featured card 2 -->
+            <article class="card" aria-label="Spicy Ramen">
+              <div class="product-image" aria-label="Spicy Ramen image">
+                <svg width="100%" height="120" viewBox="0 0 320 120" role="img" aria-label="Spicy Ramen illustration">
+                  <rect width="320" height="120" fill="#ffd6a5"></rect>
+                  <path d="M40 100 q60 -60 120 0 t120 0" fill="none" stroke="#e76f51" stroke-width="8" stroke-linecap="round"></path>
+                  <circle cx="120" cy="60" r="20" fill="#ff6b6b"></circle>
+                  <circle cx="200" cy="70" r="18" fill="#ff4d4d"></circle>
+                </svg>
+              </div>
+              <h3 aria-label="Editable text">Spicy Garlic Ramen</h3>
+              <p aria-label="Editable text">Silky noodles in a bold chili-garlic broth with onion crisp toppings.</p>
+              <div class="price" aria-label="Price">$11.49</div>
+              <button class="btn primary" aria-label="Editable text">Order Now</button>
+            </article>
+          </div>
+        </div>
+
+        <div class="hero-card" role="region" aria-label="Search and authentication" style="padding:1rem;">
+          <h2 style="margin:0 0 .25rem 0; font-size:1.05rem;" aria-label="Editable text">Search Menu</h2>
+          <div class="search" aria-label="Search bar" style="display:flex; gap:.5rem;">
+            <input class="input" type="search" placeholder="Search for meals, drinks, or desserts" aria-label="Search meals">
+            <button class="btn primary" aria-label="Editable text" style="flex:0 0 auto;">Search</button>
+          </div>
+
+          <div class="sep" aria-hidden="true"></div>
+
+          <div id="auth" aria-label="Authentication" style="margin-top:.5rem;">
+            <h3 style="margin:0 0 .5rem 0;" aria-label="Editable text">Sign Up</h3>
+            <form class="card" onsubmit="return false;" aria-label="Sign up form" style="padding:0.75rem;">
+              <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                <input class="input" type="text" placeholder="Full Name" aria-label="Full Name" style="flex:1 1 200px;">
+                <input class="input" type="email" placeholder="Email" aria-label="Email" style="flex:1 1 200px;">
+              </div>
+              <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.5rem;">
+                <input class="input" type="password" placeholder="Password" aria-label="Password" style="flex:1 1 200px;">
+                <input class="input" type="password" placeholder="Confirm" aria-label="Confirm Password" style="flex:1 1 200px;">
+              </div>
+              <button class="btn primary" style="width:100%; margin-top:.5rem;" aria-label="Editable text">Create Account</button>
+            </form>
+
+            <div class="sep" aria-hidden="true"></div>
+
+            <h3 style="margin:0 0 .5rem 0;" aria-label="Editable text">Log In</h3>
+            <form class="card" onsubmit="return false;" aria-label="Log in form" style="padding:0.75rem;">
+              <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                <input class="input" type="email" placeholder="Email" aria-label="Email" style="flex:1 1 200px;">
+                <input class="input" type="password" placeholder="Password" aria-label="Password" style="flex:1 1 200px;">
+              </div>
+              <button class="btn primary" style="width:100%; margin-top:.5rem;" aria-label="Editable text">Log In</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Listing -->
+    <section id="listing" class="section" aria-labelledby="listing-title">
+      <div class="section-title">
+        <h2 id="listing-title" aria-label="Editable text">Product Listing</h2>
+        <span class="kbd" aria-label="Shortcut for help">/</span>
+      </div>
+
+      <div class="filters" aria-label="Filters and sort options" style="margin-bottom:.75rem;">
+        <label for="category">Category</label>
+        <select id="category" class="input" aria-label="Filter by category" style="min-width:140px;">
+          <option>All</option><option>Bowls</option><option>Ramen</option><option>Desserts</option>
+        </select>
+
+        <label for="price" style="margin-left: .25rem;">Price</label>
+        <input id="price" class="input" type="range" min="0" max="25" value="15" aria-label="Maximum price" style="width:180px;">
+        <label for="rating" style="margin-left: .25rem;">Rating</label>
+        <select id="rating" class="input" aria-label="Filter by rating" style="min-width:120px;">
+          <option>Any</option><option>4★ &amp; up</option><option>4.5★ &amp; up</option>
+        </select>
+
+        <label for="sort" style="margin-left:auto;">Sort</label>
+        <select id="sort" class="input" aria-label="Sort options" style="min-width:180px;">
+          <option>Most popular</option><option>Newest</option><option>Price: low to high</option><option>Price: high to low</option>
+        </select>
+      </div>
+
+      <div class="grid" aria-label="Product grid">
+        <!-- Product 1 -->
+        <article class="card" aria-label="Product 1: Herb Lemon Chicken">
+          <div class="product-image" aria-label="Herb Lemon Chicken image">
+            <svg width="100%" height="120" viewBox="0 0 320 120" role="img" aria-label="Herb Lemon Chicken illustration">
+              <rect width="320" height="120" fill="#e2f7d8"></rect>
+              <circle cx="60" cy="60" r="22" fill="#8bd671"></circle>
+              <rect x="110" y="40" width="140" height="40" rx="8" fill="#ffd166"></rect>
+              <text x="60" y="105" font-family="Arial" font-size="12" fill="#1f2937">Herb Lemon Chicken</text>
+            </svg>
+          </div>
+          <h3 aria-label="Editable text">Herb Lemon Chicken</h3>
+          <p aria-label="Editable text">Marinated chicken grilled to perfection with a zesty lemon glaze. Served on fluffy garlic rice and seasonal veggies.</p>
+          <div class="price" aria-label="Price">$12.99</div>
+          <button class="btn primary" aria-label="Editable text">Order Now</button>
+        </article>
+
+        <!-- Product 2 -->
+        <article class="card" aria-label="Product 2: Berry Bliss Parfait">
+          <div class="product-image" aria-label="Berry Bliss Parfait image">
+            <svg width="100%" height="120" viewBox="0 0 320 120" role="img" aria-label="Berry Bliss Parfait illustration">
+              <rect width="320" height="120" fill="#fbe7ea"></rect>
+              <circle cx="40" cy="40" r="16" fill="#ff5a8a"></circle>
+              <circle cx="90" cy="60" r="12" fill="#ff9bd5"></circle>
+              <rect x="140" y="40" width="120" height="40" rx="8" fill="#ffd1dc"></rect>
+              <text x="60" y="105" font-family="Arial" font-size="12" fill="#1f1f1f">Berry Parfait</text>
+            </svg>
+          </div>
+          <h3 aria-label="Editable text">Berry Bliss Parfait</h3>
+          <p aria-label="Editable text">Layers of yogurt, crunchy granola, and a crown of fresh berries.</p>
+          <div class="price" aria-label="Price">$6.99</div>
+          <button class="btn primary" aria-label="Editable text">Order Now</button>
+        </article>
+
+        <!-- Product 3 -->
+        <article class="card" aria-label="Product 3: Spicy Sesame Tofu Bowl">
+          <div class="product-image" aria-label="Spicy Sesame Tofu Bowl image">
+            <svg width="100%" height="120" viewBox="0 0 320 120" role="img" aria-label="Spicy Sesame Tofu Bowl illustration">
+              <rect width="320" height="120" fill="#e5f0ff"></rect>
+              <rect x="40" y="40" width="60" height="40" rx="8" fill="#ffa726"></rect>
+              <circle cx="260" cy="60" r="18" fill="#ff6f61"></circle>
+              <text x="60" y="105" font-family="Arial" font-size="12" fill="#1f1f1f">Tofu Bowl</text>
+            </svg>
+          </div>
+          <h3 aria-label="Editable text">Spicy Sesame Tofu Bowl</h3>
+          <p aria-label="Editable text">Silky tofu, sesame glaze, and crisp veggies over jasmine rice.</p>
+          <div class="price" aria-label="Price">$9.49</div>
+          <button class="btn primary" aria-label="Editable text">Order Now</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- Product Detail -->
+    <section id="detail" class="section" aria-labelledby="detail-title">
+      <div class="section-title">
+        <h2 id="detail-title" aria-label="Editable text">Product Detail</h2>
+        <span class="kbd" aria-label="Shortcut for help">D</span>
+      </div>
+
+      <div class="grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="card" aria-label="Product images" style="padding:0;">
+          <div class="product-image" aria-label="Main product image" style="height:260px;">
+            <svg width="100%" height="260" viewBox="0 0 600 260" role="img" aria-label="Product collage">
+              <rect width="600" height="260" fill="#fff3e0"></rect>
+              <circle cx="150" cy="120" r="60" fill="#ffd166"></circle>
+              <rect x="260" y="60" width="260" height="120" rx="12" fill="#8ec5fc"></rect>
+              <circle cx="420" cy="130" r="28" fill="#fff"></circle>
+            </svg>
+          </div>
+          <div class="sep" aria-hidden="true"></div>
+          <div class="grid" style="grid-template-columns:1fr 1fr;">
+            <div aria-label="Thumbnail 1" class="product-image" style="height:90px;">
+              <svg width="100%" height="90" viewBox="0 0 180 90" role="img" aria-label="Thumbnail 1">
+                <rect width="180" height="90" fill="#f9f9f9"></rect>
+                <circle cx="60" cy="45" r="12" fill="#6ee7b7"></circle>
+              </svg>
+            </div>
+            <div aria-label="Thumbnail 2" class="product-image" style="height:90px;">
+              <svg width="100%" height="90" viewBox="0 0 180 90" role="img" aria-label="Thumbnail 2">
+                <rect width="180" height="90" fill="#f3f4f6"></rect>
+                <rect x="40" y="20" width="100" height="50" rx="8" fill="#93c5fd"></rect>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Product description" style="padding:1rem;">
+          <h3 aria-label="Editable text">Herb Lemon Chicken</h3>
+          <p aria-label="Editable text">Marinated chicken grilled to perfection with a zesty lemon glaze. Served on fluffy garlic rice and seasonal veggies. A bright, comforting favorite you’ll crave again and again.</p>
+          <ul aria-label="Key features" style="padding-left:1.1rem;">
+            <li>Prep time: 15 minutes</li>
+            <li>Gluten-free option</li>
+            <li>Serves 1</li>
+          </ul>
+          <div class="sep" aria-hidden="true"></div>
+          <div style="display:flex; gap:.5rem; align-items:center;">
+            <button class="btn primary" aria-label="Editable text">Add to Cart</button>
+            <button class="btn secondary" aria-label="Editable text" title="Wishlist">Wishlist</button>
+          </div>
+          <div class="sep" aria-hidden="true"></div>
+          <div aria-label="Reviews" id="reviews">
+            <h4 style="margin:0 0 .5rem 0;">Reviews</h4>
+            <p style="color:var(--muted); margin:.25rem 0;" aria-label="Editable text">"Delicious and bright flavors. The lemon glaze is perfect!" - A. Chen</p>
+            <p style="color:var(--muted); margin:.25rem 0;" aria-label="Editable text">"Cooked to order. Fresh ingredients and nice portion." - S. Patel</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cart -->
+    <section id="cart" class="section" aria-labelledby="cart-title">
+      <div class="section-title">
+        <h2 id="cart-title" aria-label="Editable text">Cart</h2>
+        <span class="kbd" aria-label="Shortcut for help">C</span>
+      </div>
+
+      <div class="card" aria-label="Cart items">
+        <table class="cart-table" aria-label="Cart items table">
+          <thead>
+            <tr><th>Item</th><th style="width:120px;">Qty</th><th style="width:120px;">Price</th><th style="width:120px;">Subtotal</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Herb Lemon Chicken</td>
+              <td>
+                <div class="qty" aria-label="Quantity">
+                  <button aria-label="Editable text">-</button><span>1</span><button aria-label="Editable text">+</button>
+                </div>
+              </td>
+              <td>$12.99</td>
+              <td>$12.99</td>
+            </tr>
+            <tr>
+              <td>Berry Bliss Parfait</td>
+              <td>
+                <div class="qty" aria-label="Quantity">
+                  <button aria-label="Editable text">-</button><span>2</span><button aria-label="Editable text">+</button>
+                </div>
+              </td>
+              <td>$6.99</td>
+              <td>$13.98</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="sep" aria-hidden="true"></div>
+        <div style="display:flex; justify-content: space-between; align-items:center;">
+          <strong class="sum" aria-label="Total price">Total: $26.97</strong>
+          <a href="#checkout" class="btn primary" aria-label="Editable text" style="min-width:180px; text-align:center;">Checkout</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Checkout -->
+    <section id="checkout" class="section" aria-labelledby="checkout-title">
+      <div class="section-title">
+        <h2 id="checkout-title" aria-label="Editable text">Checkout</h2>
+        <span class="kbd" aria-label="Shortcut for help">Checkout</span>
+      </div>
+
+      <div class="grid" style="grid-template-columns: 1fr 1fr;">
+        <form class="card" aria-label="Delivery address" style="padding:1rem;">
+          <h3 style="margin-top:0;" aria-label="Editable text">Delivery Address</h3>
+          <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+            <input class="input" type="text" placeholder="Full name" aria-label="Full name" style="flex:1 1 200px;">
+            <input class="input" type="tel" placeholder="Phone" aria-label="Phone" style="flex:1 1 200px;">
+          </div>
+          <input class="input" type="text" placeholder="Address" aria-label="Address" style="width:100%; margin-top:.5rem;">
+          <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.5rem;">
+            <input class="input" type="text" placeholder="City" aria-label="City" style="flex:1 1 150px;">
+            <input class="input" type="text" placeholder="ZIP" aria-label="ZIP" style="flex:1 1 150px;">
+          </div>
+        </form>
+
+        <section class="card" aria-label="Payment options" style="padding:1rem;">
+          <h3 style="margin-top:0;" aria-label="Editable text">Payment</h3>
+          <div role="group" aria-label="Payment methods" style="display:flex; flex-direction:column; gap:.5rem;">
+            <label><input type="radio" name="pay" checked="" aria-label="Credit Card"> Credit Card (Visa, MasterCard)</label>
+            <label><input type="radio" name="pay" aria-label="PayPal"> PayPal</label>
+            <label><input type="radio" name="pay" aria-label="Apple Pay"> Apple Pay</label>
+          </div>
+          <p class="muted" style="font-size:.9rem; margin-top:.75rem;" aria-label="Editable text">Payments are processed securely via your chosen gateway.</p>
+        </section>
+      </div>
+
+      <div class="card" aria-label="Order summary" style="margin-top:.75rem;">
+        <h3 style="margin-top:0;" aria-label="Editable text">Order Summary</h3>
+        <div style="display:flex; justify-content: space-between;">
+          <span>Herb Lemon Chicken</span><span>$12.99</span>
+        </div>
+        <div style="display:flex; justify-content: space-between;">
+          <span>Berry Bliss Parfait x2</span><span>$13.98</span>
+        </div>
+        <div class="sep" aria-hidden="true"></div>
+        <div style="display:flex; justify-content: space-between; font-weight:700;">
+          <span>Total</span><span>$26.97</span>
+        </div>
+        <button class="btn primary" style="width:100%; margin-top:.75rem;" aria-label="Editable text" type="button">Checkout</button>
+        <p style="font-size:.8rem; color: var(--muted); margin-top:.5rem;" aria-label="Editable text">
+          Need help? Track your order in Profile after checkout.
+        </p>
+      </div>
+    </section>
+
+    <!-- Profile -->
+    <section id="profile" class="section" aria-labelledby="profile-title">
+      <div class="section-title">
+        <h2 id="profile-title" aria-label="Editable text">Profile</h2>
+        <span class="kbd" aria-label="Shortcut for help">P</span>
+      </div>
+
+      <div class="grid" style="grid-template-columns: 1fr 1fr;">
+        <section class="card" aria-label="User information" style="padding:1rem;">
+          <h3 aria-label="Editable text">Your Information</h3>
+          <p aria-label="Editable text">Name: <strong>Alex Rider</strong></p>
+          <p aria-label="Editable text">Email: <strong>alex@example.com</strong></p>
+          <button class="btn secondary" aria-label="Editable text">Edit</button>
+        </section>
+
+        <section class="card" aria-label="Order history" style="padding:1rem;">
+          <h3 aria-label="Editable text">Order History</h3>
+          <ul style="margin:0; padding-left:1rem;">
+            <li>Herb Lemon Chicken • Completed • 2d ago</li>
+            <li>Spicy Sesame Tofu Bowl • Delivered • 5d ago</li>
+          </ul>
+          <button class="btn secondary" aria-label="Editable text" style="margin-top:.5rem;">Track My Order</button>
+        </section>
+      </div>
+
+      <div class="card" aria-label="Settings" style="margin-top:.75rem; padding:1rem;">
+        <h3 aria-label="Editable text">Settings</h3>
+        <label style="display:flex; align-items:center; gap:.5rem;">
+          <input type="checkbox" aria-label="Enable push notifications" checked=""> Enable push notifications
+        </label>
+        <p style="color:var(--muted); font-size:.9rem; margin-top:.25rem;" aria-label="Editable text">Receive real-time updates on your orders.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer aria-label="Footer" role="contentinfo">
+    <p aria-label="Editable text">Demo design • Mobile-first layout • WCAG-conscious typography and controls</p>
+  </footer>
+
+</body></html>
