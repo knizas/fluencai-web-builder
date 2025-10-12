@@ -1,5 +1,8 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+
+export const dynamic = 'force-dynamic'
+
+import React, { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { authedFetch } from '@/lib/utils/authedFetch'
@@ -7,7 +10,8 @@ import { firebaseAuth } from '@/lib/firebase/client'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { Loader2, Mail, Lock } from 'lucide-react'
 
-export default function SignInPage() {
+// ⤵️ this is your old component, just renamed to *Inner*
+function SignInInner() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const sp = useSearchParams()
@@ -116,5 +120,14 @@ export default function SignInPage() {
         </div>
       </section>
     </main>
+  )
+}
+
+// ⤵️ The Suspense wrapper is the new default export
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<main style={{ padding: 40 }}>Loading…</main>}>
+      <SignInInner />
+    </Suspense>
   )
 }

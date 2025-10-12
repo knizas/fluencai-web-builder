@@ -1,6 +1,6 @@
 'use client'
-
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+export const dynamic = 'force-dynamic'
+import React, { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import {
@@ -16,6 +16,7 @@ import {
 import { applyStyleTokens } from '@/lib/theme-tokens'
 import { getProject, upsertProject, newId, type Project } from '@/lib/projects'
 import { authedFetch } from '@/lib/utils/authedFetch'
+
 
 /* ---- Device constants ---- */
 const PHONE_W = 375, PHONE_H = 812
@@ -125,7 +126,7 @@ function FilePicker({
   )
 }
 
-export default function WebGenPage(){
+function WebGenPageInner(){
   /* theme tokens via URL ?p,?s,?b */
   const search = useSearchParams()
   const router = useRouter()
@@ -1246,4 +1247,11 @@ function collectLockedSections(doc: Document){
     locks.push({ id, label, html: el.outerHTML })
   })
   return locks
+}
+export default function WebGenPage() {
+  return (
+    <Suspense fallback={<main style={{ padding: 40 }}>Loading…</main>}>
+      <WebGenPageInner />
+    </Suspense>
+  )
 }
