@@ -62,7 +62,7 @@ export const ImageNode = memo(({ id, data }: NodeProps) => {
                 {data.imageUrl ? (
                     <div style={{ position: 'relative' }}>
                         <img
-                            src={data.imageUrl}
+                            src={data.imageUrl as string}
                             alt="Uploaded preview"
                             style={{
                                 width: '100%',
