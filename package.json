@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@xyflow/react": "^12.3.6",
     "cloudinary": "^2.7.0",
     "firebase": "^10.14.1",
     "firebase-admin": "^13.5.0",
@@ -18,7 +19,8 @@
     "openai": "^5.23.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "sanitize-html": "^2.13.0"
+    "sanitize-html": "^2.13.0",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@types/node": "24.5.2",

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {
   Search, Activity, ShoppingBag, CalendarDays, Truck, MessagesSquare, GraduationCap, CreditCard,
   HeartPulse, Plane, Utensils, Music, Building2, Store, PlayCircle, Gamepad2, ListChecks, FileText,
-  CloudSun, Plus, Trash2
+  CloudSun, Plus, Trash2, Coins
 } from 'lucide-react'
 import RouteTransitions from '../../transition'
 import { useRouter } from 'next/navigation'
@@ -324,28 +324,28 @@ export default function HomePage() {
   const [display, setDisplay] = React.useState('')
 
   const templates = React.useMemo(() => [
-    { slug:'fitness', name:'Fitness', desc:'Programs, workouts, progress tracking' },
-    { slug:'ecommerce', name:'E-commerce', desc:'Catalog, cart, checkout' },
-    { slug:'travel', name:'Travel', desc:'Trips, itineraries, bookings' },
-    { slug:'food', name:'Food Delivery', desc:'Menus, checkout, couriers' },
-    { slug:'finance', name:'Finance', desc:'Budgets, expenses, insights' },
-    { slug:'health', name:'Health & Wellness', desc:'Habits, mindfulness, tracking' },
-    { slug:'news', name:'News', desc:'Feeds, topics, bookmarks' },
-    { slug:'music', name:'Music', desc:'Playlists, player, library' },
-    { slug:'learning', name:'Learning', desc:'Courses, progress, quizzes' },
-    { slug:'events', name:'Events', desc:'Calendar, RSVPs, tickets' },
-    { slug:'photos', name:'Photography', desc:'Galleries, albums, share' },
-    { slug:'realestate', name:'Real Estate', desc:'Listings, maps, favorites' },
-    { slug:'social', name:'Social', desc:'Feeds, messages, profile' },
-    { slug:'marketplace', name:'Marketplace', desc:'Listings, cart, orders' },
-    { slug:'streaming', name:'Streaming', desc:'Home, browse, player' },
-    { slug:'gaming', name:'Gaming', desc:'Library, store, profile' },
-    { slug:'productivity', name:'Productivity', desc:'Tasks, calendar, projects' },
-    { slug:'notes', name:'Notes', desc:'Notes, folders, search' },
-    { slug:'weather', name:'Weather', desc:'Today, forecast, locations' }
+    { slug: 'fitness', name: 'Fitness', desc: 'Programs, workouts, progress tracking' },
+    { slug: 'ecommerce', name: 'E-commerce', desc: 'Catalog, cart, checkout' },
+    { slug: 'travel', name: 'Travel', desc: 'Trips, itineraries, bookings' },
+    { slug: 'food', name: 'Food Delivery', desc: 'Menus, checkout, couriers' },
+    { slug: 'finance', name: 'Finance', desc: 'Budgets, expenses, insights' },
+    { slug: 'health', name: 'Health & Wellness', desc: 'Habits, mindfulness, tracking' },
+    { slug: 'news', name: 'News', desc: 'Feeds, topics, bookmarks' },
+    { slug: 'music', name: 'Music', desc: 'Playlists, player, library' },
+    { slug: 'learning', name: 'Learning', desc: 'Courses, progress, quizzes' },
+    { slug: 'events', name: 'Events', desc: 'Calendar, RSVPs, tickets' },
+    { slug: 'photos', name: 'Photography', desc: 'Galleries, albums, share' },
+    { slug: 'realestate', name: 'Real Estate', desc: 'Listings, maps, favorites' },
+    { slug: 'social', name: 'Social', desc: 'Feeds, messages, profile' },
+    { slug: 'marketplace', name: 'Marketplace', desc: 'Listings, cart, orders' },
+    { slug: 'streaming', name: 'Streaming', desc: 'Home, browse, player' },
+    { slug: 'gaming', name: 'Gaming', desc: 'Library, store, profile' },
+    { slug: 'productivity', name: 'Productivity', desc: 'Tasks, calendar, projects' },
+    { slug: 'notes', name: 'Notes', desc: 'Notes, folders, search' },
+    { slug: 'weather', name: 'Weather', desc: 'Today, forecast, locations' }
   ], [])
 
-  React.useEffect(() => { try { setRecents(listProjects()) } catch {} }, [])
+  React.useEffect(() => { try { setRecents(listProjects()) } catch { } }, [])
 
   const words = ['What do you want to create?'] as const
   React.useEffect(() => {
@@ -366,19 +366,19 @@ export default function HomePage() {
 
   if (loading || !user) {
     return (
-      <main className="container page" style={{ display:'grid', placeItems:'center', minHeight:'60vh' }}>
-        <div className="panel-glass" style={{ padding:16, borderRadius:12 }}>Loading…</div>
+      <main className="container page" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh' }}>
+        <div className="panel-glass" style={{ padding: 16, borderRadius: 12 }}>Loading…</div>
       </main>
     )
   }
 
-  function onOpenProject(p: Project){
+  function onOpenProject(p: Project) {
     router.push(`/webgen?project=${encodeURIComponent(p.id)}`)
   }
-  function onDeleteProject(e: React.MouseEvent, p: Project){
+  function onDeleteProject(e: React.MouseEvent, p: Project) {
     e.preventDefault(); e.stopPropagation()
     const ok = window.confirm(`Delete "${p.name}"? This cannot be undone.`)
-    if(!ok) return
+    if (!ok) return
     deleteProject(p.id)
     setRecents(prev => prev.filter(x => x.id !== p.id))
   }
@@ -390,35 +390,21 @@ export default function HomePage() {
     try {
       const res = await authedFetch('/api/credits/deduct', {
         method: 'POST',
-        headers: { 'Content-Type':'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: 10, reason: 'starter-description' })
       })
       if (!res.ok) {
-        const j = await res.json().catch(()=>({}))
+        const j = await res.json().catch(() => ({}))
         alert(j.error || 'Not enough credits'); return
       }
       router.push(`/webgen?starter=1&prompt=${encodeURIComponent(desc)}`)
-    } catch (e:any) {
+    } catch (e: any) {
       alert(e?.message || 'Please sign in to continue.')
     }
   }
 
-  async function onPickTemplate(slug: string) {
-    const brief = TEMPLATE_STARTERS[slug]
-    try {
-      const res = await authedFetch('/api/credits/deduct', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ amount: 10, reason: `starter-template:${slug}` })
-      })
-      if (!res.ok) {
-        const j = await res.json().catch(()=>({}))
-        alert(j.error || 'Not enough credits'); return
-      }
-      router.push(`/webgen?starter=1&template=${encodeURIComponent(slug)}&prompt=${encodeURIComponent(brief)}`)
-    } catch (e:any) {
-      alert(e?.message || 'Please sign in to continue.')
-    }
+  function onPickTemplate(slug: string) {
+    router.push(`/canvas?template=${slug}`)
   }
 
   return (
@@ -427,12 +413,12 @@ export default function HomePage() {
       <main className="container page">
         <div className="shell">
           <section className="hero">
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-              <div style={{display:'flex',alignItems:'center',gap:10}}>
-                <img src="/logo.svg" alt="Fluencai" width={34} height={34} />
-                <h1 style={{margin:0,fontSize:36,lineHeight:1.15,color:'#000'}}>{display}<span style={{opacity:.4}}>▌</span></h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-6)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <img src="/logo.svg" alt="Fluencai" width={34} height={34} style={{ borderRadius: 8 }} />
+                <h1 style={{ margin: 0, fontSize: 'var(--text-4xl)', lineHeight: 1.15, color: 'var(--ink)', fontWeight: 900 }}>{display}<span style={{ opacity: .4 }}>▌</span></h1>
               </div>
-              <Link href="/webgen" className="btn-gradient" data-transition>New App Project</Link>
+              <Link href="/canvas" className="btn-cta" data-transition style={{ textDecoration: 'none', background: '#000 !important', backgroundColor: '#000', color: '#fff' }}>New Canvas Project</Link>
             </div>
 
             <div className="tabs">
@@ -440,122 +426,166 @@ export default function HomePage() {
               <button className="tab active">Templates</button>
             </div>
 
-            <div className="searchWrap">
-              <Search size={18} style={{opacity:.7}}/>
+            <div className="searchWrap" style={{ marginTop: 'var(--space-6)' }}>
+              <Search size={18} style={{ opacity: .7 }} />
               <input
                 value={q}
-                onChange={(e)=>setQ((e.target as HTMLInputElement).value)}
-                placeholder="Describe your project"
-                style={{border:'none',outline:'none',flex:1,fontSize:15}}
+                onChange={(e) => setQ((e.target as HTMLInputElement).value)}
+                placeholder="Describe your project..."
+                style={{ border: 'none', outline: 'none', flex: 1, fontSize: 'var(--text-base)', fontWeight: 500 }}
+                onKeyDown={(e) => e.key === 'Enter' && onGo()}
               />
-              <button type="button" className="btn" onClick={onGo}>Go</button>
+              <button type="button" className="btn-cta" onClick={onGo} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#000', backgroundColor: '#000', color: '#fff' }}>Go (10 <Coins size={14} />)</button>
             </div>
 
-            <div className="quickRow">
+            <div className="quickRow" style={{ marginTop: 'var(--space-6)' }}>
               {[
-                {slug:'fitness', label:'Fitness App', icon:<Activity size={18}/>},
-                {slug:'ecommerce', label:'E-commerce App', icon:<ShoppingBag size={18}/>},
-                {slug:'events', label:'Booking App', icon:<CalendarDays size={18}/>},
-                {slug:'food', label:'Delivery App', icon:<Truck size={18}/>},
-                {slug:'social', label:'Social App', icon:<MessagesSquare size={18}/>},
-                {slug:'learning', label:'Education App', icon:<GraduationCap size={18}/>},
-                {slug:'finance', label:'Finance App', icon:<CreditCard size={18}/>},
-                {slug:'health', label:'Wellness App', icon:<HeartPulse size={18}/>},
-                {slug:'travel', label:'Travel App', icon:<Plane size={18}/>},
-                {slug:'food', label:'Food App', icon:<Utensils size={18}/>},
-                {slug:'music', label:'Music App', icon:<Music size={18}/>},
-                {slug:'realestate', label:'Real Estate App', icon:<Building2 size={18}/>},
-                {slug:'marketplace', label:'Marketplace App', icon:<Store size={18}/>},
-                {slug:'streaming', label:'Streaming App', icon:<PlayCircle size={18}/>},
-                {slug:'gaming', label:'Gaming App', icon:<Gamepad2 size={18}/>},
-                {slug:'productivity', label:'Productivity App', icon:<ListChecks size={18}/>},
-                {slug:'notes', label:'Notes App', icon:<FileText size={18}/>},
-                {slug:'weather', label:'Weather App', icon:<CloudSun size={18}/>},
-              ].map((item,i)=>(
+                { slug: 'fitness', label: 'Fitness', icon: <Activity size={18} color="#000" /> },
+                { slug: 'ecommerce', label: 'E-commerce', icon: <ShoppingBag size={18} color="#000" /> },
+                { slug: 'events', label: 'Booking', icon: <CalendarDays size={18} color="#000" /> },
+                { slug: 'food', label: 'Delivery', icon: <Truck size={18} color="#000" /> },
+                { slug: 'social', label: 'Social', icon: <MessagesSquare size={18} color="#000" /> },
+                { slug: 'learning', label: 'Education', icon: <GraduationCap size={18} color="#000" /> },
+                { slug: 'finance', label: 'Finance', icon: <CreditCard size={18} color="#000" /> },
+                { slug: 'health', label: 'Wellness', icon: <HeartPulse size={18} color="#000" /> },
+                { slug: 'travel', label: 'Travel', icon: <Plane size={18} color="#000" /> },
+                { slug: 'music', label: 'Music', icon: <Music size={18} color="#000" /> },
+                { slug: 'realestate', label: 'Real Estate', icon: <Building2 size={18} color="#000" /> },
+                { slug: 'marketplace', label: 'Marketplace', icon: <Store size={18} color="#000" /> },
+                { slug: 'streaming', label: 'Streaming', icon: <PlayCircle size={18} color="#000" /> },
+                { slug: 'gaming', label: 'Gaming', icon: <Gamepad2 size={18} color="#000" /> },
+                { slug: 'productivity', label: 'Productivity', icon: <ListChecks size={18} color="#000" /> },
+                { slug: 'notes', label: 'Notes', icon: <FileText size={18} color="#000" /> },
+                { slug: 'weather', label: 'Weather', icon: <CloudSun size={18} color="#000" /> },
+              ].map((item, i) => (
                 <button
                   key={i}
                   type="button"
                   className="quick"
                   data-transition
-                  onClick={()=>onPickTemplate(item.slug)}
-                  style={{ background:'transparent', border:'none', padding:0, cursor:'pointer' }}
+                  onClick={() => onPickTemplate(item.slug)}
+                  style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
+                  aria-label={`Start with ${item.label} template`}
                 >
-                  <div className="dot">{item.icon}</div>
-                  <div style={{fontSize:12,opacity:.75,textAlign:'center'}}>{item.label}</div>
+                  <div className="dot" style={{ background: 'rgba(124,108,240,0.1)', marginBottom: 6 }}>{item.icon}</div>
+                  <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textAlign: 'center', color: 'var(--ink)' }}>{item.label}</div>
                 </button>
               ))}
             </div>
           </section>
 
-          <section style={{marginTop:18}}>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
-              <h2 style={{margin:0,fontSize:20,fontWeight:900}}>Recent designs</h2>
-              <Link href="/webgen" className="btn-outline" data-transition>New</Link>
+          <section style={{ marginTop: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900 }}>Recent designs</h2>
+              <Link href="/canvas" className="btn-outline" data-transition style={{ textDecoration: 'none' }}>New</Link>
             </div>
 
             <div className="grid">
-              <Link href="/webgen" data-transition className="card" style={{overflow:'hidden', display:'block'}}>
-                <div style={{width:'100%',height:120,display:'grid',placeItems:'center',background:'#fff',border:'1px solid #eee'}}>
-                  <Plus size={44} strokeWidth={1.5} color="#000" />
+              {/* Start New Project Card */}
+              <div
+                onClick={() => {
+                  const el = document.getElementById('project-brief-input');
+                  if (el) el.focus();
+                }}
+                className="glass-card"
+                style={{
+                  padding: '20px',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  minHeight: '160px',
+                  border: '2px dashed rgba(124,108,240,0.3)',
+                  background: 'linear-gradient(135deg, rgba(124,108,240,0.08), rgba(124,108,240,0.02))',
+                  position: 'relative',
+                  transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                  boxShadow: 'none'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-4px)'
+                  e.currentTarget.style.borderColor = 'rgba(124,108,240,0.6)'
+                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(124,108,240,0.15), rgba(124,108,240,0.05))'
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(124,108,240,0.15)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.borderColor = 'rgba(124,108,240,0.3)'
+                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(124,108,240,0.08), rgba(124,108,240,0.02))'
+                  e.currentTarget.style.boxShadow = 'none'
+                }}
+              >
+                <div style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '14px',
+                  background: 'rgba(124,108,240,0.1)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  marginBottom: 12
+                }}>
+                  <Plus size={24} color="#7C6CF0" strokeWidth={3} />
                 </div>
-                <div style={{padding:'8px 10px'}}>
-                  <div style={{fontWeight:700}}>Start a new project</div>
-                  <div style={{opacity:.6,fontSize:12}}>Create from scratch</div>
+                <div>
+                  <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 6, color: '#111' }}>Start New Project</h3>
+                  <p style={{ fontSize: 13, opacity: 0.7, lineHeight: 1.4, fontWeight: 500 }}>
+                    Create a new website from scratch or using our AI templates.
+                  </p>
                 </div>
-              </Link>
+              </div>
 
-              {recents.map((p)=>(
-  <div key={p.id} style={{ display:'grid', gap:6 }}>
-    {/* Card */}
-    <div
-      className="card"
-      style={{ overflow:'hidden', cursor:'pointer', position:'relative' }}
-      onClick={()=>onOpenProject(p)}
-      role="button"
-    >
-      {/* Delete */}
-      <button
-        onClick={(e)=>{ e.preventDefault(); e.stopPropagation(); onDeleteProject(e, p) }}
-        title="Delete project"
-        aria-label="Delete project"
-        style={{
-          position:'absolute', top:8, right:8, zIndex:2,
-          border:'1px solid #eee', background:'#fff', borderRadius:8, padding:6,
-          display:'inline-flex', alignItems:'center', justifyContent:'center'
-        }}
-      >
-        <Trash2 size={14} />
-      </button>
+              {recents.map((p) => (
+                <div key={p.id} style={{ display: 'grid', gap: 6 }}>
+                  {/* Card */}
+                  <div
+                    className="card"
+                    style={{ overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
+                    onClick={() => onOpenProject(p)}
+                    role="button"
+                  >
+                    {/* Delete */}
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDeleteProject(e, p) }}
+                      title="Delete project"
+                      aria-label="Delete project"
+                      style={{
+                        position: 'absolute', top: 8, right: 8, zIndex: 2,
+                        border: '1px solid #eee', background: '#fff', borderRadius: 8, padding: 6,
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
+                      }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
 
-      {/* Thumbnail */}
-      <div style={{
-        width:'100%', height:120, display:'grid', placeItems:'center',
-        background:'#fff', border:'1px solid #eee'
-      }}>
-        {p.thumbnail
-          ? <img src={p.thumbnail} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
-          : <div style={{opacity:.5,fontSize:12}}>No preview</div>}
-      </div>
-    </div>
+                    {/* Thumbnail */}
+                    <div style={{
+                      width: '100%', height: 120, display: 'grid', placeItems: 'center',
+                      background: '#fff', border: '1px solid #eee'
+                    }}>
+                      {p.thumbnail
+                        ? <img src={p.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        : <div style={{ opacity: .5, fontSize: 12 }}>No preview</div>}
+                    </div>
+                  </div>
 
-    {/* Name BELOW (outside the card) */}
-    <div
-      title={p.name || 'Untitled project'}
-      style={{
-        fontSize:12, fontWeight:700, textAlign:'center',
-        whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
-        padding:'0 4px'
-      }}
-    >
-      {p.name || 'Untitled project'}
-    </div>
-  </div>
-))}
+                  {/* Name BELOW (outside the card) */}
+                  <div
+                    title={p.name || 'Untitled project'}
+                    style={{
+                      fontSize: 12, fontWeight: 700, textAlign: 'center',
+                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                      padding: '0 4px'
+                    }}
+                  >
+                    {p.name || 'Untitled project'}
+                  </div>
+                </div>
+              ))}
 
             </div>
           </section>
-        </div>
-      </main>
+        </div >
+      </main >
     </>
   )
 }
