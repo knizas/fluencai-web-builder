@@ -405,30 +405,24 @@ LAYOUT & SPACING:
 - Generous whitespace and breathing room
 - Clear visual hierarchy with size/weight/color
 - Consistent padding and margins (use 8px grid)
-- Card-based layouts with subtle shadows
-- Smooth, flowing sections that guide the eye
-
 MOBILE NAVIGATION (PREMIUM REVAMP):
 - HEADER DESIGN: Fixed/Sticky at top (position: sticky; top: 0; z-index: 1000).
   - Max Height: 60px.
-  - Style: Glassmorphism (background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.1)).
+  - Style: Transparent Glass (background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1)).
   - Layout: Flex row, justify-content: space-between, align-items: center, padding: 0 20px.
+  - NO SOLID BACKGROUNDS. NO WHITE BARS.
 
 - HAMBURGER MENU (CSS ONLY):
   - Use the "Checkbox Hack" (<input type="checkbox" id="nav-toggle" hidden>)
-  - Menu Button: A <label for="nav-toggle"> containing a Lucide <i data-lucide="menu"></i> icon (24px).
+  - Menu Button: A <label for="nav-toggle"> containing a Lucide <i data-lucide="menu"></i> (color: match brand/text).
   - Close Button: Inside the open menu, a <label for="nav-toggle"> with <i data-lucide="x"></i>.
+  - IMPORTANT: Do NOT put a background color on the menu icon itself.
 
 - FULL SCREEN OVERLAY:
   - When checked (#nav-toggle:checked ~ .nav-menu), show a Full Screen Overlay.
-  - Style: Fixed position (inset: 0), z-index: 999, background: white (or brand color).
+  - Style: Fixed position (inset: 0), z-index: 999, background: white (or extracted brand background).
   - Animation: Slide in from right (transform: translateX(0%)) or Fade In (opacity: 1). Default state: translateX(100%) or opacity: 0.
   - Links: Centered vertically and horizontally, large font size (24px+), gap 24px.
-  
-- DO NOT:
-  - Do NOT stack logo and menu vertically.
-  - Do NOT show a tiny list of links.
-  - Do NOT forget the z-index (header must be above everything).
 
 HERO SECTION (CRITICAL):
 - The first section MUST be a large Hero section (min-height: 60vh to 80vh).
@@ -445,18 +439,22 @@ ICONS & VISUALS:
   - Popular icons: check, star, arrow-right, menu, x, heart, shopping-cart, user, mail, phone
   - Style icons with CSS: color, width, height, stroke-width
   
-- HERO IMAGES: Use large editable placeholder boxes
-  - Style: border: 3px dashed #ccc; padding: 100px; text-align: center; background: #f5f5f5
-  - Text: "[Click to Upload Hero Image]" or similar
-  - Min height: 400px for desktop, 300px mobile
-  
-- FEATURE SECTIONS: Use icon-based cards, NOT photo galleries
+
+- HERO & IMAGES (CRITICAL FOR EDITING):
+  - You MUST use <img> tags for all images so they are clickable/editable.
+  - DO NOT use divs or background-images for the main hero image.
+  - Placeholder Source: Use an abstract placeholder image:
+    - "https://placehold.co/1200x800/EEE/31343C?text=Upload+Hero+Image"
+    - "https://placehold.co/600x400/EEE/31343C?text=Image"
+  - Style: rounded corners, shadow-lg, object-fit: cover.
+
+- FEATURE SECTIONS: Use icon-based cards.
   - Each feature: icon + heading + description
   - Icons should be colored to match brand
-  
-- BACKGROUNDS: Use CSS gradients or solid colors, NOT stock photos
-  - Example: background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
 
+- BACKGROUNDS:
+  - Use the EXTRACTED BACKGROUND COLOR for the <body> and section backgrounds.
+  - Do NOT default to specific gradients unless they match the inspiration.
 
 BRANDING:
 - Include a prominent LOGO placeholder at top (use styled company name text)
@@ -508,21 +506,22 @@ You have ${assetsFiles.length} reference image(s) attached. Your task:
    - Overall mood (minimal/playful/corporate/luxury)
 
 REMINDER: Use Lucide Icons via CDN, NOT stock photos. Hero should be editable placeholder.
-\n` : ''}
-BRANDING:
-- Include a prominent LOGO placeholder at top (use styled company name text)
-- Ensure logo is easily replaceable/editable
-- Apply brand colors throughout the design
+\n` : ''
+      }
+    BRANDING:
+    - Include a prominent LOGO placeholder at top(use styled company name text)
+      - Ensure logo is easily replaceable / editable
+        - Apply brand colors throughout the design
 
 CONTENT GUIDELINES:
-- Write ENGAGING, professional copy (not generic Lorem Ipsum)
-- Use persuasive headings and clear CTAs
-- Include realistic placeholder content
-- Make it feel authentic and purposeful
+    - Write ENGAGING, professional copy(not generic Lorem Ipsum)
+      - Use persuasive headings and clear CTAs
+        - Include realistic placeholder content
+          - Make it feel authentic and purposeful
 
-DELIVERABLE:
-Complete, beautiful HTML with modern inline CSS. Make it STUNNING.
-${locks.length ? `\n\nLOCKED SECTIONS (preserve these):\n${locks.map(l => `  <!--WG_LOCK:${l.id}-->  (${l.label})`).join('\n')}\n` : ''}`
+    DELIVERABLE:
+    Complete, beautiful HTML with modern inline CSS.Make it STUNNING.
+      ${locks.length ? `\n\nLOCKED SECTIONS (preserve these):\n${locks.map(l => `  <!--WG_LOCK:${l.id}-->  (${l.label})`).join('\n')}\n` : ''} `
 
     // Build user content: prompt + images
     const userContent: Array<any> = [{ type: 'input_text', text: instructionsText }]
@@ -546,11 +545,11 @@ ${locks.length ? `\n\nLOCKED SECTIONS (preserve these):\n${locks.map(l => `  <!-
     // 🔒 Replace lock placeholders with original HTML (fallback: append to end of body)
     if (locks.length) {
       for (const l of locks) {
-        const token = `<!--WG_LOCK:${l.id}-->`
+        const token = `< !--WG_LOCK:${l.id} --> `
         if (html.includes(token)) {
           html = html.replaceAll(token, l.html)
         } else {
-          html = html.replace(/<\/body>/i, `${l.html}\n</body>`)
+          html = html.replace(/<\/body>/i, `${l.html} \n </body>`)
         }
       }
     }
