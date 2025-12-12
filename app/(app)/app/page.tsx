@@ -483,10 +483,7 @@ export default function HomePage() {
             <div className="grid">
               {/* Start New Project Card */}
               <div
-                onClick={() => {
-                  const el = document.getElementById('project-brief-input');
-                  if (el) el.focus();
-                }}
+                onClick={() => router.push('/canvas')}
                 className="glass-card"
                 style={{
                   padding: '20px',

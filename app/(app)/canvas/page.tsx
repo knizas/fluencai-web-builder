@@ -192,6 +192,34 @@ function CanvasWebGenPageInner() {
         }
     }
 
+    /* Save project */
+    async function handleSave() {
+        if (saveState === 'saving') return
+        setSaveState('saving')
+
+        try {
+            const id = projectId || newId()
+            if (!projectId) setProjectId(id)
+
+            const project: Project = {
+                id,
+                name: projectName,
+                html: html || '',
+                updatedAt: Date.now()
+            }
+
+            upsertProject(project)
+            setSaveState('saved')
+            showToast('✅ Project saved successfully!', 'success')
+
+            // Reset to idle after 2 seconds
+            setTimeout(() => setSaveState('idle'), 2000)
+        } catch (err: any) {
+            setSaveState('idle')
+            showToast(err.message || 'Save failed', 'error')
+        }
+    }
+
     /* Download */
     async function onDownload() {
         try { await deduct(50, 'download-html') }
@@ -218,7 +246,7 @@ function CanvasWebGenPageInner() {
                     <CanvasEditor
                         onGenerate={handleGenerateFromNodes}
                         generationStatus={status}
-                        onSave={() => {/* TODO: implement save */ }}
+                        onSave={handleSave}
                         onBack={() => router.push('/')}
                         saveState={saveState}
                         initialTemplate={search.get('template') || undefined}
