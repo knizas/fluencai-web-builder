@@ -424,11 +424,16 @@ HERO SECTION (CRITICAL):
 - Headline must be BIG (3rem+) and impactful.
 - Call to Action (CTA) button must be prominent.
 
-IMAGES & VISUALS:
-- Use large, high-quality Unsplash images.
-- Avoid small, postage-stamp sized images.
-- Use "object-fit: cover" for images to fill their containers.
-- Rounded corners (border-radius) on cards and buttons (unless "sharp/brutalist" vibe is requested).
+IMAGES & MEDIA:
+- Use high-quality Unsplash URLs.
+- VALID IDs (USE THESE ONLY to avoid 404s):
+  - Tech/Business: photo-1498050108023-c5249f4df085, photo-1486312338219-ce68d2c6f44d, photo-1526304640152-d4619684e484
+  - Fashion/Lifestyle: photo-1483985988355-763728e1935b, photo-1515886657613-9f3515b0c78f, photo-1529139574466-a302d2d3f524
+  - Food/Dining: photo-1414235077428-338989a2e8c0, photo-1504674900247-0877df9cc836
+  - Nature/Travel: photo-1507525428034-b723cf961d3e, photo-1476514525535-07fb3b4ae5f1
+- Format: https://images.unsplash.com/{id}?w={width}&h={height}&fit=crop
+- Ensure images are responsive and properly sized.
+- Always include alt text.
 
 BRANDING:
 - Include a prominent LOGO placeholder at top (use styled company name text)

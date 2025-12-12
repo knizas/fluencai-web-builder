@@ -142,7 +142,7 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
             const bounds = reactFlowWrapper.current?.getBoundingClientRect()
             if (!bounds) return
 
-            const position = reactFlowInstance.project({
+            const position = reactFlowInstance.screenToFlowPosition({
                 x: event.clientX - bounds.left,
                 y: event.clientY - bounds.top,
             })
