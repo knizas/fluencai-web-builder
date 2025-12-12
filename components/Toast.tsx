@@ -52,39 +52,47 @@ export function ToastContainer() {
                 <div
                     key={toast.id}
                     style={{
-                        background: toast.type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' :
-                            toast.type === 'error' ? 'linear-gradient(135deg, #ef4444, #dc2626)' :
-                                'linear-gradient(135deg, #3b82f6, #2563eb)',
-                        color: '#fff',
-                        padding: '14px 18px',
-                        borderRadius: 12,
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                        background: toast.type === 'success' ? '#d1fae5' :
+                            toast.type === 'error' ? '#fee2e2' :
+                                '#dbeafe',
+                        color: toast.type === 'success' ? '#065f46' :
+                            toast.type === 'error' ? '#991b1b' :
+                                '#1e40af',
+                        padding: '10px 14px',
+                        borderRadius: 10,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                        border: toast.type === 'success' ? '1px solid #a7f3d0' :
+                            toast.type === 'error' ? '1px solid #fecaca' :
+                                '1px solid #bfdbfe',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 12,
-                        minWidth: 300,
-                        maxWidth: 400,
+                        gap: 10,
+                        minWidth: 260,
+                        maxWidth: 320,
                         animation: 'slideIn 0.3s ease',
-                        fontSize: 14,
-                        fontWeight: 700
+                        fontSize: 13,
+                        fontWeight: 600
                     }}
                 >
-                    {toast.type === 'success' && <CheckCircle size={20} />}
-                    {toast.type === 'error' && <AlertCircle size={20} />}
+                    {toast.type === 'success' && <CheckCircle size={16} strokeWidth={2.5} />}
+                    {toast.type === 'error' && <AlertCircle size={16} strokeWidth={2.5} />}
                     <span style={{ flex: 1 }}>{toast.message}</span>
                     <button
                         onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
                         style={{
-                            background: 'rgba(255,255,255,0.2)',
+                            background: 'transparent',
                             border: 'none',
                             borderRadius: 6,
                             padding: 4,
                             cursor: 'pointer',
                             display: 'flex',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            opacity: 0.6
                         }}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
                     >
-                        <X size={16} />
+                        <X size={14} />
                     </button>
                 </div>
             ))}

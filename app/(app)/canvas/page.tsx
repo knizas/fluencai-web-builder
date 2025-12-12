@@ -184,7 +184,7 @@ function CanvasWebGenPageInner() {
             if (!r.ok) throw new Error(j?.error || 'Generation failed')
             setHtml(j.html || '')
             setStatus('done')
-            showToast('✨ Website generated successfully!', 'success')
+            showToast('Website generated successfully!', 'success')
         } catch (err: any) {
             setStatus('error')
             setError(err.message || 'Generation failed. Please try again.')
@@ -201,16 +201,69 @@ function CanvasWebGenPageInner() {
             const id = projectId || newId()
             if (!projectId) setProjectId(id)
 
+            // Generate thumbnail from HTML
+            let thumbnail: string | undefined
+            if (html) {
+                try {
+                    // Create a temporary iframe to render the HTML
+                    const iframe = document.createElement('iframe')
+                    iframe.style.position = 'absolute'
+                    iframe.style.left = '-9999px'
+                    iframe.style.width = '1280px'
+                    iframe.style.height = '800px'
+                    document.body.appendChild(iframe)
+
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
+                    if (iframeDoc) {
+                        iframeDoc.open()
+                        iframeDoc.write(html)
+                        iframeDoc.close()
+
+                        // Wait for content to load
+                        await new Promise(resolve => setTimeout(resolve, 500))
+
+                        // Capture screenshot using canvas
+                        const canvas = document.createElement('canvas')
+                        canvas.width = 320
+                        canvas.height = 200
+                        const ctx = canvas.getContext('2d')
+
+                        if (ctx && iframeDoc.body) {
+                            // Simple screenshot by drawing iframe content
+                            const data = new XMLSerializer().serializeToString(iframeDoc.documentElement)
+                            const svgBlob = new Blob([`<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800"><foreignObject width="100%" height="100%">${data}</foreignObject></svg>`], { type: 'image/svg+xml' })
+                            const url = URL.createObjectURL(svgBlob)
+                            const img = new Image()
+
+                            await new Promise((resolve, reject) => {
+                                img.onload = resolve
+                                img.onerror = reject
+                                img.src = url
+                            })
+
+                            ctx.drawImage(img, 0, 0, 320, 200)
+                            thumbnail = canvas.toDataURL('image/png')
+                            URL.revokeObjectURL(url)
+                        }
+                    }
+
+                    document.body.removeChild(iframe)
+                } catch (err) {
+                    console.warn('Failed to generate thumbnail:', err)
+                }
+            }
+
             const project: Project = {
                 id,
                 name: projectName,
                 html: html || '',
+                thumbnail,
                 updatedAt: Date.now()
             }
 
             upsertProject(project)
             setSaveState('saved')
-            showToast('✅ Project saved successfully!', 'success')
+            showToast('Project saved successfully!', 'success')
 
             // Reset to idle after 2 seconds
             setTimeout(() => setSaveState('idle'), 2000)

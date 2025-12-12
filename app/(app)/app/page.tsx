@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import RouteTransitions from '../../transition'
 import { useRouter } from 'next/navigation'
-import { listProjects, deleteProject, type Project } from '@/lib/projects'
+import { listProjects, deleteProject, updateProjectName, type Project } from '@/lib/projects'
 import { authedFetch } from '@/lib/utils/authedFetch'
 import { useAuth } from '@/lib/auth/AuthProvider'
 
@@ -486,13 +486,13 @@ export default function HomePage() {
                 onClick={() => router.push('/canvas')}
                 className="glass-card"
                 style={{
-                  padding: '20px',
+                  padding: '16px',
                   borderRadius: '20px',
                   cursor: 'pointer',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  minHeight: '160px',
+                  justifyContent: 'center',
+                  minHeight: '120px',
                   border: '2px dashed rgba(124,108,240,0.3)',
                   background: 'linear-gradient(135deg, rgba(124,108,240,0.08), rgba(124,108,240,0.02))',
                   position: 'relative',
@@ -512,72 +512,114 @@ export default function HomePage() {
                   e.currentTarget.style.boxShadow = 'none'
                 }}
               >
-                <div style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: '14px',
-                  background: 'rgba(124,108,240,0.1)',
-                  display: 'grid',
-                  placeItems: 'center',
-                  marginBottom: 12
-                }}>
-                  <Plus size={24} color="#7C6CF0" strokeWidth={3} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 6, color: '#111' }}>Start New Project</h3>
-                  <p style={{ fontSize: 13, opacity: 0.7, lineHeight: 1.4, fontWeight: 500 }}>
-                    Create a new website from scratch or using our AI templates.
-                  </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: '12px',
+                    background: 'rgba(124,108,240,0.1)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    flexShrink: 0
+                  }}>
+                    <Plus size={20} color="#7C6CF0" strokeWidth={3} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: 15, fontWeight: 900, marginBottom: 4, color: '#111' }}>Start New Project</h3>
+                    <p style={{ fontSize: 12, opacity: 0.7, lineHeight: 1.3, fontWeight: 500, margin: 0 }}>
+                      Create with AI templates
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {recents.map((p) => (
-                <div key={p.id} style={{ display: 'grid', gap: 6 }}>
-                  {/* Card */}
-                  <div
-                    className="card"
-                    style={{ overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
-                    onClick={() => onOpenProject(p)}
-                    role="button"
-                  >
-                    {/* Delete */}
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDeleteProject(e, p) }}
-                      title="Delete project"
-                      aria-label="Delete project"
-                      style={{
-                        position: 'absolute', top: 8, right: 8, zIndex: 2,
-                        border: '1px solid #eee', background: '#fff', borderRadius: 8, padding: 6,
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
-                      }}
+              {recents.map((p) => {
+                const [isEditing, setIsEditing] = React.useState(false)
+                const [editName, setEditName] = React.useState(p.name || 'Untitled')
+
+                return (
+                  <div key={p.id} style={{ display: 'grid', gap: 6 }}>
+                    {/* Card */}
+                    <div
+                      className="card"
+                      style={{ overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
+                      onClick={() => onOpenProject(p)}
+                      role="button"
                     >
-                      <Trash2 size={14} />
-                    </button>
+                      {/* Delete */}
+                      <button
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDeleteProject(e, p) }}
+                        title="Delete project"
+                        aria-label="Delete project"
+                        style={{
+                          position: 'absolute', top: 8, right: 8, zIndex: 2,
+                          border: '1px solid #eee', background: '#fff', borderRadius: 8, padding: 6,
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
 
-                    {/* Thumbnail */}
-                    <div style={{
-                      width: '100%', height: 120, display: 'grid', placeItems: 'center',
-                      background: '#fff', border: '1px solid #eee'
-                    }}>
-                      {p.thumbnail
-                        ? <img src={p.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        : <div style={{ opacity: .5, fontSize: 12 }}>No preview</div>}
+                      {/* Thumbnail */}
+                      <div style={{
+                        width: '100%', height: 120, display: 'grid', placeItems: 'center',
+                        background: '#fff', border: '1px solid #eee'
+                      }}>
+                        {p.thumbnail
+                          ? <img src={p.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          : <div style={{ opacity: .5, fontSize: 12 }}>No preview</div>}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Name BELOW (outside the card) */}
-                  <div
-                    title={p.name || 'Untitled project'}
-                    style={{
-                      fontSize: 12, fontWeight: 700, textAlign: 'center',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                      padding: '0 4px'
-                    }}
-                  >
-                    {p.name || 'Untitled project'}
+                    {/* Name BELOW (outside the card) - Editable */}
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        onBlur={() => {
+                          setIsEditing(false)
+                          if (editName.trim() && editName !== p.name) {
+                            updateProjectName(p.id, editName)
+                            setRecents(prev => prev.map(proj => proj.id === p.id ? { ...proj, name: editName } : proj))
+                          } else {
+                            setEditName(p.name || 'Untitled')
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            (e.target as HTMLInputElement).blur()
+                          }
+                        }}
+                        autoFocus
+                        style={{
+                          fontSize: 12, fontWeight: 700, textAlign: 'center',
+                          padding: '4px 6px', border: '1px solid #7C6CF0',
+                          borderRadius: 6, outline: 'none', width: '100%'
+                        }}
+                      />
+                    ) : (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setIsEditing(true)
+                        }}
+                        title="Click to edit name"
+                        style={{
+                          fontSize: 12, fontWeight: 700, textAlign: 'center',
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                          padding: '4px 6px', cursor: 'text', borderRadius: 6,
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(124,108,240,0.08)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                      >
+                        {p.name || 'Untitled project'}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                )
+              })}
 
             </div>
           </section>
