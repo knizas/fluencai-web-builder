@@ -409,8 +409,8 @@ ${locks.length ? `\nInsert these placeholders verbatim:\n${locks.map(l => `  <!-
 
     // Build user content: prompt + images
     const userContent: Array<any> = [{ type: 'input_text', text: instructionsText }]
-    if (referenceDataUrl) userContent.push({ type: 'input_image', image_url: { url: referenceDataUrl } })
-    for (const dataurl of Object.values(assetsMap)) userContent.push({ type: 'input_image', image_url: { url: dataurl } })
+    if (referenceDataUrl) userContent.push({ type: 'input_image', image_url: referenceDataUrl })
+    for (const dataurl of Object.values(assetsMap)) userContent.push({ type: 'input_image', image_url: dataurl })
 
     // Call Responses API with gpt-5-nano
     const response = await client.responses.create({
