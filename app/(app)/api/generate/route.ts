@@ -443,10 +443,15 @@ ICONS & VISUALS:
 - HERO & IMAGES (CRITICAL FOR EDITING):
   - You MUST use <img> tags for all images so they are clickable/editable.
   - DO NOT use divs or background-images for the main hero image.
+  - DO NOT put "Click to Upload" text in HTML (h1/p/div) over the image. The placeholder image itself has the text.
   - Placeholder Source: Use an abstract placeholder image:
     - "https://placehold.co/1200x800/EEE/31343C?text=Upload+Hero+Image"
     - "https://placehold.co/600x400/EEE/31343C?text=Image"
   - Style: rounded corners, shadow-lg, object-fit: cover.
+
+- MARKETING COPY (HERO):
+  - Overlay ACTUAL marketing headlines (e.g. "Welcome to Future") on the hero image.
+  - Do NOT overlay technical instructions like "Upload Here".
 
 - FEATURE SECTIONS: Use icon-based cards.
   - Each feature: icon + heading + description
