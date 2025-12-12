@@ -180,7 +180,16 @@ function CanvasWebGenPageInner() {
             })
 
             const r = await fetch('/api/generate', { method: 'POST', body: fd })
-            const j = await r.json()
+
+            let j
+            const text = await r.text()
+            try {
+                j = JSON.parse(text)
+            } catch (e) {
+                console.error('Failed to parse API response:', text)
+                throw new Error(`Server error: ${text.slice(0, 100)}${text.length > 100 ? '...' : ''}`)
+            }
+
             if (!r.ok) throw new Error(j?.error || 'Generation failed')
             setHtml(j.html || '')
             setStatus('done')
