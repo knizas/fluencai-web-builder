@@ -31,7 +31,7 @@ export const PromptNode = memo(({ id, data }: NodeProps) => {
             })
 
             if (res.ok) {
-                const { improved } = await res.json()
+                const { prompt: improved } = await res.json()
                 handleTextChange(improved)
             }
         } catch (err) {

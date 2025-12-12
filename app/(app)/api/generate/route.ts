@@ -424,16 +424,26 @@ HERO SECTION (CRITICAL):
 - Headline must be BIG (3rem+) and impactful.
 - Call to Action (CTA) button must be prominent.
 
-IMAGES & MEDIA:
-- Use high-quality Unsplash URLs.
-- VALID IDs (USE THESE ONLY to avoid 404s):
-  - Tech/Business: photo-1498050108023-c5249f4df085, photo-1486312338219-ce68d2c6f44d, photo-1526304640152-d4619684e484
-  - Fashion/Lifestyle: photo-1483985988355-763728e1935b, photo-1515886657613-9f3515b0c78f, photo-1529139574466-a302d2d3f524
-  - Food/Dining: photo-1414235077428-338989a2e8c0, photo-1504674900247-0877df9cc836
-  - Nature/Travel: photo-1507525428034-b723cf961d3e, photo-1476514525535-07fb3b4ae5f1
-- Format: https://images.unsplash.com/{id}?w={width}&h={height}&fit=crop
-- Ensure images are responsive and properly sized.
-- Always include alt text.
+
+ICONS & VISUALS:
+- ICONS: Use Lucide Icons (https://lucide.dev) via CDN
+  - Add to HTML head: <script src="https://unpkg.com/lucide@latest"></script>
+  - Usage: <i data-lucide="icon-name"></i> then lucide.createIcons() in a script tag at end of body
+  - Popular icons: check, star, arrow-right, menu, x, heart, shopping-cart, user, mail, phone
+  - Style icons with CSS: color, width, height, stroke-width
+  
+- HERO IMAGES: Use large editable placeholder boxes
+  - Style: border: 3px dashed #ccc; padding: 100px; text-align: center; background: #f5f5f5
+  - Text: "[Click to Upload Hero Image]" or similar
+  - Min height: 400px for desktop, 300px mobile
+  
+- FEATURE SECTIONS: Use icon-based cards, NOT photo galleries
+  - Each feature: icon + heading + description
+  - Icons should be colored to match brand
+  
+- BACKGROUNDS: Use CSS gradients or solid colors, NOT stock photos
+  - Example: background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+
 
 BRANDING:
 - Include a prominent LOGO placeholder at top (use styled company name text)
@@ -454,7 +464,39 @@ ${locks.length ? `\n\nLOCKED SECTIONS (preserve these):\n${locks.map(l => `  <!-
       `PROJECT BRIEF:
 ${prompt || '(no brief provided)'}
 
-${assetsFiles.length > 0 ? `VISUAL INSPIRATION: ${assetsFiles.length} reference image(s) provided showing desired aesthetic, colors, and layout style. Use these as inspiration for your design direction, but use Unsplash placeholder images in the final HTML.\n\n` : ''}BRANDING:
+${assetsFiles.length > 0 ? `
+!! CRITICAL - STYLE EXTRACTION FROM UPLOADED IMAGES !!
+
+You have ${assetsFiles.length} reference image(s) attached. Your task:
+
+1. COLOR PALETTE EXTRACTION:
+   - Identify the PRIMARY color (most dominant)
+   - Identify SECONDARY color (second most used)
+   - Identify ACCENT color (highlights, CTAs)
+   - Extract BACKGROUND tones (light/dark/gradient)
+   - Use these EXACT colors throughout the design
+
+2. TYPOGRAPHY MATCHING:
+   - Analyze font styles in the reference (serif/sans-serif/display)
+   - Match font weights (light/regular/bold)
+   - Replicate heading hierarchy and sizes
+   - Copy text alignment and spacing patterns
+
+3. LAYOUT & SPACING:
+   - Study the grid structure and column layouts
+   - Match padding/margin patterns
+   - Replicate card spacing and gutters
+   - Copy section heights and proportions
+
+4. VISUAL STYLE:
+   - Border radius (sharp corners vs rounded)
+   - Shadow style (none/subtle/dramatic)
+   - Button styles (flat/gradient/outlined)
+   - Overall mood (minimal/playful/corporate/luxury)
+
+REMINDER: Use Lucide Icons via CDN, NOT stock photos. Hero should be editable placeholder.
+\n` : ''}
+BRANDING:
 - Include a prominent LOGO placeholder at top (use styled company name text)
 - Ensure logo is easily replaceable/editable
 - Apply brand colors throughout the design
