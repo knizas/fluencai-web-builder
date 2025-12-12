@@ -118,6 +118,7 @@ export const DeviceNode = memo(({ id, data }: NodeProps) => {
                 }}>
                     {data.htmlContent ? (
                         <iframe
+                            key={(data.htmlContent as string)?.length || 0}
                             ref={iframeRef}
                             title={`${deviceType} -preview`}
                             srcDoc={data.htmlContent as string}

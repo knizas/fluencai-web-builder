@@ -193,7 +193,7 @@ function CanvasWebGenPageInner() {
             if (!r.ok) throw new Error(j?.error || 'Generation failed')
             setHtml(j.html || '')
             setStatus('done')
-            showToast('Website generated successfully!', 'success')
+            showToast(`Generated successfully! (${(j.html || '').length} chars)`, 'success')
         } catch (err: any) {
             setStatus('error')
             setError(err.message || 'Generation failed. Please try again.')
