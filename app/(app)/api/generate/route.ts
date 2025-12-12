@@ -472,8 +472,6 @@ ${locks.length ? `\n\nLOCKED SECTIONS (preserve these):\n${locks.map(l => `  <!-
     // Call Responses API with gpt-5-nano
     const response = await client.responses.create({
       model: 'gpt-5-nano',
-      temperature: 0.75, // Increase creativity (default is often 0 or low)
-      top_p: 0.95,      // Allow more vocabulary diversity
       input: [
         { role: 'system', content: [{ type: 'input_text', text: systemText }] },
         { role: 'user', content: userContent },
