@@ -210,7 +210,7 @@ function CanvasWebGenPageInner() {
             const id = projectId || newId()
             if (!projectId) setProjectId(id)
 
-            // Generate thumbnail from HTML
+            // Generate thumbnail from HTML using html2canvas (like webgen)
             let thumbnail: string | undefined
             if (html) {
                 try {
@@ -229,30 +229,38 @@ function CanvasWebGenPageInner() {
                         iframeDoc.close()
 
                         // Wait for content to load
-                        await new Promise(resolve => setTimeout(resolve, 500))
+                        await new Promise(resolve => setTimeout(resolve, 1000))
 
-                        // Capture screenshot using canvas
-                        const canvas = document.createElement('canvas')
-                        canvas.width = 320
-                        canvas.height = 200
-                        const ctx = canvas.getContext('2d')
+                        // Load html2canvas into iframe
+                        const script = iframeDoc.createElement('script')
+                        script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
+                        await new Promise<void>((resolve, reject) => {
+                            script.onload = () => resolve()
+                            script.onerror = () => reject(new Error('Failed to load html2canvas'))
+                            iframeDoc.head.appendChild(script)
+                        })
 
-                        if (ctx && iframeDoc.body) {
-                            // Simple screenshot by drawing iframe content
-                            const data = new XMLSerializer().serializeToString(iframeDoc.documentElement)
-                            const svgBlob = new Blob([`<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800"><foreignObject width="100%" height="100%">${data}</foreignObject></svg>`], { type: 'image/svg+xml' })
-                            const url = URL.createObjectURL(svgBlob)
-                            const img = new Image()
-
-                            await new Promise((resolve, reject) => {
-                                img.onload = resolve
-                                img.onerror = reject
-                                img.src = url
+                        // Capture screenshot
+                        const html2canvas = (iframe.contentWindow as any).html2canvas
+                        if (html2canvas) {
+                            const target = iframeDoc.body || iframeDoc.documentElement
+                            const sourceCanvas: HTMLCanvasElement = await html2canvas(target, {
+                                backgroundColor: '#ffffff',
+                                width: 1280,
+                                height: 800,
+                                windowWidth: 1280,
+                                windowHeight: 800,
+                                scale: 1,
+                                useCORS: true,
                             })
 
-                            ctx.drawImage(img, 0, 0, 320, 200)
-                            thumbnail = canvas.toDataURL('image/png')
-                            URL.revokeObjectURL(url)
+                            // Resize to thumbnail
+                            const canvas = document.createElement('canvas')
+                            canvas.width = 640
+                            canvas.height = 400
+                            const ctx = canvas.getContext('2d')!
+                            ctx.drawImage(sourceCanvas, 0, 0, 640, 400)
+                            thumbnail = canvas.toDataURL('image/png', 0.9)
                         }
                     }
 
@@ -272,6 +280,14 @@ function CanvasWebGenPageInner() {
             }
 
             upsertProject(project)
+
+            // Update URL with project ID if this is a new save
+            if (!projectId) {
+                const u = new URL(window.location.href)
+                u.searchParams.set('project', id)
+                router.replace(u.pathname + '?' + u.searchParams.toString())
+            }
+
             setSaveState('saved')
             showToast('Project saved successfully!', 'success')
 
