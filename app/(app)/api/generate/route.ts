@@ -384,28 +384,72 @@ export async function POST(req: NextRequest) {
       : ''
 
     const systemText =
-      `You generate ONE complete responsive HTML document (no JS required).
+      `You are an EXPERT web designer creating STUNNING, MODERN websites that WOW users.
 
-Hard rules:
-- Always return a full HTML document (<!doctype html> ...).
-- DO NOT wrap your answer in markdown fences.
-- Respect 100% of the user's requested business type, style, layout, theme, colors, fonts, icons, and vibe.
-- Mobile-first: it must look great at 375px wide. Avoid fixed widths. Stack gracefully on smaller screens.
-- Keep it semantic and accessible (use <header>, <main>, <section>, <footer>, .container, .grid).
-- No external CDNs, frameworks, or <script> tags. Inline all CSS in <style>.
-- If assets are provided, reference them exactly by filename in <img src="..."> (they will be inlined later).
-- Ensure forms and buttons are large/tappable on mobile.
-- Do not invent extra sections beyond what the user described.${lockIntro}
+DESIGN PHILOSOPHY:
+- Create designs that are VISUALLY STRIKING and MEMORABLE
+- Use VIBRANT, curated color palettes (HSL colors, not plain red/blue/green)
+- Apply modern design trends: smooth gradients, subtle shadows, clean typography
+- Add SMOOTH CSS transitions and hover effects for premium feel
+- Make it feel PROFESSIONAL and POLISHED, never generic or basic
+- Include a prominent LOGO placeholder (use company name in stylized text)
+
+COLOR & TYPOGRAPHY:
+- Use modern color schemes with 2-3 complementary colors
+- Apply gradients where appropriate (backgrounds, buttons, accents)
+- Use modern web-safe fonts with elegant fallbacks
+- Ensure high contrast for readability
+- Add subtle hover states on all interactive elements
+
+LAYOUT & SPACING:
+- Generous whitespace and breathing room
+- Clear visual hierarchy with size/weight/color
+- Consistent padding and margins (use 8px grid)
+- Card-based layouts with subtle shadows
+- Smooth, flowing sections that guide the eye
+
+MOBILE NAVIGATION:
+- Create a CLEAN, MODERN mobile menu (hamburger → full-screen overlay)
+- Use large touch targets (minimum 44px)
+- Smooth slide-in animations for mobile nav
+- Keep desktop nav simple and elegant
+- NO clunky auto-generated drawers
+
+TECHNICAL REQUIREMENTS:
+- Return ONE complete HTML document (<!doctype html> ...)
+- DO NOT use markdown fences
+- Mobile-first responsive (perfect at 375px, scales to desktop)
+- All CSS inline in <style> block
+- No <script> tags or external dependencies
+- Semantic HTML: <header>, <nav>, <main>, <section>, <footer>
+- Use CSS Grid and Flexbox for layouts
+- Add smooth CSS transitions (0.2-0.3s ease)
+
+IMAGES & MEDIA:
+- Use high-quality Unsplash URLs for placeholder images
+- Format: https://images.unsplash.com/photo-{id}?w={width}&h={height}&fit=crop
+- Ensure images are responsive and properly sized
+- Always include alt text${lockIntro}
 `
 
     const instructionsText =
-      `Brief:
+      `PROJECT BRIEF:
 ${prompt || '(no brief provided)'}
 
-${buildAssetsManifest(assetsMap)}
+${assetsFiles.length > 0 ? `VISUAL INSPIRATION: ${assetsFiles.length} reference image(s) provided showing desired aesthetic, colors, and layout style. Use these as inspiration for your design direction, but use Unsplash placeholder images in the final HTML.\n\n` : ''}BRANDING:
+- Include a prominent LOGO placeholder at top (use styled company name text)
+- Ensure logo is easily replaceable/editable
+- Apply brand colors throughout the design
 
-Output: HTML only. Include basic brandable CSS in a <style> block in <head>. Make sure content stacks gracefully on mobile and forms/buttons are large enough to tap.
-${locks.length ? `\nInsert these placeholders verbatim:\n${locks.map(l => `  <!--WG_LOCK:${l.id}-->  (${l.label})`).join('\n')}\n` : ''}`
+CONTENT GUIDELINES:
+- Write ENGAGING, professional copy (not generic Lorem Ipsum)
+- Use persuasive headings and clear CTAs
+- Include realistic placeholder content
+- Make it feel authentic and purposeful
+
+DELIVERABLE:
+Complete, beautiful HTML with modern inline CSS. Make it STUNNING.
+${locks.length ? `\n\nLOCKED SECTIONS (preserve these):\n${locks.map(l => `  <!--WG_LOCK:${l.id}-->  (${l.label})`).join('\n')}\n` : ''}`
 
     // Build user content: prompt + images
     const userContent: Array<any> = [{ type: 'input_text', text: instructionsText }]
@@ -422,7 +466,9 @@ ${locks.length ? `\nInsert these placeholders verbatim:\n${locks.map(l => `  <!-
     })
 
     const raw = response.output_text || ''
-    let html = postProcessHTML(raw, assetsMap)
+    // Don't embed user's uploaded images - they're for inspiration only
+    // The AI will use Unsplash URLs instead (which users can edit later)
+    let html = postProcessHTML(raw, {})
 
     // 🔒 Replace lock placeholders with original HTML (fallback: append to end of body)
     if (locks.length) {
