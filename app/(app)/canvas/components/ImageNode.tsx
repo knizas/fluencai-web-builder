@@ -1,10 +1,9 @@
 import React, { memo, useRef } from 'react'
-import { Handle, Position, type NodeProps } from '@xyflow/react'
+import { Handle, Position, type NodeProps, useReactFlow } from '@xyflow/react'
 import { Image as ImageIcon, Trash2, Upload } from 'lucide-react'
-import { useCanvasStore } from '@/lib/canvas/canvasStore'
 
 export const ImageNode = memo(({ id, data }: NodeProps) => {
-    const { updateNode, deleteNode } = useCanvasStore()
+    const { setNodes, setEdges } = useReactFlow()
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -12,10 +11,19 @@ export const ImageNode = memo(({ id, data }: NodeProps) => {
         if (file) {
             const reader = new FileReader()
             reader.onload = () => {
-                updateNode(id, { imageUrl: reader.result, imageFile: file })
+                setNodes((nds) =>
+                    nds.map((node) =>
+                        node.id === id ? { ...node, data: { ...node.data, imageUrl: reader.result, imageFile: file } } : node
+                    )
+                )
             }
             reader.readAsDataURL(file)
         }
+    }
+
+    const handleDelete = () => {
+        setNodes((nds) => nds.filter((node) => node.id !== id))
+        setEdges((eds) => eds.filter((edge) => edge.source !== id && edge.target !== id))
     }
 
     return (
@@ -42,7 +50,7 @@ export const ImageNode = memo(({ id, data }: NodeProps) => {
                     <span style={{ fontWeight: 900, fontSize: 14 }}>Image Inspiration</span>
                 </div>
                 <button
-                    onClick={() => deleteNode(id)}
+                    onClick={handleDelete}
                     style={{
                         background: 'transparent',
                         border: 'none',
