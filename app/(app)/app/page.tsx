@@ -313,6 +313,94 @@ const TEMPLATE_STARTERS: Record<string, string> = {
   })
 }
 
+// Separate component for project card to avoid hooks in map
+function ProjectCard({ project, onOpen, onDelete }: { project: Project; onOpen: (p: Project) => void; onDelete: (e: React.MouseEvent, p: Project) => void }) {
+  const [isEditing, setIsEditing] = React.useState(false)
+  const [editName, setEditName] = React.useState(project.name || 'Untitled')
+
+  return (
+    <div style={{ display: 'grid', gap: 6 }}>
+      {/* Card */}
+      <div
+        className="card"
+        style={{ overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
+        onClick={() => onOpen(project)}
+        role="button"
+      >
+        {/* Delete */}
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(e, project) }}
+          title="Delete project"
+          aria-label="Delete project"
+          style={{
+            position: 'absolute', top: 8, right: 8, zIndex: 2,
+            border: '1px solid #eee', background: '#fff', borderRadius: 8, padding: 6,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
+          }}
+        >
+          <Trash2 size={14} />
+        </button>
+
+        {/* Thumbnail */}
+        <div style={{
+          width: '100%', height: 120, display: 'grid', placeItems: 'center',
+          background: '#fff', border: '1px solid #eee'
+        }}>
+          {project.thumbnail
+            ? <img src={project.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : <div style={{ opacity: .5, fontSize: 12 }}>No preview</div>}
+        </div>
+      </div>
+
+      {/* Name BELOW (outside the card) - Editable */}
+      {isEditing ? (
+        <input
+          type="text"
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
+          onBlur={() => {
+            setIsEditing(false)
+            if (editName.trim() && editName !== project.name) {
+              updateProjectName(project.id, editName)
+            } else {
+              setEditName(project.name || 'Untitled')
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              (e.target as HTMLInputElement).blur()
+            }
+          }}
+          autoFocus
+          style={{
+            fontSize: 12, fontWeight: 700, textAlign: 'center',
+            padding: '4px 6px', border: '1px solid #7C6CF0',
+            borderRadius: 6, outline: 'none', width: '100%'
+          }}
+        />
+      ) : (
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsEditing(true)
+          }}
+          title="Click to edit name"
+          style={{
+            fontSize: 12, fontWeight: 700, textAlign: 'center',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            padding: '4px 6px', cursor: 'text', borderRadius: 6,
+            transition: 'background 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(124,108,240,0.08)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+        >
+          {project.name || 'Untitled project'}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function HomePage() {
   const router = useRouter()
   const { user, loading } = useAuth()
@@ -533,93 +621,14 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {recents.map((p) => {
-                const [isEditing, setIsEditing] = React.useState(false)
-                const [editName, setEditName] = React.useState(p.name || 'Untitled')
-
-                return (
-                  <div key={p.id} style={{ display: 'grid', gap: 6 }}>
-                    {/* Card */}
-                    <div
-                      className="card"
-                      style={{ overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
-                      onClick={() => onOpenProject(p)}
-                      role="button"
-                    >
-                      {/* Delete */}
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDeleteProject(e, p) }}
-                        title="Delete project"
-                        aria-label="Delete project"
-                        style={{
-                          position: 'absolute', top: 8, right: 8, zIndex: 2,
-                          border: '1px solid #eee', background: '#fff', borderRadius: 8, padding: 6,
-                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
-                        }}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-
-                      {/* Thumbnail */}
-                      <div style={{
-                        width: '100%', height: 120, display: 'grid', placeItems: 'center',
-                        background: '#fff', border: '1px solid #eee'
-                      }}>
-                        {p.thumbnail
-                          ? <img src={p.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          : <div style={{ opacity: .5, fontSize: 12 }}>No preview</div>}
-                      </div>
-                    </div>
-
-                    {/* Name BELOW (outside the card) - Editable */}
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        onBlur={() => {
-                          setIsEditing(false)
-                          if (editName.trim() && editName !== p.name) {
-                            updateProjectName(p.id, editName)
-                            setRecents(prev => prev.map(proj => proj.id === p.id ? { ...proj, name: editName } : proj))
-                          } else {
-                            setEditName(p.name || 'Untitled')
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            (e.target as HTMLInputElement).blur()
-                          }
-                        }}
-                        autoFocus
-                        style={{
-                          fontSize: 12, fontWeight: 700, textAlign: 'center',
-                          padding: '4px 6px', border: '1px solid #7C6CF0',
-                          borderRadius: 6, outline: 'none', width: '100%'
-                        }}
-                      />
-                    ) : (
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setIsEditing(true)
-                        }}
-                        title="Click to edit name"
-                        style={{
-                          fontSize: 12, fontWeight: 700, textAlign: 'center',
-                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                          padding: '4px 6px', cursor: 'text', borderRadius: 6,
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(124,108,240,0.08)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                      >
-                        {p.name || 'Untitled project'}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+              {recents.map((p) => (
+                <ProjectCard
+                  key={p.id}
+                  project={p}
+                  onOpen={onOpenProject}
+                  onDelete={onDeleteProject}
+                />
+              ))}
 
             </div>
           </section>
