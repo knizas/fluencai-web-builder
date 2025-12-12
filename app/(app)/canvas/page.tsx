@@ -303,6 +303,7 @@ function CanvasWebGenPageInner() {
                         onBack={() => router.push('/')}
                         saveState={saveState}
                         initialTemplate={search.get('template') || undefined}
+                        html={html || undefined}
                     />
                 </section>
 

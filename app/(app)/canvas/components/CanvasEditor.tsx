@@ -33,9 +33,10 @@ interface CanvasEditorProps {
     saveState?: 'idle' | 'saving' | 'saved'
     initialTemplate?: string
     initialPrompt?: string
+    html?: string
 }
 
-export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, saveState = 'idle', initialTemplate, initialPrompt }: CanvasEditorProps) {
+export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, saveState = 'idle', initialTemplate, initialPrompt, html }: CanvasEditorProps) {
     const [nodes, setNodes, onNodesChange] = useNodesState([])
     const [edges, setEdges, onEdgesChange] = useEdgesState([])
     const reactFlowWrapper = useRef<HTMLDivElement>(null)
@@ -79,6 +80,13 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
 
         setNodes(initialNodes)
     }, [initialTemplate, setNodes])
+
+    // Update device preview when HTML prop changes
+    useEffect(() => {
+        if (html) {
+            updateDevicePreview(html)
+        }
+    }, [html])
 
     // Keyboard shortcuts: T = Add Text, I = Add Image
     useEffect(() => {
