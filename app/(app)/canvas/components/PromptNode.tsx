@@ -1,9 +1,10 @@
-import React, { memo } from 'react'
+import React, { memo, useState } from 'react'
 import { Handle, Position, type NodeProps, useReactFlow } from '@xyflow/react'
-import { Type, Trash2 } from 'lucide-react'
+import { Type, Trash2, Sparkles } from 'lucide-react'
 
 export const PromptNode = memo(({ id, data }: NodeProps) => {
     const { setNodes } = useReactFlow()
+    const [isImproving, setIsImproving] = useState(false)
 
     const handleTextChange = (text: string) => {
         setNodes((nds) =>
@@ -15,6 +16,29 @@ export const PromptNode = memo(({ id, data }: NodeProps) => {
 
     const handleDelete = () => {
         setNodes((nds) => nds.filter((node) => node.id !== id))
+    }
+
+    const handleImprovePrompt = async () => {
+        const currentText = (data.text as string) || ''
+        if (!currentText.trim()) return
+
+        setIsImproving(true)
+        try {
+            const res = await fetch('/api/improve-prompt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: currentText })
+            })
+
+            if (res.ok) {
+                const { improved } = await res.json()
+                handleTextChange(improved)
+            }
+        } catch (err) {
+            console.error('Failed to improve prompt:', err)
+        } finally {
+            setIsImproving(false)
+        }
     }
 
     return (
@@ -77,6 +101,44 @@ export const PromptNode = memo(({ id, data }: NodeProps) => {
                         outline: 'none'
                     }}
                 />
+
+                {/* Improve Button */}
+                <button
+                    onClick={handleImprovePrompt}
+                    disabled={isImproving || !(data.text as string)?.trim()}
+                    className="nodrag"
+                    style={{
+                        marginTop: 8,
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        padding: '8px 12px',
+                        background: isImproving ? 'rgba(124,108,240,0.1)' : 'var(--brand-accent)',
+                        color: isImproving ? 'var(--brand-accent)' : '#fff',
+                        border: 'none',
+                        borderRadius: 8,
+                        fontSize: 12,
+                        fontWeight: 800,
+                        cursor: isImproving ? 'wait' : 'pointer',
+                        opacity: isImproving || !(data.text as string)?.trim() ? 0.5 : 1,
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={e => {
+                        if (!isImproving && (data.text as string)?.trim()) {
+                            e.currentTarget.style.transform = 'translateY(-1px)'
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,108,240,0.3)'
+                        }
+                    }}
+                    onMouseLeave={e => {
+                        e.currentTarget.style.transform = 'translateY(0)'
+                        e.currentTarget.style.boxShadow = 'none'
+                    }}
+                >
+                    <Sparkles size={14} className={isImproving ? 'spin' : ''} />
+                    {isImproving ? 'Improving...' : 'Improve Prompt'}
+                </button>
             </div>
 
             {/* Output Handle */}
