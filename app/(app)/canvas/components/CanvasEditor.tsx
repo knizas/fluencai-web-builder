@@ -17,7 +17,7 @@ import '@xyflow/react/dist/style.css'
 import { PromptNode } from './PromptNode'
 import { ImageNode } from './ImageNode'
 import { DeviceNode } from './DeviceNode'
-import { Type, Image as ImageIcon, Sparkles, Smartphone, Monitor, ArrowLeft, Save, Zap, Coins } from 'lucide-react'
+import { Type, Image as ImageIcon, Sparkles, Smartphone, Monitor, ArrowLeft, Save, Zap, Coins, Loader2, Check } from 'lucide-react'
 
 const nodeTypes: NodeTypes = {
     promptNode: PromptNode,
@@ -28,15 +28,17 @@ const nodeTypes: NodeTypes = {
 interface CanvasEditorProps {
     onGenerate: (nodes: Node[], edges: Edge[]) => void
     generationStatus: 'idle' | 'loading' | 'done' | 'error'
-    onSave?: () => void
+    onSave?: (nodes: Node[], edges: Edge[]) => void
     onBack?: () => void
     saveState?: 'idle' | 'saving' | 'saved'
     initialTemplate?: string
     initialPrompt?: string
+    initialNodes?: Node[]
+    initialEdges?: Edge[]
     html?: string
 }
 
-export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, saveState = 'idle', initialTemplate, initialPrompt, html }: CanvasEditorProps) {
+export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, saveState = 'idle', initialTemplate, initialPrompt, initialNodes, initialEdges, html }: CanvasEditorProps) {
     const [nodes, setNodes, onNodesChange] = useNodesState([])
     const [edges, setEdges, onEdgesChange] = useEdgesState([])
     const reactFlowWrapper = useRef<HTMLDivElement>(null)
@@ -45,11 +47,19 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
     const [deviceType, setDeviceType] = useState<'phone' | 'laptop'>('laptop')
     const initializedRef = useRef(false)
 
-    // Initialize with a device node and optional template
+    // Initialize state
     useEffect(() => {
         if (initializedRef.current) return
         initializedRef.current = true
 
+        // 1. If we have saved nodes, load them
+        if (initialNodes && initialNodes.length > 0) {
+            setNodes(initialNodes)
+            if (initialEdges) setEdges(initialEdges)
+            return
+        }
+
+        // 2. Default initialization (new project)
         const deviceNode: Node = {
             id: 'device-preview',
             type: 'deviceNode',
@@ -57,7 +67,7 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
             data: { deviceType: 'laptop', htmlContent: '' },
         }
 
-        const initialNodes: Node[] = [deviceNode]
+        const nodesList: Node[] = [deviceNode]
 
         // If template provided, load the HTML
         if (initialTemplate) {
@@ -78,8 +88,8 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
                 .catch(err => console.error('Failed to load template:', err))
         }
 
-        setNodes(initialNodes)
-    }, [initialTemplate, setNodes])
+        setNodes(nodesList)
+    }, [initialTemplate, initialNodes, initialEdges, setNodes, setEdges])
 
     // Update device preview when HTML prop changes
     useEffect(() => {
@@ -226,22 +236,14 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
 
                     {onSave && (
                         <button
-                            onClick={onSave}
-                            disabled={saveState === 'saving'}
-                            className="btn-outline"
-                            aria-label="Save project"
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                padding: '6px 12px',
-                                fontSize: 12,
-                                fontWeight: 800,
-                                opacity: saveState === 'saving' ? 0.7 : 1
-                            }}
+                            className={`btn-secondary ${saveState === 'saved' ? 'success' : ''}`}
+                            onClick={() => onSave?.(nodes, edges)}
+                            disabled={saveState === 'saving' || saveState === 'saved'}
                         >
-                            <Save size={14} />
-                            {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : 'Save'}
+                            {saveState === 'saving' ? <Loader2 size={16} className="spin" /> :
+                                saveState === 'saved' ? <Check size={16} /> :
+                                    <Save size={16} />}
+                            {saveState === 'saved' ? 'Saved' : 'Save'}
                         </button>
                     )}
 

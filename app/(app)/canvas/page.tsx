@@ -93,6 +93,25 @@ function CanvasWebGenPageInner() {
     const [html, setHtml] = useState('')
     const htmlSrcDoc = useMemo(() => html || '', [html])
 
+    /* Loaded state persistence */
+    const [initialNodes, setInitialNodes] = useState<Node[] | undefined>(undefined)
+    const [initialEdges, setInitialEdges] = useState<Edge[] | undefined>(undefined)
+
+    /* Load project from URL */
+    useEffect(() => {
+        const pid = search.get('project')
+        if (pid && !projectId) { // Only load if not already set (or if changed)
+            const p = getProject(pid)
+            if (p) {
+                setProjectId(p.id)
+                setProjectName(p.name)
+                setHtml(p.html)
+                if (p.nodes) setInitialNodes(p.nodes)
+                if (p.edges) setInitialEdges(p.edges)
+            }
+        }
+    }, [search, projectId])
+
     /* CREDIT DEDUCTION */
     async function deduct(amount: number, reason: string) {
         const res = await authedFetch('/api/credits/deduct', {
@@ -202,7 +221,7 @@ function CanvasWebGenPageInner() {
     }
 
     /* Save project */
-    async function handleSave() {
+    async function handleSave(currentNodes: Node[], currentEdges: Edge[]) {
         if (saveState === 'saving') return
         setSaveState('saving')
 
@@ -276,7 +295,9 @@ function CanvasWebGenPageInner() {
                 html: html || '',
                 thumbnail,
                 updatedAt: Date.now(),
-                type: 'canvas' // Mark as canvas project
+                type: 'canvas', // Mark as canvas project
+                nodes: currentNodes, // Save nodes
+                edges: currentEdges  // Save edges
             }
 
             upsertProject(project)
@@ -330,6 +351,8 @@ function CanvasWebGenPageInner() {
                         saveState={saveState}
                         initialTemplate={search.get('template') || undefined}
                         html={html || undefined}
+                        initialNodes={initialNodes}
+                        initialEdges={initialEdges}
                     />
                 </section>
 

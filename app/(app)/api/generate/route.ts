@@ -408,29 +408,42 @@ LAYOUT & SPACING:
 - Card-based layouts with subtle shadows
 - Smooth, flowing sections that guide the eye
 
-MOBILE NAVIGATION:
-- Create a CLEAN, MODERN mobile menu (hamburger → full-screen overlay)
-- Use large touch targets (minimum 44px)
-- Smooth slide-in animations for mobile nav
-- Keep desktop nav simple and elegant
-- NO clunky auto-generated drawers
+MOBILE NAVIGATION (CRITICAL):
+- On mobile (max-width: 768px), the header MUST be 50-60px height maximum.
+- DO NOT stack logo and menu items vertically on mobile.
+- REQUIRED: Use a standard "Hamburger Menu" pattern for mobile.
+- TECH TIP: Since NO JS is allowed, use the "CSS Checkbox Hack" (<input type="checkbox" id="nav-toggle"> + <label for="nav-toggle">) to toggle the menu state.
+- The logo should be on the left, hamburger icon on the right.
+- When menu opens, it should be a full-screen overlay or slide-out drawer.
+- DO NOT show a long list of links at the top of the mobile screen.
 
-TECHNICAL REQUIREMENTS:
-- Return ONE complete HTML document (<!doctype html> ...)
-- DO NOT use markdown fences
-- Mobile-first responsive (perfect at 375px, scales to desktop)
-- All CSS inline in <style> block
-- No <script> tags or external dependencies
-- Semantic HTML: <header>, <nav>, <main>, <section>, <footer>
-- Use CSS Grid and Flexbox for layouts
-- Add smooth CSS transitions (0.2-0.3s ease)
+HERO SECTION (CRITICAL):
+- The first section MUST be a large Hero section (min-height: 60vh to 80vh).
+- It MUST feature a high-quality background image or large featured image.
+- Text should be overlaid on the image (with proper contrast/overlay) OR in a split layout (50% text, 50% huge image).
+- Headline must be BIG (3rem+) and impactful.
+- Call to Action (CTA) button must be prominent.
 
-IMAGES & MEDIA:
-- Use high-quality Unsplash URLs for placeholder images
-- Format: https://images.unsplash.com/photo-{id}?w={width}&h={height}&fit=crop
-- Ensure images are responsive and properly sized
-- Always include alt text${lockIntro}
-`
+IMAGES & VISUALS:
+- Use large, high-quality Unsplash images.
+- Avoid small, postage-stamp sized images.
+- Use "object-fit: cover" for images to fill their containers.
+- Rounded corners (border-radius) on cards and buttons (unless "sharp/brutalist" vibe is requested).
+
+BRANDING:
+- Include a prominent LOGO placeholder at top (use styled company name text)
+- Ensure logo is easily replaceable/editable
+- Apply brand colors throughout the design
+
+CONTENT GUIDELINES:
+- Write ENGAGING, professional copy (not generic Lorem Ipsum)
+- Use persuasive headings and clear CTAs
+- Include realistic placeholder content
+- Make it feel authentic and purposeful
+
+DELIVERABLE:
+Complete, beautiful HTML with modern inline CSS. Make it STUNNING.
+${locks.length ? `\n\nLOCKED SECTIONS (preserve these):\n${locks.map(l => `  <!--WG_LOCK:${l.id}-->  (${l.label})`).join('\n')}\n` : ''}`
 
     const instructionsText =
       `PROJECT BRIEF:
@@ -459,6 +472,8 @@ ${locks.length ? `\n\nLOCKED SECTIONS (preserve these):\n${locks.map(l => `  <!-
     // Call Responses API with gpt-5-nano
     const response = await client.responses.create({
       model: 'gpt-5-nano',
+      temperature: 0.75, // Increase creativity (default is often 0 or low)
+      top_p: 0.95,      // Allow more vocabulary diversity
       input: [
         { role: 'system', content: [{ type: 'input_text', text: systemText }] },
         { role: 'user', content: userContent },

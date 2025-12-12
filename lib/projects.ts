@@ -6,6 +6,8 @@ export type Project = {
   thumbnail?: string
   updatedAt: number
   type?: 'canvas' | 'webgen' // distinguish between canvas and webgen projects
+  nodes?: any[] // Store canvas nodes
+  edges?: any[] // Store canvas edges
 }
 
 const KEY = 'fluencai.projects'
