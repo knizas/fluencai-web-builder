@@ -461,7 +461,9 @@ export default function HomePage() {
   }
 
   function onOpenProject(p: Project) {
-    router.push(`/webgen?project=${encodeURIComponent(p.id)}`)
+    // Route to canvas for canvas projects, webgen for others
+    const page = p.type === 'canvas' ? '/canvas' : '/webgen'
+    router.push(`${page}?project=${encodeURIComponent(p.id)}`)
   }
   function onDeleteProject(e: React.MouseEvent, p: Project) {
     e.preventDefault(); e.stopPropagation()

@@ -23,15 +23,15 @@ const PHONE_W = 375, PHONE_H = 812
 const LAPTOP_W = 1280, LAPTOP_H = 800
 const TITLE_H = 24, GAP = 10
 
-function innerWidth(el: HTMLDivElement){
+function innerWidth(el: HTMLDivElement) {
   const s = getComputedStyle(el)
-  return el.clientWidth - parseFloat(s.paddingLeft||'0') - parseFloat(s.paddingRight||'0')
+  return el.clientWidth - parseFloat(s.paddingLeft || '0') - parseFloat(s.paddingRight || '0')
 }
 
 /* ---- Scaled frame: keeps real viewport, scales visually ---- */
 function ScaledFrame({
   w, h, scale, children,
-}: { w:number; h:number; scale:number; children:React.ReactNode }) {
+}: { w: number; h: number; scale: number; children: React.ReactNode }) {
   return (
     <div style={{ width: w * scale, height: h * scale, position: 'relative' }}>
       <div
@@ -72,7 +72,7 @@ function FilePicker({
 
   return (
     <div className="wg-field" style={{ marginBottom: 10 }}>
-      <div className="wg-label" style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, fontWeight:700, color:'var(--ink-soft)' }}>
+      <div className="wg-label" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: 'var(--ink-soft)' }}>
         {icon} {label}
       </div>
 
@@ -80,23 +80,23 @@ function FilePicker({
         className="wg-picker"
         role="button"
         tabIndex={0}
-        onClick={()=> inputRef.current?.click()}
-        onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()}
+        onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()}
         style={{
-          display:'grid',
-          gridTemplateColumns:'auto 1fr',
-          alignItems:'center',
-          gap:8,
-          border:'1px solid var(--line-grey)',
-          background:'#fff',
-          borderRadius:12,
-          padding:'6px 8px',
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          alignItems: 'center',
+          gap: 8,
+          border: '1px solid var(--line-grey)',
+          background: '#fff',
+          borderRadius: 12,
+          padding: '6px 8px',
         }}
       >
-        <div className="wg-pill" style={{ padding:'6px 10px', borderRadius:999, fontWeight:800, background:'var(--brand-primary)', color:'#fff', fontSize:12 }}>
+        <div className="wg-pill" style={{ padding: '6px 10px', borderRadius: 999, fontWeight: 800, background: 'var(--brand-primary)', color: '#fff', fontSize: 12 }}>
           Browse
         </div>
-        <div className="wg-filename" title={names} style={{ fontSize:12, opacity:.7, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+        <div className="wg-filename" title={names} style={{ fontSize: 12, opacity: .7, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {names}
         </div>
       </div>
@@ -107,7 +107,7 @@ function FilePicker({
         className="wg-nativeFile"
         accept={accept}
         multiple={multiple}
-        onChange={(e)=>{
+        onChange={(e) => {
           const fs = e.currentTarget.files
           setNames(
             !fs || fs.length === 0
@@ -118,30 +118,30 @@ function FilePicker({
           )
           onChange?.(fs)
         }}
-        style={{ display:'none' }}
+        style={{ display: 'none' }}
       />
 
-      {helper ? <div className="wg-help" style={{ marginTop:6, fontSize:11, opacity:.6 }}>{helper}</div> : null}
+      {helper ? <div className="wg-help" style={{ marginTop: 6, fontSize: 11, opacity: .6 }}>{helper}</div> : null}
     </div>
   )
 }
 
-function WebGenPageInner(){
+function WebGenPageInner() {
   /* theme tokens via URL ?p,?s,?b */
   const search = useSearchParams()
   const router = useRouter()
   const tokens = useMemo(
     () => ({
-      palette:{ primary: search.get('p') || '#000', secondary: search.get('s') || '#7C6CF0', background: search.get('b') || '#FFF' },
-      glass:{ opacity:.75, blur:12 }
+      palette: { primary: search.get('p') || '#000', secondary: search.get('s') || '#7C6CF0', background: search.get('b') || '#FFF' },
+      glass: { opacity: .75, blur: 12 }
     }),
     [search]
   )
-  useEffect(()=>{ applyStyleTokens(tokens) }, [tokens])
+  useEffect(() => { applyStyleTokens(tokens) }, [tokens])
 
   /* layout refs */
-  const shellRef  = useRef<HTMLDivElement>(null)
-  const panelRef  = useRef<HTMLElement>(null)
+  const shellRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLElement>(null)
   const rowRef = useRef<HTMLDivElement>(null)
   const colPhoneRef = useRef<HTMLDivElement>(null)
   const colLaptopRef = useRef<HTMLDivElement>(null)
@@ -162,25 +162,25 @@ function WebGenPageInner(){
   const [projectId, setProjectId] = useState<string | null>(null)
   const [projectName, setProjectName] = useState<string>('Untitled project')
   const autosaveTimer = useRef<number | null>(null)
-  const [saveState, setSaveState] = useState<'idle'|'saving'|'saved'>('idle')
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle')
 
   /* ---- CREDIT DEDUCTION HELPER ---- */
   async function deduct(amount: number, reason: string) {
     const res = await authedFetch('/api/credits/deduct', {
       method: 'POST',
-      headers: { 'Content-Type':'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ amount, reason }),
     })
     if (!res.ok) {
-      const j = await res.json().catch(()=>({}))
+      const j = await res.json().catch(() => ({}))
       throw new Error(j.error || 'Not enough credits')
     }
   }
 
   /* scale previews to fit row while keeping real viewport inside */
-  useLayoutEffect(()=>{
+  useLayoutEffect(() => {
     const calc = () => {
-      if(!rowRef.current || !colPhoneRef.current || !colLaptopRef.current) return
+      if (!rowRef.current || !colPhoneRef.current || !colLaptopRef.current) return
       const row = rowRef.current
       const rect = row.getBoundingClientRect()
       const availH = Math.max(360, rect.height - TITLE_H - GAP)
@@ -190,35 +190,35 @@ function WebGenPageInner(){
       const p_sH = Math.min(1, Math.max(.4, availH / PHONE_H))
       const p_sW = Math.min(1, Math.max(.4, pw / PHONE_W))
       const ps = Math.min(p_sH, p_sW)
-      setPScale(ps); setPW(PHONE_W*ps); setPH(PHONE_H*ps)
+      setPScale(ps); setPW(PHONE_W * ps); setPH(PHONE_H * ps)
 
       // LAPTOP
       const lw = innerWidth(colLaptopRef.current)
       const l_sH = Math.min(1, Math.max(.25, availH / LAPTOP_H))
       const l_sW = Math.min(1, Math.max(.25, lw / LAPTOP_W))
       const ls = Math.min(l_sH, l_sW)
-      setLScale(ls); setLW(LAPTOP_W*ls); setLH(LAPTOP_H*ls)
+      setLScale(ls); setLW(LAPTOP_W * ls); setLH(LAPTOP_H * ls)
     }
     const roRow = new ResizeObserver(calc)
     const ro1 = new ResizeObserver(calc)
     const ro2 = new ResizeObserver(calc)
-    if(rowRef.current) roRow.observe(rowRef.current)
-    if(colPhoneRef.current) ro1.observe(colPhoneRef.current)
-    if(colLaptopRef.current) ro2.observe(colLaptopRef.current)
+    if (rowRef.current) roRow.observe(rowRef.current)
+    if (colPhoneRef.current) ro1.observe(colPhoneRef.current)
+    if (colLaptopRef.current) ro2.observe(colLaptopRef.current)
     window.addEventListener('resize', calc); calc()
-    return ()=>{ roRow.disconnect(); ro1.disconnect(); ro2.disconnect(); window.removeEventListener('resize', calc) }
+    return () => { roRow.disconnect(); ro1.disconnect(); ro2.disconnect(); window.removeEventListener('resize', calc) }
   }, [])
 
   /* make the bottom panel fill the remaining viewport height inside the shell */
-  useLayoutEffect(()=>{
+  useLayoutEffect(() => {
     const calcPanelMin = () => {
       if (!shellRef.current || !rowRef.current || !panelRef.current) return
 
       const shell = shellRef.current
       const header = shell.querySelector('.shell-header') as HTMLElement | null
       const shellStyles = getComputedStyle(shell)
-      const padTop = parseFloat(shellStyles.paddingTop||'0')
-      const padBot = parseFloat(shellStyles.paddingBottom||'0')
+      const padTop = parseFloat(shellStyles.paddingTop || '0')
+      const padBot = parseFloat(shellStyles.paddingBottom || '0')
       const headerH = header ? header.getBoundingClientRect().height : 0
       const previewsH = rowRef.current.getBoundingClientRect().height
 
@@ -229,10 +229,10 @@ function WebGenPageInner(){
     }
 
     const roShell = new ResizeObserver(calcPanelMin)
-    const roRow   = new ResizeObserver(calcPanelMin)
+    const roRow = new ResizeObserver(calcPanelMin)
     if (shellRef.current) roShell.observe(shellRef.current)
-    if (rowRef.current)   roRow.observe(rowRef.current)
-    window.addEventListener('resize', calcPanelMin, { passive:true })
+    if (rowRef.current) roRow.observe(rowRef.current)
+    window.addEventListener('resize', calcPanelMin, { passive: true })
     calcPanelMin()
 
     return () => {
@@ -243,12 +243,12 @@ function WebGenPageInner(){
 
   /* generation state */
   const [prompt, setPrompt] = useState('')
-  const styleFileRef  = useRef<FileList | null>(null)
+  const styleFileRef = useRef<FileList | null>(null)
   const assetFilesRef = useRef<FileList | null>(null)
-  const [status, setStatus] = useState<'idle'|'loading'|'done'|'error'>('idle')
-  const [error, setError] = useState<string|null>(null)
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [error, setError] = useState<string | null>(null)
   const [html, setHtml] = useState('')
-  const htmlSrcDoc = useMemo(()=> html || '', [html])
+  const htmlSrcDoc = useMemo(() => html || '', [html])
 
   const sp = useSearchParams()
   useEffect(() => {
@@ -264,12 +264,12 @@ function WebGenPageInner(){
     // already charged 10 on Home; we do NOT charge again here
 
     // clean URL so future clicks aren't treated as starter
-try {
-  const u = new URL(window.location.href)
-  u.searchParams.delete('starter')
-  u.searchParams.delete('prompt')
-  router.replace(u.pathname + (u.searchParams.toString() ? `?${u.searchParams.toString()}` : ''))
-} catch {}
+    try {
+      const u = new URL(window.location.href)
+      u.searchParams.delete('starter')
+      u.searchParams.delete('prompt')
+      router.replace(u.pathname + (u.searchParams.toString() ? `?${u.searchParams.toString()}` : ''))
+    } catch { }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sp])
@@ -288,27 +288,27 @@ try {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-async function onGenerate(promptOverride?: string){
-  if (status === 'loading') return;   // ← prevent double-calls
-  setError(null)
-  const usedPrompt = (promptOverride ?? prompt).trim()
-  if(!usedPrompt){ setError('Please describe the site.'); return }
+  async function onGenerate(promptOverride?: string) {
+    if (status === 'loading') return;   // ← prevent double-calls
+    setError(null)
+    const usedPrompt = (promptOverride ?? prompt).trim()
+    if (!usedPrompt) { setError('Please describe the site.'); return }
 
 
     // credit: 100 per generate (skip if starter=1)
     const isStarter = sp.get('starter') === '1'
     if (!isStarter) {
       try { await deduct(100, 'generate') }
-      catch (e:any) { setError(e.message || 'Not enough credits'); setStatus('error'); return }
+      catch (e: any) { setError(e.message || 'Not enough credits'); setStatus('error'); return }
     }
 
     // reset iframe load states so overlay shows until new content paints
     setPhoneLoaded(false); setLaptopLoaded(false)
 
     setStatus('loading')
-    try{
+    try {
       const fd = new FormData()
-fd.append('prompt', usedPrompt.slice(0,8000))
+      fd.append('prompt', usedPrompt.slice(0, 8000))
 
       // 🔒 include current locked sections (if any)
       const snapDoc = laptopIframeRef.current?.contentDocument
@@ -327,25 +327,25 @@ fd.append('prompt', usedPrompt.slice(0,8000))
       if (a && a.length) {
         for (let i = 0; i < a.length; i++) {
           const png = await normalizeToPng(a[i])
-          fd.append('assets[]', png, a[i].name.replace(/\.[^.]+$/,'') + '.png')
+          fd.append('assets[]', png, a[i].name.replace(/\.[^.]+$/, '') + '.png')
         }
       }
 
       const r = await fetch('/api/generate', { method: 'POST', body: fd })
       const j = await r.json()
-      if(!r.ok) throw new Error(j?.error || 'Generation failed')
+      if (!r.ok) throw new Error(j?.error || 'Generation failed')
       setHtml(j.html || '')
       setStatus('done')
-    }catch(e:any){
+    } catch (e: any) {
       setError(e.message || 'Something went wrong')
       setStatus('error')
     }
   }
 
   // now async because we deduct before creating the blob
-  async function onDownload(){
+  async function onDownload() {
     try { await deduct(50, 'download-html') }
-    catch (e:any) { alert(e.message || 'Not enough credits'); return }
+    catch (e: any) { alert(e.message || 'Not enough credits'); return }
 
     const doc = laptopIframeRef.current?.contentDocument
     if (doc) {
@@ -369,14 +369,14 @@ fd.append('prompt', usedPrompt.slice(0,8000))
   const [improving, setImproving] = useState(false)
   const improveStartedAt = useRef<number>(0)
 
-  async function onImprovePrompt(){
-    try{
+  async function onImprovePrompt() {
+    try {
       improveStartedAt.current = performance.now()
       setImproving(true)
 
       // credit: 5 per improve
       try { await deduct(5, 'improve-prompt') }
-      catch (e:any) { alert(e.message || 'Not enough credits'); setImproving(false); return }
+      catch (e: any) { alert(e.message || 'Not enough credits'); setImproving(false); return }
 
       const fd = new FormData()
       fd.append('prompt', (prompt || '').slice(0, 8000))
@@ -390,7 +390,7 @@ fd.append('prompt', usedPrompt.slice(0,8000))
 
       const r = await fetch('/api/improve-prompt', { method: 'POST', body: fd })
       const j = await r.json()
-      if(!r.ok) throw new Error(j?.error || 'Failed to improve prompt')
+      if (!r.ok) throw new Error(j?.error || 'Failed to improve prompt')
 
       setPrompt(j.prompt || '')
 
@@ -401,19 +401,19 @@ fd.append('prompt', usedPrompt.slice(0,8000))
       setTimeout(() => {
         requestAnimationFrame(() => setImproving(false))
       }, remaining)
-    }catch(e:any){
+    } catch (e: any) {
       alert(e.message || 'Failed to improve prompt')
       setImproving(false)
     }
   }
 
   /* === In-iframe editing bootstrap (LAPTOP ONLY) === */
-  function initIframeEditing(iframe: HTMLIFrameElement | null){
+  function initIframeEditing(iframe: HTMLIFrameElement | null) {
     if (!iframe) return
     const doc = iframe.contentDocument
     if (!doc) return
     if ((doc.documentElement as any)._wgInited) return
-    ;(doc.documentElement as any)._wgInited = true
+      ; (doc.documentElement as any)._wgInited = true
 
     // Inject lightweight editing CSS (once) — ONLY in laptop doc
     if (!doc.getElementById('wg-edit-style')) {
@@ -469,29 +469,29 @@ fd.append('prompt', usedPrompt.slice(0,8000))
     }
 
     const makeEditable = (el: HTMLElement) => {
-      el.setAttribute('contenteditable','true')
-      el.setAttribute('aria-label','Editable text')
-      if (!el.textContent || !el.textContent.trim()) el.setAttribute('data-placeholder','Type text…')
+      el.setAttribute('contenteditable', 'true')
+      el.setAttribute('aria-label', 'Editable text')
+      if (!el.textContent || !el.textContent.trim()) el.setAttribute('data-placeholder', 'Type text…')
     }
 
-    ;(function ensureRuntimeMarkers(){
-      doc.querySelectorAll<HTMLElement>('h1,h2,h3,p,button,a').forEach(el=>{
-        if(!el.hasAttribute('data-edit')) el.setAttribute('data-edit','')
-      })
-      doc.querySelectorAll<HTMLElement>('img,picture,figure,svg').forEach(el=>{
-        if(!el.hasAttribute('data-edit-img')) el.setAttribute('data-edit-img','')
-      })
-      doc.querySelectorAll<HTMLElement>('[class*="logo"],[class*="avatar"],[class*="brand"]').forEach(el=>{
-        if ((el.querySelector('img,svg'))) el.setAttribute('data-edit-img','')
-      })
-      const bgCands = Array.from(doc.querySelectorAll<HTMLElement>('[style*="background-image"],[class*="hero"],[class*="banner"],[class*="cover"]'))
-      bgCands.forEach(el=>{
-        const cs = doc.defaultView?.getComputedStyle(el)
-        if (cs && cs.backgroundImage && cs.backgroundImage !== 'none') {
-          el.setAttribute('data-edit-bg','')
-        }
-      })
-    })()
+      ; (function ensureRuntimeMarkers() {
+        doc.querySelectorAll<HTMLElement>('h1,h2,h3,p,button,a').forEach(el => {
+          if (!el.hasAttribute('data-edit')) el.setAttribute('data-edit', '')
+        })
+        doc.querySelectorAll<HTMLElement>('img,picture,figure,svg').forEach(el => {
+          if (!el.hasAttribute('data-edit-img')) el.setAttribute('data-edit-img', '')
+        })
+        doc.querySelectorAll<HTMLElement>('[class*="logo"],[class*="avatar"],[class*="brand"]').forEach(el => {
+          if ((el.querySelector('img,svg'))) el.setAttribute('data-edit-img', '')
+        })
+        const bgCands = Array.from(doc.querySelectorAll<HTMLElement>('[style*="background-image"],[class*="hero"],[class*="banner"],[class*="cover"]'))
+        bgCands.forEach(el => {
+          const cs = doc.defaultView?.getComputedStyle(el)
+          if (cs && cs.backgroundImage && cs.backgroundImage !== 'none') {
+            el.setAttribute('data-edit-bg', '')
+          }
+        })
+      })()
 
     const textSel = 'h1[data-edit],h2[data-edit],h3[data-edit],p[data-edit],button[data-edit],a[data-edit]'
     doc.querySelectorAll<HTMLElement>(textSel).forEach(makeEditable)
@@ -500,8 +500,8 @@ fd.append('prompt', usedPrompt.slice(0,8000))
       return (el.closest('section, article, header, footer, main, aside, nav, div') as HTMLElement) || el
     }
     let lockCounter = doc.querySelectorAll('[data-wg-lock]').length
-    doc.addEventListener('click',(e)=>{
-      if(!e.altKey) return
+    doc.addEventListener('click', (e) => {
+      if (!e.altKey) return
       e.preventDefault()
       e.stopPropagation()
       const el = e.target as HTMLElement
@@ -587,25 +587,25 @@ fd.append('prompt', usedPrompt.slice(0,8000))
       return b
     })()
     const textInput = bubble.querySelector<HTMLInputElement>('#wg-link-text')!
-    const urlInput  = bubble.querySelector<HTMLInputElement>('#wg-link-url')!
-    const btnSave   = bubble.querySelector<HTMLButtonElement>('#wg-link-save')!
+    const urlInput = bubble.querySelector<HTMLInputElement>('#wg-link-url')!
+    const btnSave = bubble.querySelector<HTMLButtonElement>('#wg-link-save')!
     const btnCancel = bubble.querySelector<HTMLButtonElement>('#wg-link-cancel')!
-    const dragBar   = bubble.querySelector<HTMLDivElement>('#wg-link-drag')!
+    const dragBar = bubble.querySelector<HTMLDivElement>('#wg-link-drag')!
 
     let currentLink: HTMLAnchorElement | null = null
     let bubblePinned = false
 
-    function clampToViewport(left:number, top:number){
+    function clampToViewport(left: number, top: number) {
       const vw = doc.defaultView!
       const maxLeft = vw.innerWidth - bubble.clientWidth - 8
-      const maxTop  = vw.innerHeight - bubble.clientHeight - 8
+      const maxTop = vw.innerHeight - bubble.clientHeight - 8
       return {
         left: Math.max(8, Math.min(left, maxLeft)),
-        top:  Math.max(8, Math.min(top,  maxTop)),
+        top: Math.max(8, Math.min(top, maxTop)),
       }
     }
 
-    function showLinkBubble(a: HTMLAnchorElement){
+    function showLinkBubble(a: HTMLAnchorElement) {
       currentLink = a
       textInput.value = a.textContent || ''
       urlInput.value = a.getAttribute('href') || ''
@@ -614,17 +614,17 @@ fd.append('prompt', usedPrompt.slice(0,8000))
       positionBubble(a)
       textInput.focus()
     }
-    function hideLinkBubble(){
+    function hideLinkBubble() {
       bubble.style.display = 'none'
       currentLink = null
       bubblePinned = false
     }
-    function positionBubble(a: HTMLAnchorElement){
+    function positionBubble(a: HTMLAnchorElement) {
       const rect = a.getBoundingClientRect()
-      const top  = Math.max(8, rect.bottom + 6)
-      let left   = rect.left
-      const cl   = clampToViewport(left, top)
-      bubble.style.top  = cl.top + 'px'
+      const top = Math.max(8, rect.bottom + 6)
+      let left = rect.left
+      const cl = clampToViewport(left, top)
+      bubble.style.top = cl.top + 'px'
       bubble.style.left = cl.left + 'px'
       bubble.style.display = 'block'
     }
@@ -636,24 +636,24 @@ fd.append('prompt', usedPrompt.slice(0,8000))
     }
     btnCancel.onclick = hideLinkBubble
 
-    doc.addEventListener('scroll', () => { if (currentLink && !bubblePinned) positionBubble(currentLink) }, { passive:true })
+    doc.addEventListener('scroll', () => { if (currentLink && !bubblePinned) positionBubble(currentLink) }, { passive: true })
     doc.defaultView?.addEventListener('resize', () => { if (currentLink && !bubblePinned) positionBubble(currentLink) })
 
-    dragBar.addEventListener('mousedown', (e)=>{
+    dragBar.addEventListener('mousedown', (e) => {
       e.preventDefault()
       e.stopPropagation()
       bubblePinned = true
       const startX = e.clientX
       const startY = e.clientY
       const startLeft = parseFloat(bubble.style.left || '0')
-      const startTop  = parseFloat(bubble.style.top  || '0')
+      const startTop = parseFloat(bubble.style.top || '0')
 
       const onMove = (ev: MouseEvent) => {
         const dx = ev.clientX - startX
         const dy = ev.clientY - startY
         const cl = clampToViewport(startLeft + dx, startTop + dy)
         bubble.style.left = cl.left + 'px'
-        bubble.style.top  = cl.top  + 'px'
+        bubble.style.top = cl.top + 'px'
       }
       const onUp = () => {
         doc.removeEventListener('mousemove', onMove)
@@ -683,7 +683,7 @@ fd.append('prompt', usedPrompt.slice(0,8000))
         e.preventDefault()
         showLinkBubble(t as HTMLAnchorElement)
       }
-    }, { passive:false })
+    }, { passive: false })
 
     if (!doc.getElementById('wg-title-btn')) {
       const btn = doc.createElement('button')
@@ -697,7 +697,7 @@ fd.append('prompt', usedPrompt.slice(0,8000))
       doc.body.appendChild(btn)
     }
 
-    function applyImageToTarget(target: Element, dataUrl: string){
+    function applyImageToTarget(target: Element, dataUrl: string) {
       const tag = target.tagName.toLowerCase()
 
       const figImg = tag === 'figure' ? (target.querySelector('img') as HTMLImageElement | null) : null
@@ -753,7 +753,7 @@ fd.append('prompt', usedPrompt.slice(0,8000))
   }
 
   // Save current edited DOM from laptop iframe back to state (and keep previews in sync)
-  function onSaveEdits(){
+  function onSaveEdits() {
     const doc = laptopIframeRef.current?.contentDocument
     if (!doc) return
     const cleaned = serializeCleanHTML(doc)
@@ -852,6 +852,7 @@ fd.append('prompt', usedPrompt.slice(0,8000))
         prompt,
         thumbnail,
         updatedAt: Date.now(),
+        type: 'webgen' // Mark as webgen project
       }
       upsertProject(p)
 
@@ -863,7 +864,7 @@ fd.append('prompt', usedPrompt.slice(0,8000))
       }
 
       setSaveState('saved')
-      setTimeout(()=> setSaveState('idle'), 1200)
+      setTimeout(() => setSaveState('idle'), 1200)
     } catch {
       setSaveState('idle')
       alert('Failed to save. Please try again.')
@@ -892,69 +893,69 @@ fd.append('prompt', usedPrompt.slice(0,8000))
   /* ---- UI ---- */
   return (
     <main className="container page webgen">
-      <div ref={shellRef} className="shell" style={{ overflow:'visible', maxHeight:'none', padding:18 }}>
+      <div ref={shellRef} className="shell" style={{ overflow: 'visible', maxHeight: 'none', padding: 18 }}>
         {/* Header */}
         <div
           className="shell-header"
           style={{
-            display:'flex',
-            alignItems:'center',
-            gap:10,
-            marginBottom:10,
-            position:'relative',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            marginBottom: 10,
+            position: 'relative',
             zIndex: 10,
           }}
         >
-          <img src="/logo.svg" alt="Fluencai" width={28} height={28} style={{borderRadius:8}}/>
-          <div style={{fontWeight:900,display:'flex',alignItems:'center',gap:8}}>
-            <MonitorSmartphone size={18}/> <span>Laptop + Phone preview</span>
+          <img src="/logo.svg" alt="Fluencai" width={28} height={28} style={{ borderRadius: 8 }} />
+          <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <MonitorSmartphone size={18} /> <span>Laptop + Phone preview</span>
           </div>
-          <div style={{flex:1}}/>
+          <div style={{ flex: 1 }} />
           <button
             type="button"
             className="btn-outline"
             data-transition
-            onClick={()=>saveProject(true)}
-            disabled={saveState==='saving'}
-            aria-busy={saveState==='saving'}
+            onClick={() => saveProject(true)}
+            disabled={saveState === 'saving'}
+            aria-busy={saveState === 'saving'}
             style={{
-              display:'inline-flex',
-              alignItems:'center',
-              gap:6,
-              background:'#000',
-              color:'#fff',
-              border:'3px solid #000', /* ← fixed */
-              padding:'6px 10px',
-              borderRadius:999,
-              position:'relative',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: '#000',
+              color: '#fff',
+              border: '3px solid #000', /* ← fixed */
+              padding: '6px 10px',
+              borderRadius: 999,
+              position: 'relative',
               zIndex: 20,
-              pointerEvents:'auto',
-              opacity: saveState==='saving' ? .85 : 1
+              pointerEvents: 'auto',
+              opacity: saveState === 'saving' ? .85 : 1
             }}
             title="Save project"
           >
-            {saveState==='saving' ? <Loader2 size={14} className="spin" /> :
-            saveState==='saved'  ? <Check size={14} /> : null}
-            {saveState==='saving' ? 'Saving…' :
-            saveState==='saved'  ? 'Saved' : 'Save project'}
+            {saveState === 'saving' ? <Loader2 size={14} className="spin" /> :
+              saveState === 'saved' ? <Check size={14} /> : null}
+            {saveState === 'saving' ? 'Saving…' :
+              saveState === 'saved' ? 'Saved' : 'Save project'}
           </button>
           <Link
             href="/"
             className="btn-outline"
             data-transition
             style={{
-              display:'inline-flex',
-              alignItems:'center',
-              gap:6,
-              background:'#000',
-              color:'#fff',
-              border:'2px solid #000',
-              fontSize:14,
-              padding:'6px 10px',
-              borderRadius:999
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: '#000',
+              color: '#fff',
+              border: '2px solid #000',
+              fontSize: 14,
+              padding: '6px 10px',
+              borderRadius: 999
             }}
           >
-            <ArrowLeft size={14}/> Back
+            <ArrowLeft size={14} /> Back
           </Link>
         </div>
 
@@ -963,20 +964,20 @@ fd.append('prompt', usedPrompt.slice(0,8000))
           ref={rowRef}
           className="previewsRow"
           style={{
-            display:'grid',
-            gridTemplateColumns:'1fr 1fr',
-            gap:24,
-            alignItems:'start',
-            minHeight:'56vh',
-            marginBottom:10
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 24,
+            alignItems: 'start',
+            minHeight: '56vh',
+            marginBottom: 10
           }}
         >
           {/* PHONE (READ-ONLY) */}
-          <div ref={colPhoneRef} style={{display:'grid', placeItems:'start'}}>
-            <div className="previewLabel" style={{ width: pW, margin:'0 auto 6px', textAlign:'center' }}>Phone (375×812)</div>
-            <div className="preview-shadow" style={{ width: pW, height: pH, margin:'0 auto', position:'relative' }}>
+          <div ref={colPhoneRef} style={{ display: 'grid', placeItems: 'start' }}>
+            <div className="previewLabel" style={{ width: pW, margin: '0 auto 6px', textAlign: 'center' }}>Phone (375×812)</div>
+            <div className="preview-shadow" style={{ width: pW, height: pH, margin: '0 auto', position: 'relative' }}>
               <ScaledFrame w={PHONE_W} h={PHONE_H} scale={pScale}>
-                <div style={{ position:'relative', width: PHONE_W, height: PHONE_H }}>
+                <div style={{ position: 'relative', width: PHONE_W, height: PHONE_H }}>
                   <div className="phoneBezel" />
                   <div className="phoneNotch" />
                   <div className="phoneScreen">
@@ -984,11 +985,11 @@ fd.append('prompt', usedPrompt.slice(0,8000))
                       ref={phoneIframeRef}
                       title="phone"
                       srcDoc={htmlSrcDoc}
-                      onLoad={()=>{
+                      onLoad={() => {
                         setPhoneLoaded(true)
                         initPhonePreviewGuards(phoneIframeRef.current)
                       }}
-                      style={{ width:'100%', height:'100%', border:0, background:'transparent' }}
+                      style={{ width: '100%', height: '100%', border: 0, background: 'transparent' }}
                     />
                     {phoneBusy && (
                       <div style={overlayStyle}>
@@ -1007,24 +1008,24 @@ fd.append('prompt', usedPrompt.slice(0,8000))
 
           {/* LAPTOP (EDITABLE) */}
           <div ref={colLaptopRef}>
-            <div className="previewLabel" style={{textAlign:'center'}}>Laptop (1280×800)</div>
-            <div className="preview-shadow" style={{ width: lW, height: lH, margin:'0 auto', position:'relative' }}>
+            <div className="previewLabel" style={{ textAlign: 'center' }}>Laptop (1280×800)</div>
+            <div className="preview-shadow" style={{ width: lW, height: lH, margin: '0 auto', position: 'relative' }}>
               <ScaledFrame w={LAPTOP_W} h={LAPTOP_H} scale={lScale}>
                 <div className="frame" style={{ width: LAPTOP_W, height: LAPTOP_H }}>
                   <div className="laptopChrome">
                     <div className="dot red" /><div className="dot yellow" /><div className="dot green" />
                     <div className="addr" />
                   </div>
-                  <div className="laptopViewport" style={{ height: LAPTOP_H - 36, position:'relative' }}>
+                  <div className="laptopViewport" style={{ height: LAPTOP_H - 36, position: 'relative' }}>
                     <iframe
                       ref={laptopIframeRef}
                       title="laptop"
                       srcDoc={htmlSrcDoc}
-                      onLoad={()=>{
+                      onLoad={() => {
                         setLaptopLoaded(true)
                         initIframeEditing(laptopIframeRef.current)
                       }}
-                      style={{ width:'100%', height:'100%', border:0, background:'transparent' }}
+                      style={{ width: '100%', height: '100%', border: 0, background: 'transparent' }}
                     />
                     {laptopBusy && (
                       <div style={overlayStyle}>
@@ -1046,40 +1047,40 @@ fd.append('prompt', usedPrompt.slice(0,8000))
         <section
           ref={panelRef}
           className="panel-glass wg-panel"
-          style={{ padding:12 }}
+          style={{ padding: 12 }}
         >
-          <div className="wg-panelInner" style={{ maxWidth:1200, margin:'0 auto' }}>
-            <div className="wg-panelHead" style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:6 }}>
-              <div className="wg-title" style={{ fontWeight:900, fontSize:18 }}>Generate Website</div>
-              <div className="wg-sub" style={{ opacity:.65, fontSize:12 }}>Fast preview • Alt-click a section to lock/unlock</div>
+          <div className="wg-panelInner" style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div className="wg-panelHead" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+              <div className="wg-title" style={{ fontWeight: 900, fontSize: 18 }}>Generate Website</div>
+              <div className="wg-sub" style={{ opacity: .65, fontSize: 12 }}>Fast preview • Alt-click a section to lock/unlock</div>
             </div>
 
-            <div className="wg-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1.2fr', gap:12 }}>
+            <div className="wg-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 12 }}>
               {/* Left pickers */}
               <div className="wg-leftCol">
                 <FilePicker
-                  icon={<ImageIcon size={16}/>}
+                  icon={<ImageIcon size={16} />}
                   label="Style reference (inspiration)"
                   accept="image/*"
-                  onChange={(files)=> (styleFileRef.current = files)}
+                  onChange={(files) => (styleFileRef.current = files)}
                   helper="Optional. Guides the vibe (colors/layout). Not embedded by default."
                 />
                 <FilePicker
-                  icon={<Images size={16}/>}
+                  icon={<Images size={16} />}
                   label="Site assets (logo, hero, products)"
                   accept="image/*"
                   multiple
-                  onChange={(files)=> (assetFilesRef.current = files)}
+                  onChange={(files) => (assetFilesRef.current = files)}
                   helper="Optional. Can be embedded inline as data URLs in the generated HTML."
                 />
               </div>
 
               {/* Right prompt + buttons */}
-              <div className="wg-rightCol" style={{ display:'grid', gridTemplateRows:'auto auto', gap:8 }}>
+              <div className="wg-rightCol" style={{ display: 'grid', gridTemplateRows: 'auto auto', gap: 8 }}>
                 <div>
                   <div
                     className="wg-label"
-                    style={{ fontSize:13, fontWeight:700, color:'var(--ink-soft)', marginBottom:6, display:'flex', alignItems:'center', justifyContent:'space-between' }}
+                    style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-soft)', marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                   >
                     <span>Your prompt</span>
                     <button
@@ -1088,47 +1089,47 @@ fd.append('prompt', usedPrompt.slice(0,8000))
                       disabled={improving || !prompt.trim()}
                       title="Improve prompt"
                       style={{
-                        border:'none',
-                        background:'transparent',
+                        border: 'none',
+                        background: 'transparent',
                         cursor: improving ? 'wait' : 'pointer',
-                        display:'inline-flex',
-                        alignItems:'center',
-                        gap:6,
-                        padding:0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: 0,
                         opacity: improving ? .6 : .9
                       }}
                     >
                       {improving ? <Loader2 size={16} className="spin" /> : <Sparkles size={16} />}
-                      <span style={{fontSize:12}}>{improving ? 'Improving…' : 'Improve'}</span>
+                      <span style={{ fontSize: 12 }}>{improving ? 'Improving…' : 'Improve'}</span>
                     </button>
                   </div>
                   <textarea
                     rows={4}
                     className="textarea wg-textarea"
-                    style={{ fontSize:13, padding:'.55rem .65rem', resize:'vertical', minHeight:90, opacity: improving ? .7 : 1 }}
+                    style={{ fontSize: 13, padding: '.55rem .65rem', resize: 'vertical', minHeight: 90, opacity: improving ? .7 : 1 }}
                     placeholder={improving ? 'Improving your prompt…' : 'Describe the business, vibe, sections, CTAs…'}
                     value={prompt}
-                    onChange={e=>setPrompt(e.target.value)}
+                    onChange={e => setPrompt(e.target.value)}
                     readOnly={improving}
                     aria-busy={improving}
                   />
                 </div>
 
-                <div className="wg-actions" style={{ display:'flex', gap:10, justifyContent:'flex-start', alignItems:'center', flexWrap:'wrap', paddingTop:4 }}>
-<button
-  className="btn-cta"
-  onClick={() => onGenerate()}
-  disabled={!prompt.trim() || status==='loading' || improving}  // ← added !prompt.trim()
->
-                    {status==='loading'?'Generating…':'Generate'}
+                <div className="wg-actions" style={{ display: 'flex', gap: 10, justifyContent: 'flex-start', alignItems: 'center', flexWrap: 'wrap', paddingTop: 4 }}>
+                  <button
+                    className="btn-cta"
+                    onClick={() => onGenerate()}
+                    disabled={!prompt.trim() || status === 'loading' || improving}  // ← added !prompt.trim()
+                  >
+                    {status === 'loading' ? 'Generating…' : 'Generate'}
                   </button>
                   <button className="btn" onClick={onSaveEdits} disabled={!html || improving}>
                     Save edits
                   </button>
                   <button className="btn" onClick={onDownload} disabled={!html || improving}>
-                    <Download size={16}/> Download HTML
+                    <Download size={16} /> Download HTML
                   </button>
-                  {status==='error' && <div style={{color:'#c00',fontSize:12,alignSelf:'center'}}>{error}</div>}
+                  {status === 'error' && <div style={{ color: '#c00', fontSize: 12, alignSelf: 'center' }}>{error}</div>}
                 </div>
               </div>
             </div>
@@ -1155,34 +1156,34 @@ fd.append('prompt', usedPrompt.slice(0,8000))
 
 /* Overlay styles (kept inline for clarity) */
 const overlayStyle: React.CSSProperties = {
-  position:'absolute',
-  inset:0,
-  display:'grid',
-  placeItems:'center',
-  background:'#fff',
-  zIndex:5
+  position: 'absolute',
+  inset: 0,
+  display: 'grid',
+  placeItems: 'center',
+  background: '#fff',
+  zIndex: 5
 }
 const overlayCard: React.CSSProperties = {
-  display:'flex',
-  alignItems:'center',
-  gap:8,
-  fontWeight:800,
-  padding:'10px 14px',
-  borderRadius:12,
-  border:'1px solid rgba(0,0,0,.08)',
-  background:'#fff',
-  boxShadow:'0 8px 24px rgba(0,0,0,.08)'
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  fontWeight: 800,
+  padding: '10px 14px',
+  borderRadius: 12,
+  border: '1px solid rgba(0,0,0,.08)',
+  background: '#fff',
+  boxShadow: '0 8px 24px rgba(0,0,0,.08)'
 }
 const progressWrap: React.CSSProperties = {
-  position:'absolute',
-  bottom:14,
-  left:'50%',
-  transform:'translateX(-50%)',
-  width:140,
-  height:3,
-  borderRadius:999,
-  background:'rgba(0,0,0,.06)',
-  overflow:'hidden'
+  position: 'absolute',
+  bottom: 14,
+  left: '50%',
+  transform: 'translateX(-50%)',
+  width: 140,
+  height: 3,
+  borderRadius: 999,
+  background: 'rgba(0,0,0,.06)',
+  overflow: 'hidden'
 }
 
 /* -------- utils: normalize image to PNG for vision models -------- */
@@ -1193,16 +1194,16 @@ async function normalizeToPng(file: File): Promise<File> {
   const pngUrl = canvas.toDataURL('image/png'); const blob = dataURLtoBlob(pngUrl)
   return new File([blob], 'reference.png', { type: 'image/png' })
 }
-function fileToDataUrl(file: File){return new Promise<string>((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result as string);r.onerror=rej;r.readAsDataURL(file)})}
-function loadImage(src: string){return new Promise<HTMLImageElement>((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
-function dataURLtoBlob(dataurl: string){const arr=dataurl.split(','),mime=arr[0].match(/:(.*?);/)![1];const bstr=atob(arr[1]);let n=bstr.length;const u8=new Uint8Array(n);while(n--)u8[n]=bstr.charCodeAt(n);return new Blob([u8],{type:mime})}
+function fileToDataUrl(file: File) { return new Promise<string>((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result as string); r.onerror = rej; r.readAsDataURL(file) }) }
+function loadImage(src: string) { return new Promise<HTMLImageElement>((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src }) }
+function dataURLtoBlob(dataurl: string) { const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)![1]; const bstr = atob(arr[1]); let n = bstr.length; const u8 = new Uint8Array(n); while (n--) u8[n] = bstr.charCodeAt(n); return new Blob([u8], { type: mime }) }
 
 /* Phone preview: never navigate or submit forms */
-function initPhonePreviewGuards(iframe: HTMLIFrameElement | null){
+function initPhonePreviewGuards(iframe: HTMLIFrameElement | null) {
   if (!iframe) return
   const doc = iframe.contentDocument
   if (!doc || (doc as any)._wgPhoneGuarded) return
-  ;(doc as any)._wgPhoneGuarded = true
+    ; (doc as any)._wgPhoneGuarded = true
 
   doc.addEventListener('click', (e) => {
     const el = e.target as HTMLElement | null
@@ -1218,10 +1219,10 @@ function initPhonePreviewGuards(iframe: HTMLIFrameElement | null){
     e.preventDefault()
     try {
       window.open(href, '_blank', 'noopener,noreferrer')
-    } catch {}
-  }, { capture:true })
+    } catch { }
+  }, { capture: true })
 
-  doc.addEventListener('submit', (e) => e.preventDefault(), { capture:true })
+  doc.addEventListener('submit', (e) => e.preventDefault(), { capture: true })
 
   doc.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(a => {
     const href = a.getAttribute('href') || ''
@@ -1233,16 +1234,16 @@ function initPhonePreviewGuards(iframe: HTMLIFrameElement | null){
 }
 
 /* 🔒 Collect locked sections to preserve across generations */
-function collectLockedSections(doc: Document){
-  const locks: { id:string; label:string; html:string }[] = []
+function collectLockedSections(doc: Document) {
+  const locks: { id: string; label: string; html: string }[] = []
   const nodes = Array.from(doc.querySelectorAll<HTMLElement>('[data-wg-lock]'))
   nodes.forEach((el, i) => {
-    const id = el.getAttribute('data-wg-lock') || `L${i+1}`
+    const id = el.getAttribute('data-wg-lock') || `L${i + 1}`
     const h = el.querySelector('h1,h2,h3')
     const label =
       h?.textContent?.trim() ||
       (el.id ? `#${el.id}` : '') ||
-      (el.className ? '.' + String(el.className).split(' ').slice(0,2).join('.') : '') ||
+      (el.className ? '.' + String(el.className).split(' ').slice(0, 2).join('.') : '') ||
       el.tagName.toLowerCase()
     locks.push({ id, label, html: el.outerHTML })
   })

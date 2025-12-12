@@ -267,7 +267,8 @@ function CanvasWebGenPageInner() {
                 name: projectName,
                 html: html || '',
                 thumbnail,
-                updatedAt: Date.now()
+                updatedAt: Date.now(),
+                type: 'canvas' // Mark as canvas project
             }
 
             upsertProject(project)

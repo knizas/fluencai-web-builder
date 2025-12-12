@@ -5,6 +5,7 @@ export type Project = {
   prompt?: string
   thumbnail?: string
   updatedAt: number
+  type?: 'canvas' | 'webgen' // distinguish between canvas and webgen projects
 }
 
 const KEY = 'fluencai.projects'
