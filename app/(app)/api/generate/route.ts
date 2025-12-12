@@ -408,14 +408,27 @@ LAYOUT & SPACING:
 - Card-based layouts with subtle shadows
 - Smooth, flowing sections that guide the eye
 
-MOBILE NAVIGATION (CRITICAL):
-- On mobile (max-width: 768px), the header MUST be 50-60px height maximum.
-- DO NOT stack logo and menu items vertically on mobile.
-- REQUIRED: Use a standard "Hamburger Menu" pattern for mobile.
-- TECH TIP: Since NO JS is allowed, use the "CSS Checkbox Hack" (<input type="checkbox" id="nav-toggle"> + <label for="nav-toggle">) to toggle the menu state.
-- The logo should be on the left, hamburger icon on the right.
-- When menu opens, it should be a full-screen overlay or slide-out drawer.
-- DO NOT show a long list of links at the top of the mobile screen.
+MOBILE NAVIGATION (PREMIUM REVAMP):
+- HEADER DESIGN: Fixed/Sticky at top (position: sticky; top: 0; z-index: 1000).
+  - Max Height: 60px.
+  - Style: Glassmorphism (background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.1)).
+  - Layout: Flex row, justify-content: space-between, align-items: center, padding: 0 20px.
+
+- HAMBURGER MENU (CSS ONLY):
+  - Use the "Checkbox Hack" (<input type="checkbox" id="nav-toggle" hidden>)
+  - Menu Button: A <label for="nav-toggle"> containing a Lucide <i data-lucide="menu"></i> icon (24px).
+  - Close Button: Inside the open menu, a <label for="nav-toggle"> with <i data-lucide="x"></i>.
+
+- FULL SCREEN OVERLAY:
+  - When checked (#nav-toggle:checked ~ .nav-menu), show a Full Screen Overlay.
+  - Style: Fixed position (inset: 0), z-index: 999, background: white (or brand color).
+  - Animation: Slide in from right (transform: translateX(0%)) or Fade In (opacity: 1). Default state: translateX(100%) or opacity: 0.
+  - Links: Centered vertically and horizontally, large font size (24px+), gap 24px.
+  
+- DO NOT:
+  - Do NOT stack logo and menu vertically.
+  - Do NOT show a tiny list of links.
+  - Do NOT forget the z-index (header must be above everything).
 
 HERO SECTION (CRITICAL):
 - The first section MUST be a large Hero section (min-height: 60vh to 80vh).
