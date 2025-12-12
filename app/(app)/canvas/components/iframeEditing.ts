@@ -94,13 +94,19 @@ export function injectEditing(iframeDoc: Document) {
             const reader = new FileReader()
             reader.onload = (e) => {
                 const dataUrl = e.target?.result as string
-                const img = imgCand.querySelector('img')
-                if (img) {
-                    img.src = dataUrl
+
+                // Fix: Check if the candidate itself is an image
+                if (imgCand.tagName === 'IMG') {
+                    (imgCand as HTMLImageElement).src = dataUrl
                 } else {
-                    imgCand.style.backgroundImage = `url(${dataUrl})`
-                    imgCand.style.backgroundSize = 'cover'
-                    imgCand.style.backgroundPosition = 'center'
+                    const img = imgCand.querySelector('img')
+                    if (img) {
+                        img.src = dataUrl
+                    } else {
+                        imgCand.style.backgroundImage = `url(${dataUrl})`
+                        imgCand.style.backgroundSize = 'cover'
+                        imgCand.style.backgroundPosition = 'center'
+                    }
                 }
             }
             reader.readAsDataURL(file)
