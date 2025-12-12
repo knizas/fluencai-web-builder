@@ -1,4 +1,4 @@
-import React, { memo, useRef, useEffect } from 'react'
+import React, { memo, useRef, useEffect, useMemo } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { MonitorSmartphone, Smartphone, Monitor } from 'lucide-react'
 import { injectEditing } from './iframeEditing'
@@ -7,6 +7,9 @@ export const DeviceNode = memo(({ id, data }: NodeProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const deviceType = data.deviceType || 'laptop' // 'laptop' or 'phone'
 
+    // CRITICAL: Use useMemo to ensure iframe srcDoc updates (matches webgen page fix)
+    const htmlSrcDoc = useMemo(() => (data.htmlContent as string) || '', [data.htmlContent])
+
     const isPhone = deviceType === 'phone'
     const width = isPhone ? 300 : 480
     const height = isPhone ? 560 : 340
@@ -14,7 +17,7 @@ export const DeviceNode = memo(({ id, data }: NodeProps) => {
     // Inject editing capabilities when iframe loads
     useEffect(() => {
         const iframe = iframeRef.current
-        if (!iframe || !data.htmlContent) return
+        if (!iframe || !htmlSrcDoc) return
 
         const injectWhenReady = () => {
             try {
@@ -32,7 +35,7 @@ export const DeviceNode = memo(({ id, data }: NodeProps) => {
         setTimeout(injectWhenReady, 100)
 
         return () => iframe.removeEventListener('load', injectWhenReady)
-    }, [data.htmlContent])
+    }, [htmlSrcDoc])
 
     return (
         <div style={{
@@ -116,12 +119,12 @@ export const DeviceNode = memo(({ id, data }: NodeProps) => {
                     position: 'relative',
                     boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.1)'
                 }}>
-                    {data.htmlContent ? (
+                    {htmlSrcDoc ? (
                         <iframe
-                            key={(data.htmlContent as string)?.length || 0}
+                            key={htmlSrcDoc.length || 0}
                             ref={iframeRef}
                             title={`${deviceType} -preview`}
-                            srcDoc={data.htmlContent as string}
+                            srcDoc={htmlSrcDoc}
                             style={{
                                 width: isPhone ? '375px' : '1280px',
                                 height: isPhone ? '812px' : '800px',
