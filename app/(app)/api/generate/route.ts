@@ -264,7 +264,7 @@ function extractBrand(html: string): string {
   return 'Brand'
 }
 
-function extractMenuItems(html: string): Array<{text:string; href:string}> {
+function extractMenuItems(html: string): Array<{ text: string; href: string }> {
   const navMatch = html.match(/<nav[^>]*>[\s\S]*?<\/nav>/i)
   if (navMatch) {
     const links = [...navMatch[0].matchAll(/<a[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
@@ -277,9 +277,9 @@ function extractMenuItems(html: string): Array<{text:string; href:string}> {
     .filter(x => x.text)
   if (sections.length) return dedupeByText(sections)
   return [
-    { text:'Home', href:'#home' },
-    { text:'About', href:'#about' },
-    { text:'Contact', href:'#contact' },
+    { text: 'Home', href: '#home' },
+    { text: 'About', href: '#about' },
+    { text: 'Contact', href: '#contact' },
   ]
 }
 
@@ -293,24 +293,24 @@ function detectBrandColor(html: string): string {
   if (hex?.[0]) return normalizeColor(hex[0])
   return '#111111'
 }
-function normalizeColor(s: string): string { return s.trim().replace(/["']/g,'') }
+function normalizeColor(s: string): string { return s.trim().replace(/["']/g, '') }
 function contrastOn(bg: string): string {
-  const m = bg.replace('#','').slice(0,6)
-  const r = parseInt(m.slice(0,2) || '00',16)
-  const g = parseInt(m.slice(2,4) || '00',16)
-  const b = parseInt(m.slice(4,6) || '00',16)
-  const lum = (0.2126*r + 0.7152*g + 0.0722*b)/255
+  const m = bg.replace('#', '').slice(0, 6)
+  const r = parseInt(m.slice(0, 2) || '00', 16)
+  const g = parseInt(m.slice(2, 4) || '00', 16)
+  const b = parseInt(m.slice(4, 6) || '00', 16)
+  const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
   return lum > 0.5 ? '#111' : '#fff'
 }
 
 /* ---- misc utils ---- */
-function stripTags(s: string){ return s.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim() }
-function dedupeByText(items: Array<{text:string;href:string}>){
+function stripTags(s: string) { return s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() }
+function dedupeByText(items: Array<{ text: string; href: string }>) {
   const seen = new Set<string>()
-  return items.filter(x => { const k = x.text.toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true })
+  return items.filter(x => { const k = x.text.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true })
 }
-function escapeHtml(s: string){
-  return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')
+function escapeHtml(s: string) {
+  return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;')
 }
 
 /** Replace src/href pointing to uploaded filenames with data URLs. */
@@ -325,7 +325,7 @@ function inlineAssets(html: string, assets: Record<string, string>): string {
 }
 
 /** Build a simple manifest list text for the model (file names only). */
-function buildAssetsManifest(assets: Record<string,string>): string {
+function buildAssetsManifest(assets: Record<string, string>): string {
   if (!assets || !Object.keys(assets).length) return 'No assets provided.'
   const lines = Object.keys(assets).map(k => `- ${k}`)
   return `Assets you may use (reference by filename in <img src="...">):\n${lines.join('\n')}\n\nUse these filenames exactly; do not invent new ones.`
@@ -334,8 +334,8 @@ function buildAssetsManifest(assets: Record<string,string>): string {
 /** ---- inject data-edit markers for common elements ---- */
 function autoAddDataEditMarkers(html: string): string {
   try {
-    const tags = ['h1','h2','h3','p','img','button','a'] as const
-    const counters: Record<string, number> = { h1:0, h2:0, h3:0, p:0, img:0, button:0, a:0 }
+    const tags = ['h1', 'h2', 'h3', 'p', 'img', 'button', 'a'] as const
+    const counters: Record<string, number> = { h1: 0, h2: 0, h3: 0, p: 0, img: 0, button: 0, a: 0 }
     for (const tag of tags) {
       // Add data-edit if missing; keep existing attributes
       const re = new RegExp(`<${tag}\\b(?![^>]*\\bdata-edit=)([^>]*?)(\\/?)>`, 'gi')
@@ -359,7 +359,7 @@ export async function POST(req: NextRequest) {
 
     // 🔒 Locks from client
     const locksJson = form.get('locks') as string | null
-    const locks: { id:string; label:string; html:string }[] = locksJson ? JSON.parse(locksJson) : []
+    const locks: { id: string; label: string; html: string }[] = locksJson ? JSON.parse(locksJson) : []
 
     // Assets (multiple)
     const assetsFiles = form.getAll('assets[]') as File[]
@@ -380,11 +380,11 @@ export async function POST(req: NextRequest) {
 
     // System & user messages as Responses API content lists
     const lockIntro = locks.length
-      ? `\n\nLOCKS:\n${locks.map(l=>`- id:${l.id} • label:${l.label}`).join('\n')}\n\nREQUIREMENT: Your output MUST include the exact placeholder tokens, in order: ${locks.map(l=>`<!--WG_LOCK:${l.id}-->`).join(' ')}.\nInsert each token where its section belongs based on the label. Do NOT modify these tokens.`
+      ? `\n\nLOCKS:\n${locks.map(l => `- id:${l.id} • label:${l.label}`).join('\n')}\n\nREQUIREMENT: Your output MUST include the exact placeholder tokens, in order: ${locks.map(l => `<!--WG_LOCK:${l.id}-->`).join(' ')}.\nInsert each token where its section belongs based on the label. Do NOT modify these tokens.`
       : ''
 
     const systemText =
-`You generate ONE complete responsive HTML document (no JS required).
+      `You generate ONE complete responsive HTML document (no JS required).
 
 Hard rules:
 - Always return a full HTML document (<!doctype html> ...).
@@ -399,25 +399,25 @@ Hard rules:
 `
 
     const instructionsText =
-`Brief:
+      `Brief:
 ${prompt || '(no brief provided)'}
 
 ${buildAssetsManifest(assetsMap)}
 
 Output: HTML only. Include basic brandable CSS in a <style> block in <head>. Make sure content stacks gracefully on mobile and forms/buttons are large enough to tap.
-${locks.length ? `\nInsert these placeholders verbatim:\n${locks.map(l=>`  <!--WG_LOCK:${l.id}-->  (${l.label})`).join('\n')}\n` : ''}`
+${locks.length ? `\nInsert these placeholders verbatim:\n${locks.map(l => `  <!--WG_LOCK:${l.id}-->  (${l.label})`).join('\n')}\n` : ''}`
 
     // Build user content: prompt + images
     const userContent: Array<any> = [{ type: 'input_text', text: instructionsText }]
-    if (referenceDataUrl) userContent.push({ type: 'input_image', image_url: referenceDataUrl })
-    for (const dataurl of Object.values(assetsMap)) userContent.push({ type: 'input_image', image_url: dataurl })
+    if (referenceDataUrl) userContent.push({ type: 'input_image', image_url: { url: referenceDataUrl } })
+    for (const dataurl of Object.values(assetsMap)) userContent.push({ type: 'input_image', image_url: { url: dataurl } })
 
     // Call Responses API with gpt-5-nano
     const response = await client.responses.create({
       model: 'gpt-5-nano',
       input: [
         { role: 'system', content: [{ type: 'input_text', text: systemText }] },
-        { role: 'user',   content: userContent },
+        { role: 'user', content: userContent },
       ],
     })
 
