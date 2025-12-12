@@ -11,6 +11,8 @@ export function injectEditing(iframeDoc: Document) {
     const style = iframeDoc.createElement('style')
     style.textContent = `
     [data-edit]{ cursor:text; transition: outline .15s; }
+    /* DEBUG: VISUALIZE ELEMENTS */
+    * { outline: 1px solid rgba(255,0,0,0.1) !important; }
     [data-edit]:hover{ outline:1px dashed rgba(124,108,240,.4); outline-offset:2px; }
     [data-edit]:focus{ outline:2px solid rgba(124,108,240,.7); outline-offset:2px; }
     [data-edit-img], [data-edit-bg]{ cursor:pointer; position:relative; transition: outline .15s; }
