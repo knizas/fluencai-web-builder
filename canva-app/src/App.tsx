@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Button, Rows, Text, Title } from '@canva/app-ui-kit'
-import { getDesignToken, requestExport } from '@canva/design'
+import { requestExport } from '@canva/design'
 import styles from './App.module.css'
 
-const API_URL = 'https://web-builder.fluencai.com' // Change to your production URL
+const API_URL = 'https://web-builder.fluencai.com'
 
 function App() {
     const [loading, setLoading] = useState(false)
@@ -16,46 +16,35 @@ function App() {
             setError(null)
             setPreviewUrl(null)
 
-            // Get design token to access design data
-            const token = await getDesignToken()
+            console.log('Requesting export...')
+            const exportResult = await requestExport({
+                acceptedFileTypes: ['PNG'],
+            })
 
-            // Request export of all pages
-            const pages = await Promise.all(
-                Array.from({ length: token.designInfo.pages.length }, async (_, i) => {
-                    const pageId = token.designInfo.pages[i].id
+            console.log('Export result:', exportResult)
 
-                    // Export page as PNG
-                    const pngExport = await requestExport({
-                        acceptedFileTypes: ['PNG'],
-                        pageIndex: i,
-                    })
+            const mockPages = [{
+                index: 0,
+                name: 'Page 1',
+                png: exportResult.exportUrl,
+                dimensions: {
+                    width: 1200,
+                    height: 800,
+                },
+                structure: [],
+            }]
 
-                    // TODO: Get page structured data (requires Canva API access)
-                    // For now, we'll use PNG-only approach
+            console.log('Sending to API...')
 
-                    return {
-                        index: i,
-                        name: token.designInfo.pages[i].title || `Page ${i + 1}`,
-                        png: pngExport.exportUrl,
-                        dimensions: {
-                            width: token.designInfo.pages[i].dimensions.width,
-                            height: token.designInfo.pages[i].dimensions.height,
-                        },
-                        structure: [], // Will be populated when Canva provides structured API
-                    }
-                })
-            )
-
-            // Send to Fluencai API
             const response = await fetch(`${API_URL}/api/canva/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    pages,
-                    designId: token.designInfo.id,
-                    designTitle: token.designInfo.title || 'Untitled Design',
+                    pages: mockPages,
+                    designId: 'canva-' + Date.now(),
+                    designTitle: 'My Design',
                 }),
             })
 
@@ -64,6 +53,7 @@ function App() {
             }
 
             const data = await response.json()
+            console.log('API response:', data)
             setPreviewUrl(data.previewUrl)
 
         } catch (err) {
