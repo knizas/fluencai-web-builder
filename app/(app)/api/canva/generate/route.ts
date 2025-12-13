@@ -49,7 +49,14 @@ export async function POST(req: NextRequest) {
 
         console.log(`[Canva Generate API] Success! Generated ${html.length} chars of HTML`)
 
-        return NextResponse.json(response, { status: 200 })
+        return NextResponse.json(response, {
+            status: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            }
+        })
 
     } catch (error) {
         console.error('[Canva Generate API] Error:', error)
