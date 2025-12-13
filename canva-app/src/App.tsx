@@ -3,18 +3,18 @@ import { Button, Rows, Text, Title } from '@canva/app-ui-kit'
 import { requestExport } from '@canva/design'
 import styles from './App.module.css'
 
-const API_URL = 'https://web-builder.fluencai.com'
+const API_URL = 'https://cfc746551fc5.ngrok-free.app' // Ngrok tunnel
 
 function App() {
     const [loading, setLoading] = useState(false)
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+    const [generatedHtml, setGeneratedHtml] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
 
     const handleGenerateWebsite = async () => {
         try {
             setLoading(true)
             setError(null)
-            setPreviewUrl(null)
+            setGeneratedHtml(null)
 
             console.log('Requesting export...')
             const exportResult = await requestExport({
@@ -59,7 +59,7 @@ function App() {
 
             const data = await response.json()
             console.log('API response:', data)
-            setPreviewUrl(data.previewUrl)
+            setGeneratedHtml(data.html)
 
         } catch (err) {
             console.error('Error generating website:', err)
@@ -67,6 +67,20 @@ function App() {
         } finally {
             setLoading(false)
         }
+    }
+
+    const handleDownload = () => {
+        if (!generatedHtml) return
+
+        const blob = new Blob([generatedHtml], { type: 'text/html' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'website.html'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
     }
 
     return (
@@ -80,16 +94,20 @@ function App() {
 
                 {error && (
                     <div className={styles.error}>
-                        <Text size="small">{error}</Text>
+                        <Text size="small" tone="critical">{error}</Text>
                     </div>
                 )}
 
-                {previewUrl && (
+                {generatedHtml && (
                     <div className={styles.success}>
                         <Text size="small">Website generated successfully!</Text>
-                        <a href={previewUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                            View Your Website →
-                        </a>
+                        <Button
+                            variant="secondary"
+                            onClick={handleDownload}
+                            stretch
+                        >
+                            Download HTML File
+                        </Button>
                     </div>
                 )}
 
