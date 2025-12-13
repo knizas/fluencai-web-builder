@@ -18,15 +18,20 @@ function App() {
 
             console.log('Requesting export...')
             const exportResult = await requestExport({
-                acceptedFileTypes: ['PNG'],
+                acceptedFileTypes: ['png'],
             })
 
             console.log('Export result:', exportResult)
 
+            // Check if export was completed or aborted
+            if (exportResult.status === 'aborted') {
+                throw new Error('Export was cancelled')
+            }
+
             const mockPages = [{
                 index: 0,
                 name: 'Page 1',
-                png: exportResult.exportUrl,
+                png: exportResult.exportBlobs[0].url,
                 dimensions: {
                     width: 1200,
                     height: 800,
@@ -75,13 +80,13 @@ function App() {
 
                 {error && (
                     <div className={styles.error}>
-                        <Text size="small" tone="critical">{error}</Text>
+                        <Text size="small">{error}</Text>
                     </div>
                 )}
 
                 {previewUrl && (
                     <div className={styles.success}>
-                        <Text size="small" tone="positive">Website generated successfully!</Text>
+                        <Text size="small">Website generated successfully!</Text>
                         <a href={previewUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
                             View Your Website →
                         </a>
