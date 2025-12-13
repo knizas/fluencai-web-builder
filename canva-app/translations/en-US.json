@@ -1,15 +1,46 @@
 {
-    "en-US": {
-        "app.title": "Fluencai Website Builder",
-        "app.description": "Transform your Canva design into a professional, responsive website in one click.",
-        "button.generate": "Generate Website",
-        "button.generating": "Generating...",
-        "feature.multipage": "Multi-page support",
-        "feature.responsive": "Mobile responsive",
-        "feature.icons": "Professional icons",
-        "success.message": "Website generated successfully!",
-        "success.view": "View Your Website",
-        "error.api": "Failed to generate website. Please try again.",
-        "error.export": "Failed to export design. Please check your permissions."
+    "app.title": {
+        "defaultMessage": "Fluencai Website Builder",
+        "description": "Title of the app displayed in the header section"
+    },
+    "app.description": {
+        "defaultMessage": "Transform your Canva design into a professional, responsive website in one click.",
+        "description": "Description text explaining what the app does"
+    },
+    "button.generate": {
+        "defaultMessage": "Generate Website",
+        "description": "Text on the main action button when ready to generate"
+    },
+    "button.generating": {
+        "defaultMessage": "Generating...",
+        "description": "Text on the button while the website is being generated"
+    },
+    "feature.multipage": {
+        "defaultMessage": "Multi-page support",
+        "description": "Feature description indicating multi-page design support"
+    },
+    "feature.responsive": {
+        "defaultMessage": "Mobile responsive",
+        "description": "Feature description indicating mobile responsive output"
+    },
+    "feature.icons": {
+        "defaultMessage": "Professional icons",
+        "description": "Feature description indicating professional icon usage"
+    },
+    "success.message": {
+        "defaultMessage": "Website generated successfully!",
+        "description": "Success message shown when generation completes"
+    },
+    "success.view": {
+        "defaultMessage": "View Your Website",
+        "description": "Link text to view the generated website"
+    },
+    "error.api": {
+        "defaultMessage": "Failed to generate website. Please try again.",
+        "description": "Error message when API call fails"
+    },
+    "error.export": {
+        "defaultMessage": "Failed to export design. Please check your permissions.",
+        "description": "Error message when Canva export fails"
     }
 }
