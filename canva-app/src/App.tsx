@@ -69,18 +69,26 @@ function App() {
         }
     }
 
-    const handleDownload = () => {
-        if (!generatedHtml) return
+    const handleCopyHtml = async () => {
+        if (!generatedHtml) {
+            console.log('No HTML to copy')
+            return
+        }
 
-        const blob = new Blob([generatedHtml], { type: 'text/html' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'website.html'
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
+        console.log('Copying HTML to clipboard, length:', generatedHtml.length)
+
+        try {
+            await navigator.clipboard.writeText(generatedHtml)
+            console.log('HTML copied to clipboard successfully!')
+            alert('✅ HTML copied to clipboard! Paste it into a .html file to view your website.')
+        } catch (err) {
+            console.error('Clipboard copy failed:', err)
+            // Fallback: show in console
+            alert('Clipboard blocked. Check browser console (F12) for the HTML code.')
+            console.log('=== GENERATED HTML (copy from here) ===')
+            console.log(generatedHtml)
+            console.log('=== END OF HTML ===')
+        }
     }
 
     return (
@@ -103,10 +111,10 @@ function App() {
                         <Text size="small">Website generated successfully!</Text>
                         <Button
                             variant="secondary"
-                            onClick={handleDownload}
+                            onClick={handleCopyHtml}
                             stretch
                         >
-                            Download HTML File
+                            📋 Copy HTML to Clipboard
                         </Button>
                     </div>
                 )}
