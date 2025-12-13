@@ -1,0 +1,40 @@
+.container {
+    padding: 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.error {
+    padding: 12px;
+    background-color: #FEE2E2;
+    border-radius: 8px;
+    border: 1px solid #FCA5A5;
+}
+
+.success {
+    padding: 12px;
+    background-color: #D1FAE5;
+    border-radius: 8px;
+    border: 1px solid #6EE7B7;
+}
+
+.link {
+    display: inline-block;
+    margin-top: 8px;
+    color: #6366F1;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+}

@@ -1,0 +1,15 @@
+{
+    "en-US": {
+        "app.title": "Fluencai Website Builder",
+        "app.description": "Transform your Canva design into a professional, responsive website in one click.",
+        "button.generate": "Generate Website",
+        "button.generating": "Generating...",
+        "feature.multipage": "Multi-page support",
+        "feature.responsive": "Mobile responsive",
+        "feature.icons": "Professional icons",
+        "success.message": "Website generated successfully!",
+        "success.view": "View Your Website",
+        "error.api": "Failed to generate website. Please try again.",
+        "error.export": "Failed to export design. Please check your permissions."
+    }
+}
