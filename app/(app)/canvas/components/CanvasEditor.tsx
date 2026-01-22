@@ -199,7 +199,7 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
             {/* Header - Two Rows */}
             <div style={{
                 borderBottom: '1px solid var(--line-grey)',
-                background: 'rgba(124,108,240,0.04)'
+                background: 'var(--surface)'
             }}>
                 {/* Row 1: Navigation & Actions */}
                 <div style={{
@@ -210,7 +210,7 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
                     borderBottom: '1px solid var(--line-grey)'
                 }}>
                     <div style={{ fontWeight: 900, fontSize: 14, marginRight: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Sparkles size={16} color="var(--brand-accent)" />
+                        <Sparkles size={16} color="var(--ink)" />
                         Canvas Workspace
                     </div>
 
@@ -319,8 +319,8 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
                             fontSize: 12,
                             fontWeight: 800,
                             background: '#fff',
-                            border: '1.5px solid var(--brand-accent)',
-                            color: 'var(--brand-accent)'
+                            border: '1.5px solid var(--ink)',
+                            color: 'var(--ink)'
                         }}
                     >
                         <Type size={14} aria-hidden="true" /> Prompt (T)
@@ -358,7 +358,7 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
                                 padding: '6px 12px',
                                 borderRadius: 999,
                                 border: 'none',
-                                background: deviceType === 'phone' ? 'var(--brand-accent)' : 'transparent',
+                                background: deviceType === 'phone' ? 'var(--ink)' : 'transparent',
                                 color: deviceType === 'phone' ? '#fff' : 'var(--ink)',
                                 fontSize: 11,
                                 fontWeight: 800,
@@ -379,7 +379,7 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
                                 padding: '6px 12px',
                                 borderRadius: 999,
                                 border: 'none',
-                                background: deviceType === 'laptop' ? 'var(--brand-accent)' : 'transparent',
+                                background: deviceType === 'laptop' ? 'var(--ink)' : 'transparent',
                                 color: deviceType === 'laptop' ? '#fff' : 'var(--ink)',
                                 fontSize: 11,
                                 fontWeight: 800,
@@ -417,24 +417,24 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
                         type: 'smoothstep',
                         animated: true,
                         style: {
-                            stroke: 'var(--brand-accent)',
-                            strokeWidth: 3,
+                            stroke: 'var(--ink)',
+                            strokeWidth: 2,
                         },
                     }}
                     connectionLineStyle={{
-                        stroke: 'var(--brand-accent)',
-                        strokeWidth: 3,
+                        stroke: 'var(--ink)',
+                        strokeWidth: 2,
                     }}
-                    style={{ background: 'rgba(124,108,240,0.02)' }}
+                    style={{ background: 'var(--bg-subtle)' }}
                 >
-                    <Background color="rgba(124,108,240,0.1)" gap={16} />
+                    <Background color="var(--line-dark)" gap={24} style={{ opacity: 0.1 }} />
                     <Controls />
                     <MiniMap
                         nodeColor={(node) =>
-                            node.type === 'promptNode' ? '#7C6CF0' : '#C0B6FF'
+                            node.type === 'promptNode' ? '#11181c' : '#e8e6e3'
                         }
                         style={{
-                            background: 'rgba(255,255,255,0.9)',
+                            background: 'var(--surface-white)',
                             border: '1px solid var(--line-grey)',
                             borderRadius: 12
                         }}
@@ -463,7 +463,7 @@ export function CanvasEditor({ onGenerate, generationStatus, onSave, onBack, sav
                                 gap: 8,
                                 fontSize: 12,
                                 textAlign: 'left',
-                                background: 'rgba(124,108,240,0.08)',
+                                background: 'var(--surface-white)',
                                 padding: 16,
                                 borderRadius: 12,
                                 border: '1px solid var(--line-grey)'

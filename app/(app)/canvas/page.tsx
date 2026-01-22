@@ -55,7 +55,7 @@ function CanvasWebGenPageInner() {
     const router = useRouter()
     const tokens = useMemo(
         () => ({
-            palette: { primary: search.get('p') || '#000', secondary: search.get('s') || '#7C6CF0', background: search.get('b') || '#FFF' },
+            palette: { primary: search.get('p') || '#000', secondary: search.get('s') || '#11181c', background: search.get('b') || '#FFF' },
             glass: { opacity: .75, blur: 12 }
         }),
         [search]

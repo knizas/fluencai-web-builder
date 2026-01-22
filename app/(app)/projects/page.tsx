@@ -67,7 +67,7 @@ export default function ProjectsPage() {
   return (
     <main className="container page">
       <div className="shell">
-        <section className="hero" style={{ padding: '32px 36px', alignItems: 'center', background: 'linear-gradient(135deg, rgba(124,108,240,0.12), rgba(124,108,240,0.06))' }}>
+        <section className="hero" style={{ padding: '32px 36px', alignItems: 'center', background: 'var(--surface-white)', borderBottom: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
               <div style={{
@@ -226,7 +226,7 @@ export default function ProjectsPage() {
                           style={{
                             fontWeight: 800,
                             fontSize: 18,
-                            border: '1px solid #7C6CF0',
+                            border: '1px solid var(--line-dark)',
                             borderRadius: 8,
                             padding: '4px 8px',
                             outline: 'none',

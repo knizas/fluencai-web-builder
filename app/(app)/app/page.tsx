@@ -374,7 +374,7 @@ function ProjectCard({ project, onOpen, onDelete }: { project: Project; onOpen: 
           autoFocus
           style={{
             fontSize: 12, fontWeight: 700, textAlign: 'center',
-            padding: '4px 6px', border: '1px solid #7C6CF0',
+            padding: '4px 6px', border: '1px solid var(--link)',
             borderRadius: 6, outline: 'none', width: '100%'
           }}
         />
@@ -391,7 +391,7 @@ function ProjectCard({ project, onOpen, onDelete }: { project: Project; onOpen: 
             padding: '4px 6px', cursor: 'text', borderRadius: 6,
             transition: 'background 0.2s'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(124,108,240,0.08)'}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface)'}
           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
         >
           {project.name || 'Untitled project'}
@@ -557,7 +557,7 @@ export default function HomePage() {
                   style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
                   aria-label={`Start with ${item.label} template`}
                 >
-                  <div className="dot" style={{ background: 'rgba(124,108,240,0.1)', marginBottom: 6 }}>{item.icon}</div>
+                  <div className="dot" style={{ background: 'var(--surface-white)', marginBottom: 6 }}>{item.icon}</div>
                   <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textAlign: 'center', color: 'var(--ink)' }}>{item.label}</div>
                 </button>
               ))}
@@ -583,23 +583,21 @@ export default function HomePage() {
                   flexDirection: 'column',
                   justifyContent: 'center',
                   minHeight: '120px',
-                  border: '2px dashed rgba(124,108,240,0.3)',
-                  background: 'linear-gradient(135deg, rgba(124,108,240,0.08), rgba(124,108,240,0.02))',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-white)',
                   position: 'relative',
                   transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-                  boxShadow: 'none'
+                  boxShadow: 'var(--shadow-1)'
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-4px)'
-                  e.currentTarget.style.borderColor = 'rgba(124,108,240,0.6)'
-                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(124,108,240,0.15), rgba(124,108,240,0.05))'
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(124,108,240,0.15)'
+                  e.currentTarget.style.borderColor = 'var(--line-dark)'
+                  e.currentTarget.style.boxShadow = 'var(--shadow-2)'
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.borderColor = 'rgba(124,108,240,0.3)'
-                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(124,108,240,0.08), rgba(124,108,240,0.02))'
-                  e.currentTarget.style.boxShadow = 'none'
+                  e.currentTarget.style.borderColor = 'var(--line)'
+                  e.currentTarget.style.boxShadow = 'var(--shadow-1)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -607,12 +605,13 @@ export default function HomePage() {
                     width: 40,
                     height: 40,
                     borderRadius: '12px',
-                    background: 'rgba(124,108,240,0.1)',
+                    background: 'var(--surface)',
                     display: 'grid',
                     placeItems: 'center',
-                    flexShrink: 0
+                    flexShrink: 0,
+                    border: '1px solid var(--line)'
                   }}>
-                    <Plus size={20} color="#7C6CF0" strokeWidth={3} />
+                    <Plus size={20} color="var(--ink)" strokeWidth={2} />
                   </div>
                   <div>
                     <h3 style={{ fontSize: 15, fontWeight: 900, marginBottom: 4, color: '#111' }}>Start New Project</h3>

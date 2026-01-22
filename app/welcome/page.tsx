@@ -39,24 +39,23 @@ export default function WelcomePage() {
   }
 
   return (
-    <main className="welcome-wrap page" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 20px', background: 'radial-gradient(circle at 50% 0%, rgba(124,108,240,0.15), transparent 70%), radial-gradient(circle at 80% 80%, rgba(124,108,240,0.08), transparent 50%)' }}>
+    <main className="welcome-wrap page" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 20px', background: '#fefdfb', position: 'relative' }}>
+      {/* Subtle texture overlay */}
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 20% 50%, rgba(0, 0, 0, .015) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(0, 0, 0, .015) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
+
 
       {/* Main Hero Card */}
       <section className="container" style={{ maxWidth: 1280, width: '100%', margin: '0 auto', height: '100%', maxHeight: 800 }}>
         <div className="glass-card" style={{
+          position: 'relative', zIndex: 1,
           padding: 0,
           borderRadius: 32,
           overflow: 'hidden',
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          background: `
-            radial-gradient(1200px 520px at 20% 10%, rgba(124, 108, 240, .20), rgba(124, 108, 240, 0) 70%),
-            linear-gradient(180deg, rgba(124, 108, 240, .14), rgba(255, 255, 255, .75))
-          `,
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          border: '1px solid rgba(255,255,255,0.8)',
-          boxShadow: '0 20px 80px -10px rgba(124,108,240,0.25), 0 0 0 1px rgba(255,255,255,0.5) inset',
+          background: '#faf9f7',
+          border: '1px solid #e8e6e3',
+          boxShadow: '0 4px 12px 0 rgba(0, 0, 0, .08)',
           height: '100%'
         }}>
 
@@ -65,7 +64,7 @@ export default function WelcomePage() {
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'auto' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <img src="/logo.svg" alt="Fluencai" width={32} height={32} style={{ borderRadius: 8 }} />
-                <strong style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em', color: '#111' }}>Fluencai</strong>
+                <strong style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: '#11181c', fontFamily: '"Libre Baskerville", serif' }}>Fluencai</strong>
               </div>
               <Link href="/signin?next=%2Fapp" className="link-quiet no-underline" style={{ fontWeight: 600, fontSize: 14 }}>
                 Sign in
@@ -89,11 +88,12 @@ export default function WelcomePage() {
                 ].map((item, i) => (
                   <div key={i} className={`fade-in feature-pill ${item.delay}`} style={{
                     display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '10px 16px', background: 'rgba(255,255,255,0.5)',
-                    borderRadius: 12, border: '1px solid rgba(255,255,255,0.6)', width: 'fit-content'
+                    padding: '10px 16px', background: '#fff',
+                    borderRadius: 12, border: '1px solid #e8e6e3', width: 'fit-content',
+                    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, .1)'
                   }}>
-                    <div style={{ color: '#000' }}>{item.icon}</div>
-                    <span style={{ fontSize: 14, color: '#222', fontWeight: 700 }}>
+                    <div style={{ color: '#11181c' }}>{item.icon}</div>
+                    <span style={{ fontSize: 14, color: '#11181c', fontWeight: 600 }}>
                       {item.text}
                     </span>
                   </div>
@@ -106,9 +106,9 @@ export default function WelcomePage() {
                   className="btn-cta"
                   style={{
                     textDecoration: 'none',
-                    background: '#000', color: '#fff',
-                    padding: '14px 28px', fontSize: 15, borderRadius: 14,
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+                    background: '#11181c', color: '#fff',
+                    padding: '14px 28px', fontSize: 15, borderRadius: 999,
+                    boxShadow: '0 4px 12px 0 rgba(0, 0, 0, .08)'
                   }}
                 >
                   Get started
@@ -155,8 +155,8 @@ export default function WelcomePage() {
                   />
                 </div>
               </figure>
-              {/* Decor Blob */}
-              <div style={{ position: 'absolute', top: -50, right: -50, width: 300, height: 300, background: '#7C6CF0', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.12, pointerEvents: 'none' }} />
+              {/* Decor Blob REMOVED for clean monochrome */}
+              {/* <div style={{ position: 'absolute', top: -50, right: -50, width: 300, height: 300, background: '#7C6CF0', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.12, pointerEvents: 'none' }} /> */}
             </div>
 
             {/* Bottom: How It Works Schemas (Adjusted Space) */}
@@ -214,14 +214,14 @@ export default function WelcomePage() {
 
                 {/* Step 2: Generate Node */}
                 <div className="fade-in d5" style={{
-                  background: '#fff', border: '1.5px solid #7C6CF0', borderRadius: 14, padding: '14px 20px',
+                  background: '#fff', border: '1px solid #11181c', borderRadius: 14, padding: '14px 20px',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-                  boxShadow: '0 8px 24px rgba(124,108,240,0.2)', position: 'relative'
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)', position: 'relative'
                 }}>
-                  <div style={{ width: 8, height: 8, background: '#7C6CF0', borderRadius: '50%', position: 'absolute', left: -5, top: '50%', transform: 'translateY(-50%)', border: '2px solid #fff' }} />
-                  <div style={{ width: 8, height: 8, background: '#7C6CF0', borderRadius: '50%', position: 'absolute', right: -5, top: '50%', transform: 'translateY(-50%)', border: '2px solid #fff' }} />
+                  <div style={{ width: 8, height: 8, background: '#11181c', borderRadius: '50%', position: 'absolute', left: -5, top: '50%', transform: 'translateY(-50%)', border: '2px solid #fff' }} />
+                  <div style={{ width: 8, height: 8, background: '#11181c', borderRadius: '50%', position: 'absolute', right: -5, top: '50%', transform: 'translateY(-50%)', border: '2px solid #fff' }} />
 
-                  <Sparkles size={20} color="#7C6CF0" />
+                  <Sparkles size={20} color="#11181c" />
                   <span style={{ fontSize: 13, fontWeight: 800, color: '#111' }}>Generate</span>
                 </div>
 
